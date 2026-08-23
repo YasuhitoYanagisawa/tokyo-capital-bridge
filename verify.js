@@ -16,7 +16,17 @@ const CHECKS = {
     scatter: document.querySelectorAll('#scatterChart circle').length,
     routes: document.getElementById('routeList').children.length,
     srcs: document.getElementById('srcList').children.length }) },
-  v4: { lenses: 9, probe: () => ({
+  v4: { lenses: 10, probe: () => ({
+    obAsset: document.getElementById('obAsset').textContent,
+    obTiles: document.querySelectorAll('#obTiles .tile').length,
+    obSec: document.querySelectorAll('#obSecChart rect').length,
+    obSecR: document.getElementById('obSecR').textContent,
+    obMix: document.querySelectorAll('#obMixChart rect').length,
+    obLoan: document.querySelectorAll('#obLoanChart rect').length,
+    obYenR: document.getElementById('obYenR').textContent,
+    obYen: document.querySelectorAll('#obYenChart rect').length,
+    obCay: document.querySelectorAll('#obCayTable tbody tr').length,
+    obIn: document.querySelectorAll('#obInChart rect').length,
     heroCorr: document.getElementById('heroCorr').textContent,
     flow: document.querySelectorAll('#flowMap .node').length,
     ladder: document.querySelectorAll('#ladderChart rect').length,

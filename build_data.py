@@ -929,6 +929,99 @@ data['actions'] = [
     },
 ]
 
+
+# ---- 日本から海外へ出ていく資金（対外投資・対外与信・円建て与信）----
+# 財務省「本邦対外資産負債残高（地域別）」と、日本銀行が公表する BIS 統計の日本分。
+# いずれも東京都のオープンデータではないが、JPX と同じく公表統計として使う。
+# 取得済みの数値は data/gaikoku_research.json に置いてある（xls/xlsx を機械抽出したもの）。
+_gk = json.load(open('data/gaikoku_research.json', encoding='utf-8'))
+
+_sec = _gk['証券投資_資産_国別']
+_fdi = _gk['直接投資_資産_国別']
+_liab = _gk['証券投資_負債_国別']
+_cbs = _gk['邦銀_対外与信_国別']
+_yen = _gk['円建てクロスボーダー債権']
+
+# 地域構成比。証券投資と直接投資で「アジアの比重」が桁違いに違うことを見せる。
+_secRegSum = sum(_sec['地域'].values())
+_fdiRegSum = sum(_fdi['地域'].values())
+_regions = ['北米', '欧州', 'アジア', '中南米', '大洋州']
+
+data['outbound'] = {
+    'iip': _gk['iip_2025'],
+
+    # 1) 証券投資の行き先（上位国・億円）
+    'sec': {
+        'label': _sec['label'],
+        'url': 'https://www.mof.go.jp/policy/international_policy/reference/iip/data/index.htm',
+        'total': 7686533,
+        'rows': [{'n': r[0], 'v': r[1], 'eq': r[2], 'db': r[3]} for r in _sec['国'][:12]],
+        'regions': _sec['地域'],
+    },
+
+    # 2) 直接投資の行き先
+    'fdi': {
+        'label': _fdi['label'],
+        'total': 3845350,
+        'rows': [{'n': r[0], 'v': r[1]} for r in _fdi['国'][:12]],
+        'regions': _fdi['地域'],
+    },
+
+    # 3) 証券投資：地域構成比の対比（％）
+    'mix': [{
+        'n': r,
+        'sec': round(_sec['地域'].get(r, 0) / _secRegSum * 100, 1),
+        'fdi': round(_fdi['地域'].get(r, 0) / _fdiRegSum * 100, 1),
+    } for r in _regions],
+
+    # 4) 逆向き：海外から日本への証券投資
+    'inbound': {
+        'total': 6438854,
+        'rows': [{'n': r[0], 'v': r[1]} for r in _liab['国'] if r[0] != '合計'][:8],
+    },
+
+    # 5) 融資（邦銀の対外与信・最終リスクベース・百万米ドル）
+    'loan': {
+        'label': _cbs['label'],
+        'url': _cbs['url'],
+        'total': _cbs['合計']['対非居住者合計'],
+        'sector': _cbs['合計'],
+        'rows': [{'n': r[0], 'v': r[1], 'off': r[2], 'bk': r[3], 'nb': r[4]} for r in _cbs['国'][:12]],
+    },
+
+    # 6) 円建て（＝円キャリーの規模の代理指標・百万米ドル）
+    'yen': {
+        'label': _yen['label'],
+        'all': _yen['非銀行向け']['全通貨'],
+        'fx': _yen['非銀行向け']['外貨建'],
+        'jpy': _yen['非銀行向け']['円建'],
+        'allSectorJpy': _yen['全セクター']['円建'],
+        'rows': [{'n': r[0], 'jpy': r[1], 'all': r[2]} for r in _yen['非銀行向け円建_国別'][:8]],
+        'caution': _yen['注意'],
+    },
+}
+
+# ケイマンが3つの統計すべてで上位に来ることを、ひとつの表にまとめる
+_caySec = next(r for r in _sec['国'] if r[0] == 'ケイマン諸島')[1]
+_cayLoan = next(r for r in _cbs['国'] if r[0] == 'ケイマン諸島')
+_cayYen = next(r for r in _yen['非銀行向け円建_国別'] if r[0] == 'ケイマン諸島')
+data['outbound']['cayman'] = {
+    'rows': [
+        {'k': '対外証券投資残高', 'v': f'{_caySec/10000:.1f}兆円', 'rank': '2位',
+         'note': f'全体{7686533/10000:.1f}兆円の{_caySec/7686533*100:.0f}%。うち株式・投資ファンド持分が'
+                 f'{next(r for r in _sec["国"] if r[0]=="ケイマン諸島")[2]/10000:.1f}兆円'},
+        {'k': '邦銀の対外与信', 'v': f'{_cayLoan[1]/100:,.0f}億ドル', 'rank': '2位',
+         'note': f'うち民間非銀行向けが{_cayLoan[4]/_cayLoan[1]*100:.0f}%。公的機関向けは{_cayLoan[2]}百万ドルしかない'},
+        {'k': '円建て・非銀行向け債権', 'v': f'{_cayYen[1]/100:,.0f}億ドル', 'rank': '1位',
+         'note': f'全体{_yen["非銀行向け"]["円建"]/100:,.0f}億ドルの{_cayYen[1]/_yen["非銀行向け"]["円建"]*100:.0f}%'},
+    ],
+    'finding': ('ケイマン諸島は3つの統計すべてで上位に来ます。しかも邦銀の与信は公的機関向けが'
+                'ほぼゼロで、相手はファンドとSPCです。ここは投資の目的地ではなく通り道で、'
+                '円キャリートレードの実体もここにあります。'
+                '投資信託を通じて外国資産を持つとき、その器の多くがケイマン籍です。'
+                '「増やす制度を使う」ことと「円の巻き戻しで損をする」ことは、同じ配管の話になります。'),
+}
+
 data['sources'] = [
     {'n': '東京都中小企業の景況（月次・回答3,875社対象）', 'org': '東京都産業労働局',
      'url': 'https://catalog.data.metro.tokyo.lg.jp/dataset/t000012d0000000087',
@@ -991,6 +1084,18 @@ data['sources'] = [
      'file': 'https://www.stat-search.boj.or.jp/ssi/mtshtml/fm08_m_1.html',
      'lic': '日本銀行 利用規約',
      'use': '255か月のドル円から12か月変化率を243回算出し、「円安傾向だから儲かる」という前提を検証。'},
+    {'n': '本邦対外資産負債残高（地域別／直接投資・証券投資、資産・負債）', 'org': '財務省',
+     'url': 'https://www.mof.go.jp/policy/international_policy/reference/iip/data/index.htm',
+     'file': 'https://www.mof.go.jp/policy/international_policy/reference/iip/data/rdip_all2025.xls',
+     'lic': '財務省 公表統計',
+     'use': '日本から海外へ出ていく資金の国別内訳。証券投資768.7兆円と直接投資384.5兆円の行き先、'
+            'および海外から日本への証券投資643.9兆円を、東京への流入と突き合わせるために使用。'},
+    {'n': 'BIS国際与信統計・国際資金取引統計 日本分集計結果', 'org': '日本銀行',
+     'url': 'https://www.boj.or.jp/statistics/bis/ibs/index.htm',
+     'file': 'https://www.boj.or.jp/statistics/bis/ibs/qcbs.zip',
+     'lic': '日本銀行 公表統計',
+     'use': '融資の国別内訳（邦銀の対外与信・部門別）と、円建てクロスボーダー債権。'
+            '後者は円キャリートレードの規模を測る代理指標として使用。'},
     {'n': '事業概況（令和6年度通期・令和7年度第3四半期）', 'org': '東京信用保証協会',
      'url': 'https://www.cgc-tokyo.or.jp/about/profile/cgc_gaikyou-.html',
      'file': 'https://www.cgc-tokyo.or.jp/about/profile/cgc_gaikyou-.files/cgc_gaikyou_R6-43.pdf.pdf',
