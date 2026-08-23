@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>東京資本橋 — はじめにお読みください</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=Shippori+Mincho+B1:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+<style>
+:root{
+  --bg:#faf9f7; --surface:#fff; --surface-2:#f4f2ee;
+  --ink:#1a1a1a; --ink-2:#4a4a4a; --ink-3:#767676;
+  --line:#e6e3dd; --line-2:#d4d0c8; --accent:#2a78d6; --crit:#d03b3b; --good:#0ca30c;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#16171a; --surface:#1e2024; --surface-2:#26282d;
+    --ink:#f0efec; --ink-2:#c2c0bb; --ink-3:#918e88;
+    --line:#33363c; --line-2:#43464d; --accent:#3987e5; --crit:#e06565; --good:#3ec13e;
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  font-size:15px;line-height:1.9;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding:44px 24px 80px}
+h1{font-family:"Shippori Mincho B1","Yu Mincho",serif;font-size:30px;line-height:1.35;margin:0 0 6px;letter-spacing:.01em}
+.en{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.22em;color:var(--ink-3);text-transform:uppercase}
+.lede{font-size:16px;color:var(--ink-2);margin:18px 0 0;line-height:2}
+h2{font-family:"Shippori Mincho B1","Yu Mincho",serif;font-size:20px;margin:44px 0 10px;padding-top:22px;border-top:1px solid var(--line)}
+h3{font-size:15px;margin:24px 0 6px}
+p{margin:0 0 14px;color:var(--ink-2)}
+strong{color:var(--ink);font-weight:700}
+.box{background:var(--surface);border:1px solid var(--line);padding:20px 22px;margin:18px 0}
+.box.warn{background:var(--surface-2);border-color:var(--line-2)}
+.step{display:flex;gap:14px;align-items:flex-start;margin:0 0 14px}
+.step .n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;
+  font-family:"IBM Plex Mono",monospace;font-size:13px;font-weight:600;display:grid;place-items:center;margin-top:2px}
+.step p{margin:0}
+table{width:100%;border-collapse:collapse;font-size:13.5px;margin:14px 0}
+th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{color:var(--ink-3);font-weight:500;font-size:12px}
+td.t{white-space:nowrap;font-weight:700;color:var(--ink)}
+.num{font-family:"IBM Plex Mono",monospace;font-weight:600;color:var(--ink)}
+ul{margin:0 0 14px;padding-left:1.3em;color:var(--ink-2)}
+li{margin-bottom:7px}
+.q{background:var(--surface);border-left:3px solid var(--accent);padding:14px 18px;margin:0 0 12px}
+.q b{display:block;color:var(--ink);margin-bottom:2px}
+.q span{font-size:13.5px;color:var(--ink-3)}
+.dead{font-family:"IBM Plex Mono",monospace;font-size:20px;font-weight:600;color:var(--crit)}
+footer{margin-top:52px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-3);line-height:1.85}
+a{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<span class="en">Tokyo Capital Bridge</span>
+<h1>東京資本橋</h1>
+<p class="lede">
+都知事杯オープンデータ・ハッカソン2026 の応募作品プロトタイプです。<br>
+チームに入っていただきありがとうございます。まず触ってみて、<strong>率直な感想をください</strong>。
+このメモは3分で読めます。
+</p>
+
+<h2>これは何をするものか</h2>
+<p>
+東京の「お金」を <strong>海外投資家 → 上場企業 → 中小企業 → 都民</strong> の四つの層に分けて、
+それぞれの資金の状況を東京都のオープンデータで可視化するWebサイトです。
+</p>
+<p>
+面白いのはその先で、<strong>この四つの層がどれだけつながっているかを実際に計算しています</strong>。
+結果は「ほとんどつながっていない」でした。国債の金利と都内中小企業の景況感の相関は
+<span class="num">r = −0.03</span>（255か月ぶんのデータ）。ほぼ無関係という意味です。
+金利が上がっても下がっても、街の中小企業の実感はほとんど動いていませんでした。
+</p>
+<p>
+「東京は世界有数の金融都市」と「都内の中小企業に金が回っていない」が同時に成り立っている。
+その断絶を数字で見せて、どこが詰まっているのかを指すのがこの作品です。
+</p>
+
+<h2>開き方</h2>
+<div class="box">
+  <div class="step"><span class="n">1</span><p>ZIPを<strong>デスクトップなどに展開（解凍）</strong>してください。ZIPの中身を直接ダブルクリックすると正しく動かないことがあります。</p></div>
+  <div class="step"><span class="n">2</span><p>フォルダの中の <strong>index.html</strong> をダブルクリック。ブラウザ（Chrome / Edge / Safari）で開きます。</p></div>
+  <div class="step"><span class="n">3</span><p>上部の <strong>01〜08 のタブ</strong>を切り替えて見ていきます。グラフは<strong>マウスを乗せると</strong>数字が出ます。</p></div>
+</div>
+<p style="font-size:13.5px;color:var(--ink-3)">
+インターネット接続もインストールも不要です。HTMLファイル1つで完結していて、外部のライブラリを一切使っていません。
+スマホでも開けますが、表が多いのでPCのほうが見やすいです。ダークモードにも対応しています。
+</p>
+
+<h2>まずここだけ見てほしい（3か所）</h2>
+<table>
+  <thead><tr><th style="width:96px">タブ</th><th>見どころ</th></tr></thead>
+  <tbody>
+    <tr><td class="t">01<br>東京の資金地図</td><td><strong>最初の画面。ここだけで結論が分かります。</strong>四つの層が横並びになっていて、上に <span class="num">r = −0.03</span> が出ています。三番目の「非上場の中小企業」だけ背景色が違うのは、そこで資金の流れが切れているからです。</td></tr>
+    <tr><td class="t">05<br>連関</td><td><strong>この作品の心臓部。</strong>冒頭の「今月のファイナンス環境」は、四つの層の最新の数字を毎月そろえて前月差から機械的に判定しています（2026年7月時点は「ほぼ横ばい」）。その下は12個の指標を総当たりで相関にかけた表です。</td></tr>
+    <tr><td class="t">07<br>投資家：投資機会</td><td><strong>いちばん意外な発見がここ。</strong>個人が買える「個人向け都債」は、円建てが平成25年を最後に<strong>12年以上発行されていません</strong>。いま出ているのは外貨建てだけで、為替のリスクは買う人が負います。</td></tr>
+  </tbody>
+</table>
+
+<h3>タブの全体像</h3>
+<table>
+  <tbody>
+    <tr><td class="t">01</td><td>東京の資金地図 — 四層の全体像。ここが入口</td></tr>
+    <tr><td class="t">02</td><td>外国からの資金 — 東証プライムの売買代金の66.2%は海外投資家。その75.3%が欧州経由</td></tr>
+    <tr><td class="t">03</td><td>上場企業の資金 — 3市場（プライム/スタンダード/グロース）の規模・回転率・配当利回りと債券市場</td></tr>
+    <tr><td class="t">04</td><td>中小企業の資金 — 業況DIは255か月間ずっとマイナス。24業種×20年の色分けマップあり</td></tr>
+    <tr><td class="t">05</td><td>連関 — 今月のファイナンス環境と、相関の実測</td></tr>
+    <tr><td class="t">06</td><td>事業者：資金調達 — 業種と規模を選ぶと「いま必要な資金の種類」を判定して調達手段を返す</td></tr>
+    <tr><td class="t">07</td><td>投資家：投資機会 — 国債・株式・都債・クラウドファンディングの利回りと、個人が到達できるか</td></tr>
+    <tr><td class="t">08</td><td>データと判定ロジック — 判定式の全文と、使ったデータの出典URL一覧</td></tr>
+  </tbody>
+</table>
+
+<h2>いただきたい感想（4つ）</h2>
+<p>全部でなくて構いません。<strong>ひとつでも刺さったところ／刺さらなかったところ</strong>を教えてもらえると助かります。</p>
+
+<div class="q"><b>1. 最初の画面（タブ01）で、何のサービスか伝わりましたか？</b>
+<span>審査は2分のプレゼンで決まります。最初の10秒で伝わらないと厳しいので、ここがいちばん知りたいところです。</span></div>
+
+<div class="q"><b>2. 8つのタブ、多すぎませんか？ どれが一番面白かったですか？</b>
+<span>削る判断がしたいです。「これは要らない」も遠慮なくどうぞ。</span></div>
+
+<div class="q"><b>3. これを見て、誰が何をできるようになると思いましたか？</b>
+<span>「可視化しました」で止まっている感じがあり、そこが今の弱点だと自覚しています。使い道の案が欲しいです。</span></div>
+
+<div class="q"><b>4. 数字や表現で「おかしいのでは」と感じたところ</b>
+<span>数字はすべて公開統計から機械的に取っていますが、解釈の言葉づかいには私の判断が入っています。違和感があれば必ず教えてください。</span></div>
+
+<h2>スケジュール</h2>
+<div class="box warn">
+  <p style="margin:0 0 4px">作品提出の締切</p>
+  <p class="dead" style="margin:0 0 10px">8月23日（日）17:00</p>
+  <p style="margin:0;font-size:13.5px">
+    提出後も、チーム名と作品名以外は締切まで何度でも直せます。<br>
+    このあと <strong>8/26〜30 に2分間のプレゼン動画を事務局と収録</strong>します（自宅収録の提出は不可）。<br>
+    そこを通過すると 10/17 の最終審査です。
+  </p>
+</div>
+<p style="font-size:13.5px;color:var(--ink-3)">
+残っている作業は「プレゼン資料（16:9のPDF）の作成」と「Cloudflare Pages への公開」の2つです。手伝っていただけるところがあればぜひ。
+</p>
+
+<h2>注意していること</h2>
+<ul>
+  <li>これは<strong>プロトタイプ</strong>です。数字はすべて公開統計の機械的な加工結果で、投資の勧誘や金融商品の推奨、個別企業の信用評価ではありません。</li>
+  <li>利回りは過去の実績または現時点の水準で、将来の成果を約束するものではありません。</li>
+  <li>使ったデータは東京都オープンデータカタログサイト（CC BY 4.0）、東京都財務局、財務省、日本取引所グループの公表統計です。出典URLはタブ08に全件載せています。</li>
+  <li>判定に使っている式としきい値はすべてタブ08に全文公開しています。ブラックボックスを作らないことを設計方針にしています。</li>
+  <li>画面の一番下から、開発の途中経過にあたる<strong>過去バージョン（v1〜v3）</strong>も見られます。考え方が変わってきた経緯が分かるので、興味があればどうぞ。</li>
+</ul>
+
+<footer>
+東京資本橋 / Tokyo Capital Bridge — 都知事杯オープンデータ・ハッカソン2026 応募作品プロトタイプ<br>
+出典：東京都オープンデータカタログサイト（東京都産業労働局・東京都総務局）、東京都財務局、財務省、日本取引所グループ。
+東京都のデータセットはクリエイティブ・コモンズ表示 4.0 国際（CC BY 4.0）で提供されています。
+</footer>
+
+</div>
+</body>
+</html>
