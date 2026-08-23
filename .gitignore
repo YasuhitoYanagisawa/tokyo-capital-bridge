@@ -1,24 +1,9 @@
-# build / distribution artifacts
-*.zip
-deploy_cloudflare/
-dist/
-
-# OS
-desktop.ini
-Thumbs.db
-.DS_Store
-
-# editor
-.vscode/
-.idea/
-*.swp
-
-# python
-__pycache__/
-*.pyc
-.venv/
-venv/
-
-# node
 node_modules/
-.wrangler/
+shots/
+
+# ビルド成果物の配布用コピー（dist/ から再生成できるため追跡しない）
+github_pages/
+github_pages.zip
+deploy_cloudflare.zip
+share/東京資本橋/
+share/東京資本橋.zip
