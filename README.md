@@ -13,6 +13,8 @@ src/
   build_data.py     オープンデータ → 静的JSON への整形
   build.py          テンプレート + JSON → index.html のビルド
 screenshots/        画面キャプチャ8枚
+docs/
+  TokyoCapitalBridge_presentation.pdf   プレゼン資料
 ```
 
 `index.html` は1枚で完結するため、ビルドせずブラウザで開くだけで動作する。
