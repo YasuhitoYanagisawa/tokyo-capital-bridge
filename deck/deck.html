@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><title>Tokyo Capital Bridge</title>
+<style>
+@page{size:1280px 720px;margin:0}
+:root{
+  --bg:#faf9f7; --ink:#141414; --ink2:#4a4a4a; --ink3:#7d7a75;
+  --line:#e2dfd8; --line2:#cfcbc2;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --crit:#d03b3b; --good:#0ca30c; --warn:#fab219;
+  --serif:"Noto Serif CJK JP","Noto Serif JP",serif;
+  --sans:"Noto Sans CJK JP","Noto Sans JP",sans-serif;
+  --mono:"Noto Sans Mono CJK JP",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff;font-family:var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased}
+.s{width:1280px;height:720px;page-break-after:always;background:var(--bg);position:relative;
+   overflow:hidden;padding:52px 68px 80px;display:flex;flex-direction:column}
+.s:last-child{page-break-after:auto}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--ink3);text-transform:uppercase}
+h1{font-family:var(--serif);font-size:64px;font-weight:700;line-height:1.15;letter-spacing:.01em}
+h2{font-family:var(--serif);font-size:40px;font-weight:700;line-height:1.3;margin-top:6px}
+h3{font-family:var(--serif);font-size:26px;font-weight:700;line-height:1.4}
+.lede{font-size:19px;line-height:1.85;color:var(--ink2);max-width:62ch;margin-top:14px}
+.num{font-family:var(--mono);font-weight:700;letter-spacing:-.02em}
+.pn{position:absolute;right:30px;bottom:22px;font-family:var(--mono);font-size:12px;color:var(--ink3)}
+.brandbar{position:absolute;left:0;top:0;width:100%;height:6px;
+  background:linear-gradient(90deg,var(--s1) 0 25%,var(--s3) 25% 50%,var(--s4) 50% 75%,var(--s2) 75% 100%)}
+.src{position:absolute;left:68px;bottom:22px;font-size:12px;color:var(--ink3);line-height:1.6;max-width:82ch}
+/* 表紙 */
+.cover{justify-content:center;background:#141414;color:#fff}
+.cover h1{font-size:78px;color:#fff}
+.cover .sub{font-size:24px;color:#d8d5d0;margin-top:18px;line-height:1.6}
+.cover .meta{margin-top:44px;font-family:var(--mono);font-size:14px;color:#918e88;letter-spacing:.1em;line-height:2}
+.cover .eyebrow{color:#918e88}
+/* 数字の並び */
+.stats{display:flex;gap:0;margin-top:auto;border-top:1px solid var(--line2)}
+.hero-line{font-family:var(--serif);font-size:34px;font-weight:700;line-height:1.6;margin:auto 0;color:var(--ink)}
+.hero-line em{font-style:normal;color:var(--crit)}
+.stats .it{flex:1;padding:22px 26px 0;border-right:1px solid var(--line)}
+.stats .it:last-child{border-right:0}
+.stats .k{font-size:13px;color:var(--ink3);line-height:1.5;min-height:2.9em}
+.stats .v{font-family:var(--mono);font-size:42px;font-weight:700;letter-spacing:-.03em;line-height:1.1;margin-top:4px}
+.stats .d{font-size:12.5px;color:var(--ink3);margin-top:6px;line-height:1.6}
+/* 2カラム */
+.two{display:flex;gap:34px;margin-top:20px;flex:1;min-height:0;align-items:stretch}
+.two .l{flex:0 0 38%;display:flex;flex-direction:column;justify-content:center}
+.two .r{flex:1;min-width:0;display:flex;align-items:center;justify-content:center}
+.shot{width:100%;max-height:100%;object-fit:contain;object-position:top;border:1px solid var(--line2);box-shadow:0 2px 18px rgba(0,0,0,.09)}
+ul.pt{margin-top:16px;list-style:none}
+ul.pt li{position:relative;padding-left:22px;font-size:16.5px;line-height:1.9;color:var(--ink2);margin-bottom:12px}
+ul.pt li::before{content:"";position:absolute;left:0;top:12px;width:9px;height:9px;background:var(--s1)}
+ul.pt li b{color:var(--ink)}
+.big{font-family:var(--mono);font-size:96px;font-weight:700;letter-spacing:-.04em;line-height:1}
+.arrow{font-family:var(--mono);font-size:34px;color:var(--ink3);margin:0 14px}
+.callout{border-left:4px solid var(--s1);background:#fff;padding:18px 24px;margin-top:20px;
+  font-size:17px;line-height:1.85;color:var(--ink2)}
+.callout b{color:var(--ink)}
+.layers{display:flex;gap:1px;background:var(--line2);border:1px solid var(--line2);margin-top:26px}
+.layers .n{flex:1;background:#fff;padding:18px 18px 20px}
+.layers .n.cut{background:#f2efe9}
+.layers .lv{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:var(--ink3)}
+.layers .nm{font-size:16px;font-weight:700;margin-top:5px}
+.layers .vv{font-family:var(--mono);font-size:26px;font-weight:700;margin-top:6px;letter-spacing:-.02em}
+.layers .dd{font-size:11.5px;color:var(--ink3);line-height:1.6;margin-top:6px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line2);
+  border:1px solid var(--line2);margin-top:24px}
+.grid3 .c{background:#fff;padding:20px 22px 24px}
+.grid3 .c .t{font-size:17px;font-weight:700;line-height:1.5}
+.grid3 .c .b{font-size:13.5px;color:var(--ink2);line-height:1.8;margin-top:8px}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;
+  padding:3px 10px;border:1px solid var(--line2);color:var(--ink3);margin-right:6px}
+.tag.g{color:var(--good);border-color:var(--good)}
+.tag.b{color:var(--s1);border-color:var(--s1)}
+</style></head><body>
+
+<!-- 1 表紙 -->
+<section class="s cover">
+  <div class="brandbar"></div>
+  <span class="eyebrow">都知事杯オープンデータ・ハッカソン2026</span>
+  <h1>Tokyo Capital Bridge</h1>
+  <p class="sub">東京の資金循環を四層で可視化し、<br>都民の資産形成と成長企業の資金調達をつなぐ</p>
+  <div class="meta">
+    東京都オープンデータ 他 16 データセット ／ 判定式は全文公開 ／ 外部ライブラリ不使用の単一HTML
+  </div>
+</section>
+
+<!-- 2 課題 -->
+<section class="s">
+  <div class="brandbar"></div>
+  <span class="eyebrow">The problem</span>
+  <h2>同じ東京で、資金の回路が分断されています</h2>
+  <p class="lede">東京は世界10位の国際金融都市です。しかしその活況は、都内の中小企業にも、都民の家計にも届いていません。</p>
+  <p class="hero-line">世界から資金が集まる市場と、<em>255か月ずっと水面下の中小企業</em>が、<br>同じ都内に並んで存在しています。その間をつなぐ経路が、ほとんどありません。</p>
+  <div class="stats">
+    <div class="it"><div class="k">GFCI 第39版（2026年3月）<br>東京の順位</div><div class="v" style="color:var(--s1)">10位</div><div class="d">前版15位から5つ上昇。スコアは744→739と低下</div></div>
+    <div class="it"><div class="k">東証プライムの売買代金に<br>占める海外投資家</div><div class="v" style="color:var(--s1)">66.2<span style="font-size:22px">%</span></div><div class="d">うち75.3%が欧州経由</div></div>
+    <div class="it"><div class="k">都内中小企業の業況DIが<br>0を超えた月（2005年5月〜）</div><div class="v" style="color:var(--crit)">0<span style="font-size:22px"> / 255</span></div><div class="d">255か月、一度もありません</div></div>
+    <div class="it"><div class="k">住民1人あたり住民税負担額<br>の区市町村格差</div><div class="v" style="color:var(--crit)">7.9<span style="font-size:22px">倍</span></div><div class="d">港区582,777円 ↔ 檜原村74,131円</div></div>
+  </div>
+  <div class="src">出典：Z/Yen Group GFCI 39／日本取引所グループ 投資部門別売買状況（2025年）／東京都「中小企業の景況」（2026年7月調査）／東京都統計年鑑 令和5年 21-8</div>
+  <div class="pn">2</div>
+</section>
+
+<!-- 3 やったこと -->
+<section class="s">
+  <div class="brandbar"></div>
+  <span class="eyebrow">What we built</span>
+  <h2>資金を四つの層に分けて、層と層の連関を実測しました</h2>
+  <p class="lede">「つながっているはず」を検証するために、景況DI・国債金利・為替を255か月そろえ、相関を計算しています。</p>
+  <div class="layers">
+    <div class="n"><span class="lv">LAYER 1 — GLOBAL</span><div class="nm">海外投資家</div><div class="vv" style="color:var(--s1)">66.2%</div><div class="dd">東証プライムの委託売買代金シェア。75.3%が欧州経由。</div></div>
+    <div class="n"><span class="lv">LAYER 2 — LISTED</span><div class="nm">上場企業</div><div class="vv" style="color:var(--s3)">3,837社</div><div class="dd">時価総額の96.1%がプライムに集中。</div></div>
+    <div class="n cut"><span class="lv">LAYER 3 — SME</span><div class="nm">非上場の中小企業</div><div class="vv" style="color:var(--crit)">3,875社</div><div class="dd">景況調査の対象。海外投資家が売買できる市場が存在しない。</div></div>
+    <div class="n"><span class="lv">LAYER 4 — HOUSEHOLDS</span><div class="nm">都民の家計</div><div class="vv" style="color:var(--s4)">212,929円</div><div class="dd">勤労者世帯の月次残額。NISAで届くのは上場企業まで。</div></div>
+  </div>
+  <div class="callout">四層目の「都民」は一枚岩ではありません。担税力は区市町村で <b class="num">7.9倍</b>、23区の中だけでも <b class="num">5.1倍</b> の開きがあります。</div>
+  <div class="pn">3</div>
+</section>
+
+<!-- 4 発見1 -->
+<section class="s">
+  <div class="brandbar"></div>
+  <span class="eyebrow">Finding 01</span>
+  <h2>金利は効いていないのではなく、2年遅れて効いていました</h2>
+  <div class="two">
+    <div class="l">
+      <div style="display:flex;align-items:baseline;margin-top:18px">
+        <span class="big" style="font-size:62px;color:var(--ink3)">−0.03</span>
+        <span class="arrow">→</span>
+        <span class="big" style="font-size:62px;color:var(--s1)">−0.54</span>
+      </div>
+      <ul class="pt">
+        <li>同じ月で並べると <b>r = −0.03</b>。ここで止めれば「金利は中小企業に関係ない」という結論になります。</li>
+        <li>金利を <b>0〜24か月ずらして総当たり</b>で計算し直すと、相関は一方向に強まり、24か月で <b>r = −0.54</b>（国債2年・n=231）。</li>
+        <li>変化幅（前年差）で見ると同時点で <b>r = +0.49</b>。景気が良いから金利が上がる、という向きも別に見えます。</li>
+        <li><b>今日の金利で今日の景況を語ってはいけない。</b>支援策は2年先を見て組む必要があります。</li>
+      </ul>
+    </div>
+    <div class="r"><img class="shot" src="../submission/capture-3-corr.png" alt=""></div>
+  </div>
+  <div class="pn">4</div>
+</section>
+
+<!-- 5 発見2 -->
+<section class="s">
+  <div class="brandbar"></div>
+  <span class="eyebrow">Finding 02</span>
+  <h2>資産形成の格差は「制度の使われ方」に出ていました</h2>
+  <div class="two">
+    <div class="l">
+      <div class="big" style="color:var(--s1);margin-top:20px">r = 0.80</div>
+      <ul class="pt">
+        <li>自治体の所得水準と <b>iDeCo・小規模企業共済等の利用率</b> の相関。利用率は最大 <b>2.5倍</b> の開き。</li>
+        <li>いっぽう <b>生命保険料控除</b> は所得と r = −0.43、開きは1.15倍。どの自治体でも65〜75%が使っています。</li>
+        <li><b>守りの制度は誰でも使えているのに、増やす制度は所得の高い地域に偏る。</b></li>
+        <li>だとすれば埋めにいくべきは<b>知識と手続きの側</b>です。ここからツールの設計が決まりました。</li>
+      </ul>
+    </div>
+    <div class="r"><img class="shot" src="../submission/capture-1b-gap.png" alt=""></div>
+  </div>
+  <div class="src">出典：市町村税課税状況等の調（令和5年度・多摩島しょ39市町村）／東京都統計年鑑 令和5年 21-8（全62区市町村）</div>
+  <div class="pn">5</div>
+</section>
+
+<!-- 6 ツールA -->
+<section class="s">
+  <div class="brandbar"></div>
+  <span class="eyebrow">Tool A — for residents</span>
+  <h2>資産形成の入口チェッカー</h2>
+  <div class="two">
+    <div class="l">
+      <p class="lede" style="font-size:17px">区市町村・年収・働き方・年齢の4つを選ぶだけ。<b>使っていない制度と、使わないことで失っている金額を円で出します。</b></p>
+      <ul class="pt">
+        <li>世田谷区／年収300〜500万円／会社員なら、iDeCoを上限まで使うだけで <b>年 +55,200円</b>。自営業で年収700〜1,000万円なら <b>年 +496,800円</b>。</li>
+        <li>節税額は運用の成績に関係なく<b>確定する部分</b>。まずここが取りにいけます。</li>
+        <li>65歳まで積んだ場合を、預金・円のまま国債・為替リスクを取る場合で並べて表示。</li>
+        <li>計算式も上限の根拠も画面に全文表示。<b>通信を一切行いません。</b></li>
+      </ul>
+    </div>
+    <div class="r"><img class="shot" src="../submission/capture-8-tool.png" alt=""></div>
+  </div>
+  <div class="pn">6</div>
+</section>
+
+<!-- 7 ツールB -->
+<section class="s">
+  <div class="brandbar"></div>
+  <span class="eyebrow">Tool B — for business owners</span>
+  <h2>資金タイプの判定から、相談メモまで</h2>
+  <div class="two">
+    <div class="l">
+      <ul class="pt" style="margin-top:22px">
+        <li>業種・規模・使いみちを選ぶと、直近3か月の実データから <b>いま必要な資金の種類</b> をルールベースで判定。根拠の5指標を必ず併記します。</li>
+        <li>借入額と金利を入れると、<b>都内中小企業のどの帯にいるか</b>、国債との差、金利が1%上がったときの追加負担額が出ます。</li>
+        <li>結果はそのまま <b>金融機関に出せる相談メモ</b> になります。業況DI・価格転嫁ギャップ・国債金利まで出典つきで本文に入り、ワンクリックでコピー。</li>
+        <li>「AIに答えさせる」のではなく、<b>AIにも窓口にも渡せる材料をつくる</b>設計にしました。</li>
+      </ul>
+    </div>
+    <div class="r"><img class="shot" src="../submission/capture-5-diagnosis.png" alt=""></div>
+  </div>
+  <div class="pn">7</div>
+</section>
+
+<!-- 8 設計 -->
+<section class="s">
+  <div class="brandbar"></div>
+  <span class="eyebrow">How it is built</span>
+  <h2>ブラックボックスを作らないことを設計方針にしました</h2>
+  <div class="grid3">
+    <div class="c"><div class="t">判定式は全文公開</div><div class="b">資金タイプの判定式、しきい値、事業体力スコアの重みまで画面に出しています。加重は設計判断による任意の値であることも明記。<b>間違っていても、間違いが見える。</b></div></div>
+    <div class="c"><div class="t">外部ライブラリ不使用</div><div class="b">単一HTMLで、チャートはすべて手書きSVG。CDNにもネットワークにも依存せず、審査環境でも確実に動きます。Cloudflare Pagesに置くだけで運用コストは実質ゼロ。</div></div>
+    <div class="c"><div class="t">数字は必ず一次資料から</div><div class="b">XLSXはSheetJS、PDFはpdf.js、CSVはPythonで機械的に抽出。構成比は各行の合計が100%になることを検算。配色はカラーユニバーサルデザインを機械検証。</div></div>
+  </div>
+  <div class="callout" style="border-left-color:var(--warn)">
+    <b>投資助言は行いません。</b>表示しているのは公開統計から取った利回りの実測値と、制度上そこに到達できるかどうかの事実だけです。個別の銘柄・商品の推奨、購入時期の判断は一切含みません。
+  </div>
+  <div class="pn">8</div>
+</section>
+
+<!-- 9 これから -->
+<section class="s">
+  <div class="brandbar"></div>
+  <span class="eyebrow">What comes next</span>
+  <h2>測るところから、動かすところへ</h2>
+  <div class="grid3">
+    <div class="c"><div class="t"><span class="tag b">都民</span>入口を開ける</div><div class="b">円建ての個人向け都債は平成25年を最後に<b>12年以上発行がありません</b>。いま東京都が個人に出しているのは外貨建てだけ。金利が戻ったいま、円で東京に投資する入口を開ける余地があります。</div></div>
+    <div class="c"><div class="t"><span class="tag b">事業者</span>2年先回りで備える</div><div class="b">金利の影響が景況に届くまで約24か月。いまの金利上昇に対応する悪化は2年後に来る前提で、保証枠と利子補給を先に積む。</div></div>
+    <div class="c"><div class="t"><span class="tag g">両方</span>データの空白を埋める</div><div class="b">23区の制度利用率は公開データが存在せず、最も人口の多い地域が測れていません。景況調査の調達手段にはエクイティの選択肢がありません。<b>測れないものは、動かせない。</b></div></div>
+  </div>
+  <div class="callout">
+    毎月更新される東京都のデータをそのまま流し込めば、<b>「今月のファイナンス環境」は自動で再判定されます。</b>
+    判定式としきい値を公開しているので、東京都や支援機関が自らの施策に合わせて数値を調整し、再配布することもできます。
+  </div>
+  <p class="hero-line" style="font-size:30px;line-height:1.7">
+    橋を架ける前に、まず川幅と、水が届くまでの時間を測りました。<br>
+    <span style="color:var(--s1)">次は、閉じている入口を開ける番です。</span></p>
+  <div class="src">Tokyo Capital Bridge ／ 都知事杯オープンデータ・ハッカソン2026 応募作品プロトタイプ。数値はいずれも公開統計の機械的な加工結果であり、投資勧誘・金融商品の推奨・個別企業の信用評価を目的とするものではありません。</div>
+  <div class="pn">9</div>
+</section>
+
+</body></html>
