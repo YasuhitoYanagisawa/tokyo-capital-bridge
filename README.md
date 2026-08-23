@@ -7,18 +7,16 @@
 ### リポジトリ構成
 
 ```
-index.html          アプリ本体（最新 = v4。単一HTML・外部ライブラリ0）
-versions.html       各版へのリンク一覧
+index.html          アプリ本体（単一HTML・外部ライブラリ0）
 src/
   app.html          テンプレート
   build_data.py     オープンデータ → 静的JSON への整形
   build.py          テンプレート + JSON → index.html のビルド
-v1/ 〜 v4/          各版のビルド成果物
-submission/         提出用キャプチャ8枚、フォーム回答、要件チェック
-share/              配布用の案内ページ、共有文面
+screenshots/        画面キャプチャ8枚
 ```
 
 `index.html` は1枚で完結するため、ビルドせずブラウザで開くだけで動作する。
+ビルドし直す場合は `python src/build_data.py && python src/build.py`。
 
 ---
 
