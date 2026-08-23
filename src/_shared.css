@@ -1,0 +1,237 @@
+
+/* ============================================================
+   継ぐ東京 / TSUGU TOKYO
+   計器盤 (instrument panel) を意匠の軸に。ゼロ線を構造の背骨とする。
+   ============================================================ */
+:root{
+  color-scheme: light;
+  --bg:#eaeef3; --plane:#f3f6f9; --surface:#ffffff; --surface-2:#f6f8fb;
+  --line:#d5dce5; --line-2:#b9c4d1; --rule:#98a6b6;
+  --ink:#0e1720; --ink-2:#41505f; --ink-3:#6d7d8d;
+  --accent:#1c5cab; --accent-2:#256abf; --accent-wash:#e2ecf9; --focus:#1c5cab;
+  --dv-neg:#d03b3b; --dv-pos:#2a78d6; --dv-mid:#e8eaee;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --st-good:#0ca30c; --st-warn:#fab219; --st-serious:#ec835a; --st-crit:#d03b3b;
+  --grid:#e4e8ee; --axis:#bcc6d2;
+  --shadow:0 1px 2px rgba(14,23,32,.06), 0 8px 24px -14px rgba(14,23,32,.28);
+  --mode:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#090d12; --plane:#0c1219; --surface:#131b25; --surface-2:#18212d;
+    --line:#25313f; --line-2:#35455a; --rule:#54677e;
+    --ink:#eaf1f8; --ink-2:#adbccb; --ink-3:#7a8b9c;
+    --accent:#4b9bea; --accent-2:#3987e5; --accent-wash:#14263a; --focus:#6cb0f2;
+    --dv-neg:#e66767; --dv-pos:#3987e5; --dv-mid:#202935;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --grid:#1e2734; --axis:#38485c;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 28px -16px rgba(0,0,0,.8);
+    --mode:dark;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#090d12; --plane:#0c1219; --surface:#131b25; --surface-2:#18212d;
+  --line:#25313f; --line-2:#35455a; --rule:#54677e;
+  --ink:#eaf1f8; --ink-2:#adbccb; --ink-3:#7a8b9c;
+  --accent:#4b9bea; --accent-2:#3987e5; --accent-wash:#14263a; --focus:#6cb0f2;
+  --dv-neg:#e66767; --dv-pos:#3987e5; --dv-mid:#202935;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --grid:#1e2734; --axis:#38485c;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 28px -16px rgba(0,0,0,.8);
+  --mode:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Shippori Mincho B1","Hiragino Mincho ProN",serif;font-weight:700;text-wrap:balance;margin:0;line-height:1.35}
+
+/* ---- 日本語の折り返し -------------------------------------------------
+   line-break:strict  禁則処理を厳格に（行頭の「、。）」などを禁止）
+   word-break:auto-phrase  文節の切れ目で改行する。「東京都中小企業の／景況」の
+     ように意味の切れ目で折り返るため、狭い画面でも読み崩れにくい
+   text-wrap:pretty  行末に1文字だけ残る（孤立行）のを減らす
+   text-wrap:balance 見出しの各行の長さを揃える
+   いずれも未対応ブラウザでは従来どおりの折り返しに戻るだけで、崩れない */
+body{line-break:strict;word-break:auto-phrase;overflow-wrap:break-word}
+p,li,dd,dt,figcaption,.sub,.note-sm,.diag-why,.hero-lede,.tile .d,.metric .md,
+.src .u,.routes .rnote,.schemes .body span,.brand .tag,.tip{text-wrap:pretty}
+h1,h2,h3,.big-q,.brand .jp{word-break:auto-phrase}
+/* 数値・記号・英字は途中で切らない（桁の途中で改行されると読めなくなるため） */
+.mono,.num,code,kbd,.tagr,.pill,.metric .mv,.tile .v,.hero-figure .val,
+tbody td,.eyebrow,.lens-btn .idx{word-break:normal;overflow-wrap:normal;line-break:auto}
+/* URLだけは例外的にどこで切ってもよい */
+.src a{word-break:break-all}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+.num{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+a{color:var(--accent);text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:3px}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 72px}
+.masthead{border-bottom:1px solid var(--rule);background:var(--plane);padding:22px 0 16px}
+.masthead-inner{max-width:1180px;margin:0 auto;padding:0 20px;display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;gap:2px;flex:1 1 260px}
+.brand .jp{font-family:"Shippori Mincho B1",serif;font-weight:700;font-size:clamp(24px,3.4vw,34px);letter-spacing:.06em;line-height:1.15}
+.brand .en{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3)}
+.brand .tag{font-size:13px;color:var(--ink-2);margin-top:6px;max-width:54ch}
+.stamp{border:1px solid var(--line-2);background:var(--surface);padding:8px 12px;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;line-height:1.6;color:var(--ink-2);align-self:flex-start}
+.stamp b{color:var(--ink);font-weight:600}
+
+.lenses{display:flex;border-bottom:1px solid var(--rule);background:var(--plane);
+  position:sticky;top:0;z-index:40;overflow-x:auto;scrollbar-width:thin}
+.lenses-inner{max-width:1180px;margin:0 auto;padding:0 20px;display:flex;width:100%}
+.lens-btn{appearance:none;background:none;border:0;border-bottom:3px solid transparent;
+  padding:13px 18px 10px;cursor:pointer;color:var(--ink-3);font-family:inherit;font-size:14px;
+  font-weight:500;white-space:nowrap;display:flex;align-items:baseline;gap:9px}
+.lens-btn .idx{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;opacity:.75}
+.lens-btn:hover{color:var(--ink-2);background:var(--surface-2)}
+.lens-btn[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+
+.panel{display:none;padding-top:26px}
+.panel.on{display:block}
+.card{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);padding:20px;margin-bottom:20px}
+.card > h2{font-size:19px;margin-bottom:4px}
+.card > h3{font-size:16px;margin-bottom:4px}
+.card .sub{font-size:12.5px;color:var(--ink-3);margin:0 0 16px;line-height:1.6}
+.grid{display:grid;gap:20px}
+@media(min-width:860px){
+  .grid.g2{grid-template-columns:1fr 1fr}
+  .grid.g32{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}
+  .grid.g23{grid-template-columns:minmax(0,1fr) minmax(0,1.55fr)}
+}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-3);display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.hero{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);padding:22px 20px 12px;margin:26px 0 20px}
+.hero-top{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px}
+.hero-figure{display:flex;flex-direction:column;gap:2px}
+.hero-figure .lab{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.16em;color:var(--ink-3);text-transform:uppercase}
+.hero-figure .val{font-family:"IBM Plex Mono",monospace;font-size:clamp(30px,5vw,46px);font-weight:600;line-height:1;letter-spacing:-.02em}
+.hero-figure .note{font-size:11.5px;color:var(--ink-3)}
+.hero-lede{flex:1 1 320px;font-size:13.5px;color:var(--ink-2);max-width:62ch;line-height:1.75}
+
+.tiles{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin:0 0 18px}
+@media(min-width:640px){.tiles{grid-template-columns:repeat(4,1fr)}}
+.tile{background:var(--surface);padding:14px 15px;display:flex;flex-direction:column;gap:3px}
+.tile .k{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;color:var(--ink-3);text-transform:uppercase}
+.tile .v{font-family:"IBM Plex Mono",monospace;font-size:24px;font-weight:600;line-height:1.15;letter-spacing:-.02em}
+.tile .d{font-size:11.5px;color:var(--ink-3);line-height:1.5}
+
+.controls{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field label{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+select{font-family:inherit;font-size:14px;padding:8px 10px;background:var(--surface-2);
+  color:var(--ink);border:1px solid var(--line-2);border-radius:0;min-width:180px;max-width:100%}
+
+.chart{position:relative;width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.scroller{overflow-x:auto;padding-bottom:4px}
+/* 画面が狭く、図を縮めると文字が読めなくなる場合は原寸のまま横に流す。
+   .pan が付いた図だけ、右端のグラデーションと注記でスクロールできることを示す。 */
+.chart.pan{padding-bottom:4px}
+.panhint{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;
+  color:var(--ink-3);margin:5px 0 0;text-align:right}
+.chart::-webkit-scrollbar{height:6px}
+.chart::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:3px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font-size:12px;color:var(--ink-2)}
+.legend .it{display:inline-flex;align-items:center;gap:7px}
+.legend .sw{width:14px;height:3px;border-radius:2px;flex:none}
+.legend .sw.box{height:12px;width:12px;border-radius:2px}
+
+.tip{position:fixed;pointer-events:none;z-index:90;opacity:0;transition:opacity .1s;
+  background:var(--surface);border:1px solid var(--line-2);box-shadow:var(--shadow);
+  padding:9px 11px;font-size:12px;line-height:1.6;max-width:280px}
+.tip .th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;color:var(--ink-3);margin-bottom:4px}
+.tip .tr{display:flex;justify-content:space-between;gap:14px}
+.tip .tr b{font-family:"IBM Plex Mono",monospace;font-weight:600}
+
+.pill{display:inline-flex;align-items:center;gap:7px;padding:4px 11px 4px 8px;
+  border:1px solid var(--line-2);background:var(--surface-2);font-size:12.5px;font-weight:500;white-space:nowrap}
+.pill .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.pill .ic{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;letter-spacing:.04em}
+
+.diag-head{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.diag-why{border-left:3px solid var(--accent);background:var(--surface-2);
+  padding:12px 15px;font-size:13.5px;line-height:1.8;color:var(--ink-2);margin-bottom:16px}
+.metrics{display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+@media(min-width:560px){.metrics{grid-template-columns:repeat(5,1fr)}.metrics.m3{grid-template-columns:repeat(3,1fr)}}
+.metric{background:var(--surface);padding:11px 12px}
+.metric .mk{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.13em;color:var(--ink-3);text-transform:uppercase}
+.metric .mv{font-family:"IBM Plex Mono",monospace;font-size:19px;font-weight:600;line-height:1.3}
+.metric .md{font-size:10.5px;color:var(--ink-3);line-height:1.45}
+
+.schemes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line)}
+.schemes li{background:var(--surface);padding:13px 15px;display:flex;gap:14px;align-items:flex-start}
+.schemes .rank{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);padding-top:3px;flex:none;width:22px}
+.schemes .body strong{display:block;font-size:14.5px;font-weight:700;margin-bottom:2px}
+.schemes .body span{font-size:12.5px;color:var(--ink-2);line-height:1.65}
+
+.tblwrap{overflow-x:auto;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--surface)}
+th.l,td.l{text-align:left}
+thead th{background:var(--surface-2);font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;color:var(--ink-3);font-weight:500;text-transform:uppercase}
+tbody td{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+tbody tr:hover td{background:var(--surface-2)}
+
+.routes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line)}
+.routes li{background:var(--surface);padding:14px 16px;display:grid;gap:4px 16px;
+  grid-template-columns:1fr;align-items:start;border-left:3px solid transparent}
+@media(min-width:720px){.routes li{grid-template-columns:minmax(0,1.15fr) minmax(0,1.5fr)}}
+.routes li.reaches{border-left-color:var(--st-good)}
+.routes li.indirect{border-left-color:var(--s1)}
+.routes li.mismatch{border-left-color:var(--st-warn)}
+.routes li.blocked{border-left-color:var(--st-crit);background:var(--surface-2)}
+.routes .rname{font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.routes .rmeta{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);margin-top:3px;line-height:1.7}
+.routes .rnote{font-size:12.5px;color:var(--ink-2);line-height:1.75}
+.tagr{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;padding:2px 7px;border:1px solid var(--line-2);white-space:nowrap;font-weight:500}
+.tagr.reaches{color:var(--st-good);border-color:var(--st-good)}
+.tagr.indirect{color:var(--s1);border-color:var(--s1)}
+.tagr.mismatch{color:var(--st-warn);border-color:var(--st-warn)}
+.tagr.blocked{color:var(--st-crit);border-color:var(--st-crit)}
+
+.src{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line)}
+.src li{background:var(--surface);padding:13px 15px}
+.src .n{font-size:13.5px;font-weight:700;display:block;margin-bottom:3px}
+.src .m{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3);letter-spacing:.05em;margin-bottom:5px}
+.src .u{font-size:12.5px;color:var(--ink-2);line-height:1.65}
+.src a{font-family:"IBM Plex Mono",monospace;font-size:11px;word-break:break-all}
+
+footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--rule);font-size:12px;color:var(--ink-3);line-height:1.8}
+.note-sm{font-size:11.5px;color:var(--ink-3);line-height:1.6;margin-top:10px}
+.big-q{font-family:"Shippori Mincho B1",serif;font-size:clamp(19px,2.6vw,26px);font-weight:700;line-height:1.6;margin:0 0 12px}
+/* ---- スマートフォン ---------------------------------------------------
+   横スクロールを起こさず、余白を詰めて本文の1行あたりの文字数を確保する。
+   表と広いチャートは .scroller / .tblwrap の中だけで横に流す。 */
+@media(max-width:600px){
+  body{font-size:14.5px;line-height:1.75}
+  .wrap{padding:0 14px 56px}
+  .masthead{padding:18px 0 12px}
+  .masthead-inner{padding:0 14px;gap:14px}
+  .brand .tag{font-size:12.5px}
+  .card{padding:16px 14px;margin-bottom:16px}
+  .card > h2{font-size:17.5px}
+  .card > h3{font-size:15px}
+  .card .sub{font-size:12px}
+  .hero{padding:18px 14px 10px;margin:20px 0 16px}
+  .hero-top{gap:18px}
+  .hero-lede{font-size:13px}
+  .diag-why{padding:11px 13px;font-size:13px;line-height:1.85}
+  .schemes li,.routes li{padding:12px 13px}
+  .tile{padding:12px 13px}
+  .metric{padding:10px 11px}
+  table{font-size:11.5px}
+  th,td{padding:6px 8px}
+  .legend{gap:5px 14px;font-size:11.5px}
+  .tip{max-width:min(280px,calc(100vw - 28px))}
+  footer{font-size:11.5px}
+}
+/* 折り返し不可の要素が画面幅を押し広げないことを保証する */
+.wrap,.card,.panel,.grid > *{min-width:0}
+@media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important}}

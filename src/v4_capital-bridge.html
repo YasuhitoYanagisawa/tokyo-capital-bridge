@@ -1,0 +1,3215 @@
+<title>Tokyo Capital Bridge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Shippori+Mincho+B1:wght@600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap">
+
+<style>
+
+/* ============================================================
+   継ぐ東京 / TSUGU TOKYO
+   計器盤 (instrument panel) を意匠の軸に。ゼロ線を構造の背骨とする。
+   ============================================================ */
+:root{
+  color-scheme: light;
+  --bg:#eaeef3; --plane:#f3f6f9; --surface:#ffffff; --surface-2:#f6f8fb;
+  --line:#d5dce5; --line-2:#b9c4d1; --rule:#98a6b6;
+  --ink:#0e1720; --ink-2:#41505f; --ink-3:#6d7d8d;
+  --accent:#1c5cab; --accent-2:#256abf; --accent-wash:#e2ecf9; --focus:#1c5cab;
+  --dv-neg:#d03b3b; --dv-pos:#2a78d6; --dv-mid:#e8eaee;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100;
+  --st-good:#0ca30c; --st-warn:#fab219; --st-serious:#ec835a; --st-crit:#d03b3b;
+  --grid:#e4e8ee; --axis:#bcc6d2;
+  --shadow:0 1px 2px rgba(14,23,32,.06), 0 8px 24px -14px rgba(14,23,32,.28);
+  --mode:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#090d12; --plane:#0c1219; --surface:#131b25; --surface-2:#18212d;
+    --line:#25313f; --line-2:#35455a; --rule:#54677e;
+    --ink:#eaf1f8; --ink-2:#adbccb; --ink-3:#7a8b9c;
+    --accent:#4b9bea; --accent-2:#3987e5; --accent-wash:#14263a; --focus:#6cb0f2;
+    --dv-neg:#e66767; --dv-pos:#3987e5; --dv-mid:#202935;
+    --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+    --grid:#1e2734; --axis:#38485c;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 28px -16px rgba(0,0,0,.8);
+    --mode:dark;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#090d12; --plane:#0c1219; --surface:#131b25; --surface-2:#18212d;
+  --line:#25313f; --line-2:#35455a; --rule:#54677e;
+  --ink:#eaf1f8; --ink-2:#adbccb; --ink-3:#7a8b9c;
+  --accent:#4b9bea; --accent-2:#3987e5; --accent-wash:#14263a; --focus:#6cb0f2;
+  --dv-neg:#e66767; --dv-pos:#3987e5; --dv-mid:#202935;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500;
+  --grid:#1e2734; --axis:#38485c;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 10px 28px -16px rgba(0,0,0,.8);
+  --mode:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Zen Kaku Gothic New","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
+  font-size:15px;line-height:1.7;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:"Shippori Mincho B1","Hiragino Mincho ProN",serif;font-weight:700;text-wrap:balance;margin:0;line-height:1.35}
+
+/* ---- 日本語の折り返し -------------------------------------------------
+   line-break:strict  禁則処理を厳格に（行頭の「、。）」などを禁止）
+   word-break:auto-phrase  文節の切れ目で改行する。「東京都中小企業の／景況」の
+     ように意味の切れ目で折り返るため、狭い画面でも読み崩れにくい
+   text-wrap:pretty  行末に1文字だけ残る（孤立行）のを減らす
+   text-wrap:balance 見出しの各行の長さを揃える
+   いずれも未対応ブラウザでは従来どおりの折り返しに戻るだけで、崩れない */
+body{line-break:strict;word-break:auto-phrase;overflow-wrap:break-word}
+p,li,dd,dt,figcaption,.sub,.note-sm,.diag-why,.hero-lede,.tile .d,.metric .md,
+.src .u,.routes .rnote,.schemes .body span,.brand .tag,.tip{text-wrap:pretty}
+h1,h2,h3,.big-q,.brand .jp{word-break:auto-phrase}
+/* 数値・記号・英字は途中で切らない（桁の途中で改行されると読めなくなるため） */
+.mono,.num,code,kbd,.tagr,.pill,.metric .mv,.tile .v,.hero-figure .val,
+tbody td,.eyebrow,.lens-btn .idx{word-break:normal;overflow-wrap:normal;line-break:auto}
+/* URLだけは例外的にどこで切ってもよい */
+.src a{word-break:break-all}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+.num{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+a{color:var(--accent);text-underline-offset:3px}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px;border-radius:3px}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px 72px}
+.masthead{border-bottom:1px solid var(--rule);background:var(--plane);padding:22px 0 16px}
+.masthead-inner{max-width:1180px;margin:0 auto;padding:0 20px;display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.brand{display:flex;flex-direction:column;gap:2px;flex:1 1 260px}
+.brand .jp{font-family:"Shippori Mincho B1",serif;font-weight:700;font-size:clamp(24px,3.4vw,34px);letter-spacing:.06em;line-height:1.15}
+.brand .en{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-3)}
+.brand .tag{font-size:13px;color:var(--ink-2);margin-top:6px;max-width:54ch}
+.stamp{border:1px solid var(--line-2);background:var(--surface);padding:8px 12px;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;line-height:1.6;color:var(--ink-2);align-self:flex-start}
+.stamp b{color:var(--ink);font-weight:600}
+
+.lenses{display:flex;border-bottom:1px solid var(--rule);background:var(--plane);
+  position:sticky;top:0;z-index:40;overflow-x:auto;scrollbar-width:thin}
+.lenses-inner{max-width:1180px;margin:0 auto;padding:0 20px;display:flex;width:100%}
+.lens-btn{appearance:none;background:none;border:0;border-bottom:3px solid transparent;
+  padding:13px 18px 10px;cursor:pointer;color:var(--ink-3);font-family:inherit;font-size:14px;
+  font-weight:500;white-space:nowrap;display:flex;align-items:baseline;gap:9px}
+.lens-btn .idx{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.12em;opacity:.75}
+.lens-btn:hover{color:var(--ink-2);background:var(--surface-2)}
+.lens-btn[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:700}
+
+.panel{display:none;padding-top:26px}
+.panel.on{display:block}
+.card{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);padding:20px;margin-bottom:20px}
+.card > h2{font-size:19px;margin-bottom:4px}
+.card > h3{font-size:16px;margin-bottom:4px}
+.card .sub{font-size:12.5px;color:var(--ink-3);margin:0 0 16px;line-height:1.6}
+.grid{display:grid;gap:20px}
+@media(min-width:860px){
+  .grid.g2{grid-template-columns:1fr 1fr}
+  .grid.g32{grid-template-columns:minmax(0,1.55fr) minmax(0,1fr)}
+  .grid.g23{grid-template-columns:minmax(0,1fr) minmax(0,1.55fr)}
+}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--ink-3);display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.hero{background:var(--surface);border:1px solid var(--line);box-shadow:var(--shadow);padding:22px 20px 12px;margin:26px 0 20px}
+.hero-top{display:flex;gap:26px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px}
+.hero-figure{display:flex;flex-direction:column;gap:2px}
+.hero-figure .lab{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.16em;color:var(--ink-3);text-transform:uppercase}
+.hero-figure .val{font-family:"IBM Plex Mono",monospace;font-size:clamp(30px,5vw,46px);font-weight:600;line-height:1;letter-spacing:-.02em}
+.hero-figure .note{font-size:11.5px;color:var(--ink-3)}
+.hero-lede{flex:1 1 320px;font-size:13.5px;color:var(--ink-2);max-width:62ch;line-height:1.75}
+
+.tiles{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin:0 0 18px}
+@media(min-width:640px){.tiles{grid-template-columns:repeat(4,1fr)}}
+.tile{background:var(--surface);padding:14px 15px;display:flex;flex-direction:column;gap:3px}
+.tile .k{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;color:var(--ink-3);text-transform:uppercase}
+.tile .v{font-family:"IBM Plex Mono",monospace;font-size:24px;font-weight:600;line-height:1.15;letter-spacing:-.02em}
+.tile .d{font-size:11.5px;color:var(--ink-3);line-height:1.5}
+
+.controls{display:flex;gap:14px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--line)}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field label{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3)}
+select{font-family:inherit;font-size:14px;padding:8px 10px;background:var(--surface-2);
+  color:var(--ink);border:1px solid var(--line-2);border-radius:0;min-width:180px;max-width:100%}
+
+.chart{position:relative;width:100%;overflow-x:auto;overscroll-behavior-x:contain}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.scroller{overflow-x:auto;padding-bottom:4px}
+/* 画面が狭く、図を縮めると文字が読めなくなる場合は原寸のまま横に流す。
+   .pan が付いた図だけ、右端のグラデーションと注記でスクロールできることを示す。 */
+.chart.pan{padding-bottom:4px}
+.panhint{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;
+  color:var(--ink-3);margin:5px 0 0;text-align:right}
+.chart::-webkit-scrollbar{height:6px}
+.chart::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:3px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:10px;font-size:12px;color:var(--ink-2)}
+.legend .it{display:inline-flex;align-items:center;gap:7px}
+.legend .sw{width:14px;height:3px;border-radius:2px;flex:none}
+.legend .sw.box{height:12px;width:12px;border-radius:2px}
+
+.tip{position:fixed;pointer-events:none;z-index:90;opacity:0;transition:opacity .1s;
+  background:var(--surface);border:1px solid var(--line-2);box-shadow:var(--shadow);
+  padding:9px 11px;font-size:12px;line-height:1.6;max-width:280px}
+.tip .th{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.1em;color:var(--ink-3);margin-bottom:4px}
+.tip .tr{display:flex;justify-content:space-between;gap:14px}
+.tip .tr b{font-family:"IBM Plex Mono",monospace;font-weight:600}
+
+.pill{display:inline-flex;align-items:center;gap:7px;padding:4px 11px 4px 8px;
+  border:1px solid var(--line-2);background:var(--surface-2);font-size:12.5px;font-weight:500;white-space:nowrap}
+.pill .dot{width:9px;height:9px;border-radius:50%;flex:none}
+.pill .ic{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;letter-spacing:.04em}
+
+.diag-head{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.diag-why{border-left:3px solid var(--accent);background:var(--surface-2);
+  padding:12px 15px;font-size:13.5px;line-height:1.8;color:var(--ink-2);margin-bottom:16px}
+.metrics{display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+@media(min-width:560px){.metrics{grid-template-columns:repeat(5,1fr)}.metrics.m3{grid-template-columns:repeat(3,1fr)}}
+.metric{background:var(--surface);padding:11px 12px}
+.metric .mk{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.13em;color:var(--ink-3);text-transform:uppercase}
+.metric .mv{font-family:"IBM Plex Mono",monospace;font-size:19px;font-weight:600;line-height:1.3}
+.metric .md{font-size:10.5px;color:var(--ink-3);line-height:1.45}
+
+.schemes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line)}
+.schemes li{background:var(--surface);padding:13px 15px;display:flex;gap:14px;align-items:flex-start}
+.schemes .rank{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);padding-top:3px;flex:none;width:22px}
+.schemes .body strong{display:block;font-size:14.5px;font-weight:700;margin-bottom:2px}
+.schemes .body span{font-size:12.5px;color:var(--ink-2);line-height:1.65}
+
+.tblwrap{overflow-x:auto;border:1px solid var(--line)}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th,td{padding:7px 10px;text-align:right;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;background:var(--surface)}
+th.l,td.l{text-align:left}
+thead th{background:var(--surface-2);font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.08em;color:var(--ink-3);font-weight:500;text-transform:uppercase}
+tbody td{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+tbody tr:hover td{background:var(--surface-2)}
+
+.routes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line)}
+.routes li{background:var(--surface);padding:14px 16px;display:grid;gap:4px 16px;
+  grid-template-columns:1fr;align-items:start;border-left:3px solid transparent}
+@media(min-width:720px){.routes li{grid-template-columns:minmax(0,1.15fr) minmax(0,1.5fr)}}
+.routes li.reaches{border-left-color:var(--st-good)}
+.routes li.indirect{border-left-color:var(--s1)}
+.routes li.mismatch{border-left-color:var(--st-warn)}
+.routes li.blocked{border-left-color:var(--st-crit);background:var(--surface-2)}
+.routes .rname{font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.routes .rmeta{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--ink-3);margin-top:3px;line-height:1.7}
+.routes .rnote{font-size:12.5px;color:var(--ink-2);line-height:1.75}
+.tagr{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.08em;padding:2px 7px;border:1px solid var(--line-2);white-space:nowrap;font-weight:500}
+.tagr.reaches{color:var(--st-good);border-color:var(--st-good)}
+.tagr.indirect{color:var(--s1);border-color:var(--s1)}
+.tagr.mismatch{color:var(--st-warn);border-color:var(--st-warn)}
+.tagr.blocked{color:var(--st-crit);border-color:var(--st-crit)}
+
+.src{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line)}
+.src li{background:var(--surface);padding:13px 15px}
+.src .n{font-size:13.5px;font-weight:700;display:block;margin-bottom:3px}
+.src .m{font-family:"IBM Plex Mono",monospace;font-size:10.5px;color:var(--ink-3);letter-spacing:.05em;margin-bottom:5px}
+.src .u{font-size:12.5px;color:var(--ink-2);line-height:1.65}
+.src a{font-family:"IBM Plex Mono",monospace;font-size:11px;word-break:break-all}
+
+footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--rule);font-size:12px;color:var(--ink-3);line-height:1.8}
+.note-sm{font-size:11.5px;color:var(--ink-3);line-height:1.6;margin-top:10px}
+.big-q{font-family:"Shippori Mincho B1",serif;font-size:clamp(19px,2.6vw,26px);font-weight:700;line-height:1.6;margin:0 0 12px}
+/* ---- スマートフォン ---------------------------------------------------
+   横スクロールを起こさず、余白を詰めて本文の1行あたりの文字数を確保する。
+   表と広いチャートは .scroller / .tblwrap の中だけで横に流す。 */
+@media(max-width:600px){
+  body{font-size:14.5px;line-height:1.75}
+  .wrap{padding:0 14px 56px}
+  .masthead{padding:18px 0 12px}
+  .masthead-inner{padding:0 14px;gap:14px}
+  .brand .tag{font-size:12.5px}
+  .card{padding:16px 14px;margin-bottom:16px}
+  .card > h2{font-size:17.5px}
+  .card > h3{font-size:15px}
+  .card .sub{font-size:12px}
+  .hero{padding:18px 14px 10px;margin:20px 0 16px}
+  .hero-top{gap:18px}
+  .hero-lede{font-size:13px}
+  .diag-why{padding:11px 13px;font-size:13px;line-height:1.85}
+  .schemes li,.routes li{padding:12px 13px}
+  .tile{padding:12px 13px}
+  .metric{padding:10px 11px}
+  table{font-size:11.5px}
+  th,td{padding:6px 8px}
+  .legend{gap:5px 14px;font-size:11.5px}
+  .tip{max-width:min(280px,calc(100vw - 28px))}
+  footer{font-size:11.5px}
+}
+/* 折り返し不可の要素が画面幅を押し広げないことを保証する */
+.wrap,.card,.panel,.grid > *{min-width:0}
+@media (prefers-reduced-motion: reduce){*{transition:none !important;animation:none !important}}
+
+/* --- v4 追加 --- */
+/* 英語タイトル＋日本語サブタイトル */
+.brand .jp{letter-spacing:.005em;font-size:clamp(26px,3.6vw,38px)}
+.brand .en{font-family:"Zen Kaku Gothic New",sans-serif;font-size:clamp(12.5px,1.3vw,14.5px);
+  letter-spacing:.01em;text-transform:none;color:var(--ink-2);font-weight:500;margin-top:5px;display:block}
+.brand .tag{margin-top:9px;max-width:60ch}
+/* タブ：9枚を収める。収まるときは中央、あふれるときは左端から横スクロール */
+.lenses{justify-content:safe center}
+.lenses-inner{margin:0;width:max-content;min-width:min(100%,1180px);max-width:none;padding:0 16px}
+.lens-btn{padding:12px 10px 9px;font-size:13.5px;gap:6px}
+.lens-btn .idx{font-size:9.5px;letter-spacing:.1em}
+.flow{display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+@media(min-width:900px){.flow{grid-template-columns:repeat(4,1fr)}}
+.flow .node{background:var(--surface);padding:16px 16px 18px;display:flex;flex-direction:column;gap:6px;position:relative}
+.flow .node .lv{font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.16em;color:var(--ink-3);text-transform:uppercase}
+.flow .node .nm{font-size:15px;font-weight:700;line-height:1.4}
+.flow .node .big{font-family:"IBM Plex Mono",monospace;font-size:26px;font-weight:600;line-height:1.1;letter-spacing:-.02em}
+.flow .node .dt{font-size:11.5px;color:var(--ink-3);line-height:1.6}
+.flow .node.cut{background:var(--surface-2)}
+.flow .node.cut .big{color:var(--st-crit)}
+.opp{width:100%;border-collapse:collapse;font-size:12.5px}
+.opp th,.opp td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.opp th:first-child,.opp td:first-child{text-align:left;white-space:normal;min-width:190px}
+.opp td.note{text-align:left;white-space:normal;font-family:inherit;font-size:11.5px;color:var(--ink-3);line-height:1.6;min-width:260px}
+.opp tbody td{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+.opp tbody td:first-child{font-family:"Zen Kaku Gothic New",sans-serif;font-weight:500}
+.opp tr.blocked td{background:var(--surface-2);color:var(--ink-3)}
+.acc{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.06em;padding:2px 7px;border:1px solid var(--line-2)}
+.acc.ok{color:var(--st-good);border-color:var(--st-good)}
+.acc.capped{color:var(--st-warn);border-color:var(--st-warn)}
+.acc.blocked{color:var(--st-crit);border-color:var(--st-crit)}
+.finding{border:1px solid var(--line-2);background:var(--surface-2);padding:16px 18px;margin:0 0 18px}
+.finding .r{font-family:"IBM Plex Mono",monospace;font-size:32px;font-weight:600;line-height:1;letter-spacing:-.02em;display:block;margin-bottom:6px}
+.finding p{margin:0;font-size:13.5px;color:var(--ink-2);line-height:1.8}
+/* 今月のファイナンス環境 */
+.clim{border:1px solid var(--line-2);background:var(--surface-2);padding:18px 20px;margin:0 0 20px}
+.clim-top{display:flex;flex-wrap:wrap;align-items:baseline;gap:14px;margin-bottom:4px}
+.clim-top .vd{font-size:26px;font-weight:700;line-height:1.2;font-family:"Shippori Mincho B1",serif}
+.clim-top .sc{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--ink-3)}
+.clim-top .as{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.08em;color:var(--ink-3);margin-left:auto}
+.clim-grid{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:14px}
+@media(min-width:760px){.clim-grid{grid-template-columns:repeat(3,1fr)}}
+@media(min-width:1080px){.clim-grid{grid-template-columns:repeat(6,1fr)}}
+.clim-grid .ci{background:var(--surface);padding:12px 13px 13px;display:flex;flex-direction:column;gap:3px}
+.clim-grid .ci .k{font-size:11px;color:var(--ink-3);line-height:1.5;min-height:2.9em}
+.clim-grid .ci .v{font-family:"IBM Plex Mono",monospace;font-size:20px;font-weight:600;letter-spacing:-.02em;line-height:1.1}
+.clim-grid .ci .dd{font-family:"IBM Plex Mono",monospace;font-size:11.5px;font-weight:600}
+.clim-grid .ci .sr{font-size:10px;color:var(--ink-3);margin-top:2px}
+/* 都債 */
+.tosai-2{display:grid;gap:20px}
+.tosai-2>*{min-width:0}
+@media(min-width:900px){.tosai-2{grid-template-columns:1.15fr .85fr}}
+.tos-tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tos-tbl th,.tos-tbl td{padding:7px 9px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.tos-tbl th:first-child,.tos-tbl td:first-child{text-align:left}
+.tos-tbl tbody td{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
+/* 政策 */
+.gfci{border:1px solid var(--line-2);background:var(--surface-2);padding:16px 18px;margin:0 0 18px;
+  display:flex;flex-wrap:wrap;gap:18px;align-items:baseline}
+.gfci .rk{font-family:"IBM Plex Mono",monospace;font-size:34px;font-weight:600;line-height:1;letter-spacing:-.02em}
+.gfci .tx{font-size:13px;color:var(--ink-2);line-height:1.8;flex:1 1 320px;margin:0}
+.pol{display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+.pol .p{background:var(--surface);padding:16px 18px}
+.pol .p h4{margin:0 0 3px;font-size:15px;font-weight:700}
+.pol .p .meta{font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.06em;color:var(--ink-3);margin-bottom:9px}
+.pol .p dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:5px 12px;font-size:12.5px;line-height:1.8}
+.pol .p dt{font-weight:700;white-space:nowrap;color:var(--ink-3)}
+/* 長いURLが列幅を押し広げないよう、どこでも折り返してよいことにする */
+.pol .p dd{margin:0;color:var(--ink-2);min-width:0;overflow-wrap:anywhere}
+@media(max-width:520px){.pol .p dl{grid-template-columns:1fr;gap:1px 0}.pol .p dt{margin-top:7px}}
+.pol .p dt.g{color:var(--st-crit)}
+/* 相談メモ */
+.memo-wrap{border:1px solid var(--line-2);background:var(--surface-2)}
+textarea.memo{width:100%;border:0;background:transparent;color:var(--ink);padding:16px 18px;
+  font-family:"Zen Kaku Gothic New",sans-serif;font-size:13px;line-height:1.95;resize:vertical;display:block}
+textarea.memo:focus{outline:2px solid var(--accent);outline-offset:-2px}
+.memo-bar{display:flex;align-items:center;gap:14px;padding:10px 14px;border-top:1px solid var(--line)}
+.btn{font-family:"Zen Kaku Gothic New",sans-serif;font-size:12.5px;font-weight:700;color:var(--surface);
+  background:var(--ink);border:0;padding:8px 18px;cursor:pointer;letter-spacing:.02em}
+.btn:hover{opacity:.86}
+.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.memo-msg{font-size:12px;color:var(--st-good);font-weight:700}
+/* 円キャリーの手順 */
+ol.carry{list-style:none;counter-reset:cs;margin:18px 0 0;padding:0;display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+@media(min-width:860px){ol.carry{grid-template-columns:repeat(4,1fr)}}
+ol.carry li{counter-increment:cs;background:var(--surface);padding:16px 16px 18px;display:flex;flex-direction:column;gap:6px}
+ol.carry li::before{content:"STEP " counter(cs);font-family:"IBM Plex Mono",monospace;font-size:9.5px;letter-spacing:.16em;color:var(--ink-3)}
+ol.carry li .h{font-size:14px;font-weight:700;line-height:1.5}
+ol.carry li .v{font-family:"IBM Plex Mono",monospace;font-size:21px;font-weight:600;letter-spacing:-.02em;line-height:1.15}
+ol.carry li .d{font-size:11.5px;color:var(--ink-2);line-height:1.7}
+ol.carry li.risk .v{color:var(--st-crit)}
+/* 儲かる／損する の対比 */
+.carry2{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:18px}
+@media(min-width:820px){.carry2{grid-template-columns:1fr 1fr}}
+.carry2 .cc{background:var(--surface);padding:18px 20px 20px}
+.carry2 .cc .lb{font-family:"Shippori Mincho B1",serif;font-size:19px;font-weight:700;display:block;margin-bottom:12px}
+.carry2 .cc.win{border-top:3px solid var(--st-good)}
+.carry2 .cc.lose{border-top:3px solid var(--st-crit)}
+.carry2 .cc.win .lb{color:var(--st-good)}
+.carry2 .cc.lose .lb{color:var(--st-crit)}
+.carry2 ol{list-style:none;counter-reset:c2;margin:0;padding:0}
+.carry2 ol li{counter-increment:c2;position:relative;padding:0 0 14px 34px;font-size:13px;line-height:1.85;color:var(--ink-2)}
+.carry2 ol li::before{content:counter(c2);position:absolute;left:0;top:2px;width:22px;height:22px;
+  border-radius:50%;background:var(--surface-2);border:1px solid var(--line-2);color:var(--ink-3);
+  font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;display:grid;place-items:center}
+.carry2 ol li:last-child{padding-bottom:0}
+.carry2 ol li b{color:var(--ink);font-family:"IBM Plex Mono",monospace;font-size:14px}
+.carry2 .cc.win ol li.tot b{color:var(--st-good);font-size:19px}
+.carry2 .cc.lose ol li.tot b{color:var(--st-crit);font-size:19px}
+.opp tr.pos td.v{color:var(--st-good);font-weight:600}
+.opp tr.neg td.v{color:var(--st-crit);font-weight:600}
+.opp tr.be td{background:var(--surface-2)}
+/* 打ち手 */
+.acts{display:flex;flex-direction:column;gap:20px}
+.act{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--accent);padding:22px 24px 24px}
+.act .top{display:flex;flex-wrap:wrap;align-items:baseline;gap:12px;margin-bottom:12px}
+.act .no{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.16em;color:var(--ink-3)}
+.act h3{margin:0;font-size:19px;font-family:"Shippori Mincho B1",serif;font-weight:700;line-height:1.45;flex:1 1 300px}
+.act .tos{display:flex;gap:6px;flex-wrap:wrap}
+.act .to{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.06em;padding:3px 9px;border:1px solid var(--line-2);white-space:nowrap}
+.act .to.both{color:var(--st-good);border-color:var(--st-good);font-weight:600}
+.act dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:9px 16px;font-size:13px;line-height:1.9}
+@media(max-width:640px){.act dl{grid-template-columns:1fr;gap:2px 0}.act dl dt{margin-top:10px}}
+.act dt{font-weight:700;white-space:nowrap;color:var(--ink-3);font-size:12px;padding-top:2px}
+.act dd{margin:0;color:var(--ink-2)}
+.act dt.f{color:var(--accent)}
+.act dt.r{color:var(--st-warn)}
+/* ツール */
+.tk-place{display:grid;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:20px}
+@media(min-width:760px){.tk-place{grid-template-columns:repeat(4,1fr)}}
+.tk-place .q{background:var(--surface-2);padding:14px 15px;display:flex;flex-direction:column;gap:4px}
+.tk-place .q .k{font-size:11px;color:var(--ink-3);line-height:1.5}
+.tk-place .q .v{font-family:"IBM Plex Mono",monospace;font-size:19px;font-weight:600;letter-spacing:-.02em}
+.tk-place .q .d{font-size:11px;color:var(--ink-3);line-height:1.6}
+.tk-out{border:1px solid var(--line-2);border-left:3px solid var(--st-good);background:var(--surface-2);
+  padding:18px 20px;margin-top:18px;font-size:13.5px;line-height:1.9;color:var(--ink-2)}
+.tk-out b.big{font-family:"IBM Plex Mono",monospace;font-size:24px;color:var(--st-good);letter-spacing:-.02em}
+ul.pts{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--line);border:1px solid var(--line)}
+ul.pts li{background:var(--surface);padding:14px 16px;font-size:13px;line-height:1.85;color:var(--ink-2)}
+ul.pts li strong{color:var(--ink);display:block;margin-bottom:2px;font-size:13.5px}
+ul.pts li .tg{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.06em;
+  padding:2px 8px;border:1px solid var(--line-2);margin-right:7px;color:var(--ink-3)}
+ul.pts li .tg.both{color:var(--st-good);border-color:var(--st-good)}
+</style>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <span class="jp">Tokyo Capital Bridge</span>
+      <span class="en">東京の資金循環を四層で可視化し、都民の資産形成と成長企業の資金調達をつなぐ</span>
+      <span class="tag">「国際金融都市・東京」構想2.0と金融・資産運用特区の政策に接続し、東京都のオープンデータで資金の流れを「海外 → 上場企業 → 中小企業 → 都民」の四層に分けて可視化する。各層がどれだけ連関しているかを月次データで実測し、都民の資産形成格差と成長企業の資金調達難を同じ画面の上に置く。</span>
+    </div>
+    <div class="stamp" id="stamp"></div>
+  </div>
+</header>
+
+<nav class="lenses" role="tablist" aria-label="視点の切り替え">
+  <div class="lenses-inner">
+    <button class="lens-btn" role="tab" aria-selected="true" data-lens="0"><span class="idx">01</span>東京の資金地図</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="1"><span class="idx">02</span>外国からの資金</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="2"><span class="idx">03</span>上場企業の資金</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="3"><span class="idx">04</span>中小企業の資金</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="4"><span class="idx">05</span>連関</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="5"><span class="idx">06</span>事業者：資金調達</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="6"><span class="idx">07</span>投資家：投資機会</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="7"><span class="idx">08</span>入口をひらく</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="8"><span class="idx">09</span>データと判定ロジック</button>
+  </div>
+</nav>
+
+<div class="wrap">
+
+<!-- ================= 01 資金地図 ================= -->
+<section class="panel on" id="panel-0" role="tabpanel">
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-figure">
+        <span class="lab">国債2年利回り × 都内中小企業 業況DI（24か月ずらして比較・n=231）</span>
+        <span class="val" id="heroCorr">—</span>
+        <span class="note" id="heroCorrNote">同じ月で並べると r=−0.03。ずらすと関係が現れます</span>
+      </div>
+      <p class="hero-lede">
+        東京の資金は四つの層に分かれています。海外投資家、上場企業、中小企業、そして都民の家計。
+        本サービスは各層の資金状況をオープンデータで可視化し、<strong>層と層がどれだけつながっているかを月次データで実測</strong>します。
+        金利と中小企業の景況は、同じ月で並べるとほとんど無関係に見えます。ところが金利を2年ずらすと、はっきりした関係が現れました。
+        <strong>金利は効いていないのではなく、2年遅れて効いている。</strong>橋を架ける前に、まず川幅と、水が届くまでの時間を測りました。
+      </p>
+    </div>
+    <div class="flow" id="flowMap"></div>
+  </div>
+
+  <div class="tiles" id="mapTiles"></div>
+
+  <div class="card">
+    <div class="eyebrow">Layer 4 — Households</div>
+    <h2 id="stripH">都民は一枚岩ではない</h2>
+    <p class="sub">四層目の「都民の家計」を平均値でひとつの箱に描くと、いちばん大事なものが消えます。住民1人あたりの個人住民税の負担額を全62区市町村で並べると、これだけ散らばっています。所得の水準と、税を納めている人の割合の両方が効くため、地域ごとの「投資に回せる余力の出発点」の目安になります。</p>
+    <div class="chart" id="ineqStrip"></div>
+    <div class="legend" id="ineqStripLegend"></div>
+    <div class="metrics m3" id="stripMetrics"></div>
+    <p class="note-sm" id="stripNote"></p>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <div class="eyebrow">Layer gradient</div>
+      <h3>海外マネーは、層を下るほど薄くなる</h3>
+      <p class="sub">委託取引の売買代金に占める海外投資家の比率。非上場の中小企業には、そもそも売買できる市場がありません。</p>
+      <div class="chart" id="ladderChart"></div>
+      <div class="legend" id="ladderLegend"></div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Deposits vs loans</div>
+      <h3>中小企業に近い金融機関ほど、預金が貸出に回っていない</h3>
+      <p class="sub">預貸率＝貸出金÷預金。都内の銀行は<b class="num" id="ratioBank">—</b>%、信用金庫は<b class="num" id="ratioShinkin">—</b>%です。銀行の水準そのものは特に低くありませんが、<strong>中小企業向け融資の主力である信用金庫が20ポイント以上低い</strong>点が論点になります（東京都統計年鑑 15-1／15-2）。</p>
+      <div class="chart" id="ratioChart"></div>
+      <div class="legend" id="ratioLegend"></div>
+      <p class="note-sm" id="ratioNote"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 02 外国からの資金 ================= -->
+<section class="panel" id="panel-1" role="tabpanel">
+  <div class="card">
+    <div class="eyebrow">Foreign capital</div>
+    <h2>外国からの資金：どこから、どれだけ入っているか</h2>
+    <p class="sub">日本取引所グループ「投資部門別売買状況」「海外投資家地域別株券売買状況」より。2025年は東証プライムの委託売買代金の66.2%が海外投資家によるものでした。</p>
+    <div class="tiles" id="foreignTiles"></div>
+    <div class="grid g2" style="gap:20px">
+      <div>
+        <h3 style="font-size:14px;margin-bottom:8px">海外マネーの出どころ（地域別）</h3>
+        <div class="chart" id="regionChart"></div>
+        <div class="legend" id="regionLegend"></div>
+        <p class="note-sm" id="regionNote"></p>
+      </div>
+      <div>
+        <h3 style="font-size:14px;margin-bottom:8px">市場区分別 海外投資家シェアの推移</h3>
+        <div class="chart" id="foreignTrend"></div>
+        <div class="legend" id="foreignLegend"></div>
+        <p class="note-sm">市場区分再編（2022年4月）以降の4年間。プライムは緩やかに低下し、スタンダード・グロースは上昇しています。</p>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="eyebrow">Policy</div>
+    <h2>この資金を呼び込むために、いま何が行われているか</h2>
+    <p class="sub" id="policyLede"></p>
+    <div class="gfci" id="gfciBox"></div>
+    <div class="pol" id="policyList"></div>
+    <p class="note-sm">各施策の「取組内容」「効果」「不足」は、一次情報の要約と本サービスの実測値を突き合わせたものです。評価はデータに基づく記述であり、施策の是非を判断するものではありません。</p>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Implication</div>
+    <h3>東京の株式は、東京の外で意思決定されている</h3>
+    <p class="sub">海外投資家の売買代金の75.3%が欧州経由です。これは欧州の投資家が多いという意味ではなく、海外運用会社の発注拠点がロンドン等に置かれているためとされます。国際金融都市を掲げる東京にとって、運用機能そのものをどう呼び込むかという論点に直結します。</p>
+    <div class="metrics m3" id="foreignMetrics"></div>
+  </div>
+</section>
+
+<!-- ================= 03 上場企業の資金 ================= -->
+<section class="panel" id="panel-2" role="tabpanel">
+  <div class="card">
+    <div class="eyebrow">Overview</div>
+    <h2>投資環境の概要</h2>
+    <p class="sub">上場企業の資金調達は、株式市場と債券市場の二つの価格に挟まれて決まります。いまはその関係が20年ぶりに逆転しています。</p>
+    <div class="metrics m3" id="bondEnv"></div>
+    <div style="height:16px"></div>
+    <div class="diag-why">
+      <strong>債券市場。</strong>国債10年 <b class="num" id="beY10">—</b>%、2年 <b class="num" id="beY2">—</b>%、10年−2年のスプレッドは <b class="num" id="beSpread">—</b>pt。
+      国債利回りは社債・借入金利の土台になるため、この水準が上場企業にも中小企業にも調達コストとして波及します。
+      <br><br>
+      <strong>株式市場。</strong>東証3市場の上場会社数・時価総額・回転率・配当利回りは下の表のとおりです。
+      プライムの配当利回り <b class="num" id="beDiv">—</b>% に対し国債10年が <b class="num" id="beY10b">—</b>% で、「配当より国債」が成り立つ水準に戻りました。
+      <br><br>
+      <strong>その他市場。</strong>非上場の中小企業には売買される市場そのものが存在しません。株式投資型クラウドファンディング（年間上限50万円）が唯一の準市場的な経路で、規模は上の二市場と桁が違います。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Listed market</div>
+    <h2>上場企業の資金：3,837社の内訳</h2>
+    <p class="sub">東京都統計年鑑 令和5年 15-6 より（2023年）。会社数はプライム43.2%とスタンダード42.2%がほぼ拮抗し、グロースが14.6%。それでも時価総額はプライムに96.1%が集中しています。</p>
+    <div class="tblwrap" id="marketTable"></div>
+    <div style="height:18px"></div>
+    <div class="grid g2" style="gap:20px">
+      <div>
+        <h3 style="font-size:14px;margin-bottom:8px">会社数シェアと時価総額シェア</h3>
+        <div class="chart" id="marketBars"></div>
+        <div class="legend" id="marketLegend"></div>
+        <p class="note-sm" id="marketNote"></p>
+      </div>
+      <div>
+        <h3 style="font-size:14px;margin-bottom:8px">売買回転率と配当利回り</h3>
+        <div class="chart" id="turnYield"></div>
+        <div class="legend" id="turnYieldLegend"></div>
+        <p class="note-sm">グロースは配当利回り0.34%に対して売買回転率428.2%。配当ではなく値上がり益を狙う短期の市場であることが数字に出ています。</p>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="eyebrow">Monthly</div>
+    <h3>東証プライムの月次（2023年）</h3>
+    <p class="sub">時価総額と株価指数の月次推移。東京都統計年鑑で月次が揃うのは2023年分のみです。</p>
+    <div class="chart" id="tseMonthly"></div>
+    <div class="legend" id="tseMonthlyLegend"></div>
+  </div>
+</section>
+
+<!-- ================= 04 中小企業の資金 ================= -->
+<section class="panel" id="panel-3" role="tabpanel">
+  <div class="hero" style="margin-top:0">
+    <div class="hero-top">
+      <div class="hero-figure">
+        <span class="lab">都内中小企業 業況DI（全体）</span>
+        <span class="val" id="heroDI">—</span>
+        <span class="note" id="heroDINote">—</span>
+      </div>
+      <p class="hero-lede">
+        東京都は毎月、都内の中小企業3,875社に景況を尋ねています。2005年5月から255か月ぶんが公開データとして残っている。
+        <strong>そのDIは20年間、一度も0を超えていません。</strong>上場市場が最高値を更新した局面でも、この線は水面下にあり続けました。
+      </p>
+    </div>
+    <div class="chart" id="heroChart"></div>
+  </div>
+
+  <div class="tiles" id="smeTiles"></div>
+
+  <div class="grid g2">
+    <div class="card">
+      <div class="eyebrow">Funding demand</div>
+      <h3>いま何のために、いくらの金利で借りているか</h3>
+      <p class="sub" id="shikinLede"></p>
+      <div class="metrics m3" id="shikinMetrics"></div>
+      <div style="height:16px"></div>
+      <div class="chart" id="shikinChart"></div>
+      <div class="legend" id="shikinLegend"></div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Stress</div>
+      <h3>返済の肩代わりは2024年度がピーク、2025年度に減り始めた</h3>
+      <p class="sub">代位弁済＝信用保証協会が事業者に代わって金融機関へ返済した件数。保証承諾（借りやすさ）と桁が違うため、2019年度＝100 に指数化しています。</p>
+      <div class="chart" id="subroChart"></div>
+      <div class="legend" id="subroLegend"></div>
+      <p class="note-sm" id="subroNote"></p>
+      <div style="height:16px"></div>
+      <div class="chart" id="hoshoChart"></div>
+      <div class="legend" id="hoshoLegend"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Signal map</div>
+    <h2>20年 × 24業種の業況マップ</h2>
+    <p class="sub">セルは各年の業況DI年平均。<span class="mono">赤＝悪化</span>／<span class="mono">青＝改善</span>、中央の無彩色が0です。セルをクリックすると、その業種の資金タイプ判定に移ります。</p>
+    <div class="scroller"><div class="chart" id="heatChart"></div></div>
+    <div class="legend" id="heatLegend"></div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">The missing option</div>
+    <h2>選択肢に「増資」が無い</h2>
+    <p class="sub">同じ調査の資金調達手段の設問には、<strong>自己資金・借入（融資）・借入（その他）の3つしか選択肢がありません</strong>。増資も、社債も、クラウドファンディングも項目として存在しない。設問の作りそのものが、都内中小企業の資金調達がデットに限られている実態を映しています。</p>
+    <div class="metrics m3" id="equityGap"></div>
+    <div style="height:18px"></div>
+    <div class="grid g2" style="gap:20px">
+      <div>
+        <h3 style="font-size:14px;margin-bottom:8px">成長企業はどこにいるか</h3>
+        <p class="sub">エクイティで資金を集める市場は東証グロースですが、都内中小企業3,875社との規模の差は歴然です。</p>
+        <div class="chart" id="growthChart"></div>
+        <div class="legend" id="growthLegend"></div>
+      </div>
+      <div>
+        <h3 style="font-size:14px;margin-bottom:8px">エクイティに届くまでの段差</h3>
+        <div class="diag-why" id="growthNote"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">One more option</div>
+    <h2>選択肢のひとつ：事業承継</h2>
+    <p class="sub">同じ調査の付帯調査によれば、回答企業の経営者の34.1%が70歳以上、創業1980年以前が63.6%。資金調達と並ぶ選択肢として、引き継ぎも数字で見ておく価値があります。</p>
+    <p class="sub" id="urgFormula"></p>
+    <div class="grid g2" style="gap:20px">
+      <div>
+        <div class="chart" id="urgChart"></div>
+        <div class="legend" id="urgLegend"></div>
+      </div>
+      <div>
+        <div class="chart" id="ageOverview"></div>
+        <div class="legend" id="ageOverviewLegend"></div>
+        <p class="note-sm">窓口：<a href="https://jigyo-hikitsugi.go.jp/" target="_blank" rel="noopener">東京都事業承継・引継ぎ支援センター</a>／<a href="https://www.tokyo-kosha.or.jp/support/ssmatching/index.html" target="_blank" rel="noopener">TOKYO版 創業・承継マッチング支援事業</a>／<a href="https://www.cgc-tokyo.or.jp/assistinfo/jigyoshokei.html" target="_blank" rel="noopener">東京信用保証協会 事業承継支援</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 05 連関 ================= -->
+<section class="panel" id="panel-4" role="tabpanel">
+  <div class="card">
+    <div class="eyebrow">This month</div>
+    <h2>今月のファイナンス環境</h2>
+    <p class="sub">四つの層の最新値を毎月そろえ、一枚で読めるようにしています。実体（中小企業）・先行き・調達コスト（債券市場）・海外マネーを同じ画面に置き、前月差から今月の環境を機械的に判定します。</p>
+    <div class="clim" id="climate"></div>
+    <p class="note-sm" id="climFormula"></p>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">The measurement</div>
+    <h2>層と層は、どれだけ連関しているか</h2>
+    <p class="sub">「つながっているはず」を検証します。景況DI（東京都・月次）と国債金利（財務省・月中平均）を255か月そろえ、ピアソンの積率相関係数を計算しました。</p>
+    <div class="finding">
+      <span class="r" id="findR">—</span>
+      <p><strong>国債10年利回り × 都内中小企業 業況DI、同じ月どうしの比較（2005年5月〜2026年7月、n=255）。</strong>
+      ここだけ見ると「マネーの価格が動いても中小企業の景況は動かない」という結論になります。
+      しかしこれは<strong>時差をゼロと決め打ちした場合の数字</strong>にすぎません。下でその前提を外します。</p>
+    </div>
+
+    <div class="card" style="border:1px solid var(--line-2);background:var(--surface-2);padding:20px 22px;margin:0 0 20px">
+      <div class="eyebrow">Why the 10-year JGB</div>
+      <h3 style="margin-top:0">なぜ国債10年を基準にするのか</h3>
+      <p class="sub" id="whyY10" style="margin-bottom:0"></p>
+    </div>
+
+    <div class="card" style="padding:0;border:0;margin:0 0 20px">
+      <div class="eyebrow">Lag scan</div>
+      <h3>時差を入れて測り直す</h3>
+      <p class="sub" id="lagAnswer"></p>
+      <div class="scroller"><div class="chart" id="rateScanChart"></div></div>
+      <div class="legend" id="rateScanLegend"></div>
+      <div class="finding" style="border-left:3px solid var(--s1);margin-top:18px">
+        <span class="r" id="findLag">—</span>
+        <p id="findLagNote"></p>
+      </div>
+    </div>
+    <div class="finding" style="border-left:3px solid var(--s2)">
+      <span class="r" id="findR2" style="color:var(--s2)">—</span>
+      <p><strong>東証プライム株価指数 × 業況DI（2023年・n=11、参考値）。</strong>
+      上場市場の株価と中小企業の景況も、ほぼ無関係でした。東京都統計年鑑で月次が揃うのが2023年分のみのため参考値ですが、方向は上と一致します。</p>
+    </div>
+    <div class="scroller"><div class="chart" id="corrChart"></div></div>
+    <div class="legend" id="corrLegend"></div>
+    <p class="note-sm" id="corrNote"></p>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Tokyo bonds as the anchor</div>
+    <h2>都債を物差しにすると、何が見えるか</h2>
+    <p class="sub">東京都自身が資金を借りるときの金利と、都内の中小企業が借りるときの金利を、同じ物差しの上に並べます。四つの層は「同じお金を、違う値段で借りている」。その値段の差が、層と層の距離です。</p>
+    <div class="chart" id="ladderRate"></div>
+    <div class="legend" id="ladderRateLegend"></div>
+    <div class="diag-why" id="ladderRateNote" style="margin-top:16px"></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <div class="eyebrow">Lag</div>
+      <h3>経営者の先読みは、何か月先まで当たるか</h3>
+      <p class="sub">見通しDI（今後3か月の見通し）が、k か月後の業況DIをどれだけ説明するか。3か月先を聞いているのに、最もよく当たるのは1か月先でした。</p>
+      <div class="chart" id="lagChart"></div>
+      <div class="legend" id="lagLegend"></div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Where it does connect</div>
+      <h3>唯一つながっていたもの</h3>
+      <p class="sub">同じ月どうしで唯一つながっていたのは、業況ではなく<strong>価格転嫁ギャップ</strong>でした。金利が上がる局面で、中小企業はコストを価格に乗せきれなくなる。時差を入れて測り直しても<b class="num" id="gapBestLab">—</b>で、この経路はほぼ即座に効いています。</p>
+      <div class="chart" id="scatterRate"></div>
+      <p class="note-sm">横軸：国債10年利回り（月中平均、%）。縦軸：価格転嫁ギャップ（販売単価DI − 仕入単価DI）。255か月の各月を1点として描画。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= 06 事業者：資金調達 ================= -->
+<section class="panel" id="panel-5" role="tabpanel">
+  <div class="card">
+    <div class="eyebrow">Diagnosis</div>
+    <h2>いま必要な資金の種類を判定する</h2>
+    <p class="sub">業種を選ぶと、直近3か月の実データからルールベースで資金タイプを判定します。判定に使った数値と、その根拠を必ず併記します。</p>
+    <div class="controls">
+      <div class="field"><label for="dgInd">業種</label><select id="dgInd"></select></div>
+      <div class="field"><label for="dgSize">従業員規模</label>
+        <select id="dgSize">
+          <option value="micro">1〜9人（小規模）</option>
+          <option value="small" selected>10〜19人（中小規模）</option>
+          <option value="mid">20〜49人（中規模）</option>
+          <option value="large">50人以上（大規模）</option>
+        </select></div>
+      <div class="field"><label for="dgUse">資金の使いみち</label>
+        <select id="dgUse">
+          <option value="unknown" selected>まだ決めていない</option>
+          <option value="working">当面の運転資金</option>
+          <option value="capex">設備・省力化投資</option>
+          <option value="growth">人材採用・事業拡大</option>
+          <option value="restruct">事業の建て直し</option>
+          <option value="succession">事業承継・引継ぎ</option>
+        </select></div>
+    </div>
+    <div class="diag-head">
+      <span class="pill" id="dgPill"><span class="dot"></span><span class="ic"></span><span class="tx"></span></span>
+      <strong id="dgTitle" style="font-size:17px"></strong>
+    </div>
+    <div class="diag-why" id="dgWhy"></div>
+    <div class="metrics" id="dgMetrics"></div>
+    <p class="note-sm">数値はいずれも「東京都中小企業の景況」の直近3か月平均。DIは「良い」と答えた企業の割合から「悪い」を引いた値で、範囲は −100〜+100 です。</p>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <div class="eyebrow">Matched instruments</div>
+      <h3>適合する資金調達の形</h3>
+      <p class="sub">判定タイプ・規模・使いみちから、資金調達手段の<strong>類型</strong>を優先順位付けします。個別の制度名・要件は必ず一次窓口で最新をご確認ください。</p>
+      <ol class="schemes" id="dgSchemes"></ol>
+      <p class="note-sm">窓口：<a href="https://www.sangyo-rodo.metro.tokyo.lg.jp/" target="_blank" rel="noopener">東京都産業労働局</a>／<a href="https://www.cgc-tokyo.or.jp/" target="_blank" rel="noopener">東京信用保証協会</a>／<a href="https://www.tokyo-kosha.or.jp/" target="_blank" rel="noopener">東京都中小企業振興公社</a>／<a href="https://jigyo-hikitsugi.go.jp/" target="_blank" rel="noopener">東京都事業承継・引継ぎ支援センター</a></p>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Rate gap</div>
+      <h3>いまの借入金利は、この先どうなりそうか</h3>
+      <p class="sub" id="rateGapNote"></p>
+      <div class="chart" id="rateGapChart"></div>
+      <div class="legend" id="rateGapLegend"></div>
+      <div class="metrics m3" style="margin-top:16px" id="rateGapMetrics"></div>
+      <div class="diag-why" id="rateGapPlain" style="margin-top:16px"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Take this to the counter</div>
+    <h2>相談メモをつくる</h2>
+    <p class="sub">上で選んだ条件と判定結果を、そのまま金融機関や支援機関の窓口で使える文章にまとめます。<strong>コピーして、メールや相談予約フォームに貼ってください。</strong>数字にはすべて出典が付いているので、相手側でも検証できます。</p>
+    <div class="controls">
+      <div class="field"><label for="memoAmt">希望金額</label>
+        <select id="memoAmt">
+          <option value="300万円以内">300万円以内</option>
+          <option value="300万〜1,000万円" selected>300万〜1,000万円</option>
+          <option value="1,000万〜3,000万円">1,000万〜3,000万円</option>
+          <option value="3,000万円超">3,000万円超</option>
+        </select></div>
+      <div class="field"><label for="memoWhen">必要な時期</label>
+        <select id="memoWhen">
+          <option value="1か月以内">1か月以内</option>
+          <option value="3か月以内" selected>3か月以内</option>
+          <option value="半年以内">半年以内</option>
+          <option value="時期は未定">時期は未定</option>
+        </select></div>
+      <div class="field"><label for="memoYears">創業からの年数</label>
+        <select id="memoYears">
+          <option value="1年未満">1年未満</option>
+          <option value="1〜3年">1〜3年</option>
+          <option value="3〜10年">3〜10年</option>
+          <option value="10年以上" selected>10年以上</option>
+        </select></div>
+    </div>
+    <div class="memo-wrap">
+      <textarea id="memoText" class="memo" readonly rows="14" aria-label="相談メモ"></textarea>
+      <div class="memo-bar">
+        <button type="button" class="btn" id="memoCopy">メモをコピー</button>
+        <span class="memo-msg" id="memoMsg" role="status" aria-live="polite"></span>
+      </div>
+    </div>
+    <h3 style="margin-top:22px">窓口に行く前に用意しておくもの</h3>
+    <ol class="schemes" id="prepList"></ol>
+    <p class="note-sm">必要書類は一般的な例です。制度・機関によって異なるため、最終的な要否は各窓口でご確認ください。本サービスは融資の可否や条件を保証するものではありません。</p>
+  </div>
+</section>
+
+<!-- ================= 07 投資家：投資機会 ================= -->
+<section class="panel" id="panel-6" role="tabpanel">
+  <div class="card">
+    <div class="eyebrow">Yield curve</div>
+    <h2>いまの利回り：国債イールドカーブ</h2>
+    <p class="sub" id="jgbNote"></p>
+    <div class="chart" id="curveChart"></div>
+    <div class="legend" id="curveLegend"></div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Tokyo bonds for residents</div>
+    <h2>起点としての「個人向け都債」</h2>
+    <p class="sub" id="tosaiLede"></p>
+    <div class="tosai-2">
+      <div>
+        <h3 style="font-size:14px;margin-bottom:8px">円建て 個人向け都債の表面利率（第1回〜第18回）</h3>
+        <div class="chart" id="tosaiChart"></div>
+        <div class="legend" id="tosaiLegend"></div>
+        <p class="note-sm" id="tosaiNote"></p>
+      </div>
+      <div>
+        <h3 style="font-size:14px;margin-bottom:8px">いま個人が買える都債：外貨建てグリーン・ブルーボンド</h3>
+        <div class="tblwrap"><table class="tos-tbl" id="tosaiFx"></table></div>
+        <p class="note-sm">表面利率は発行時の外貨建て利率です。円で受け取る際には為替の影響を受けるため、円建ての利回りが表の数字になるとは限りません。</p>
+      </div>
+    </div>
+    <div class="finding" style="margin:20px 0 0"><p id="tosaiFinding"></p></div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Opportunities</div>
+    <h2>投資機会の一覧</h2>
+    <p class="sub">利回りはすべて一次情報の実測値です。アクセス可否は制度の事実であり、特定の手段を推奨するものではありません。</p>
+    <div class="tblwrap"><table class="opp" id="oppTable"></table></div>
+    <p class="note-sm">
+      国債利回りは財務省「国債金利情報」、株式の配当利回りは東京都統計年鑑 令和5年 15-6、
+      株式投資型クラウドファンディングの上限は<a href="https://market.jsda.or.jp/shijyo/kabucrowdfunding/seido/gaiyou/index.html" target="_blank" rel="noopener">日本証券業協会</a>によります。
+      利回りは過去の実績または現時点の水準であり、将来の成果を約束するものではありません。
+    </p>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Wealth gap</div>
+    <h2>資産形成の格差は、制度の使われ方に出ている</h2>
+
+    <h3 style="margin-top:4px">まず、格差はどれくらいあるか（全62区市町村）</h3>
+    <p class="sub" id="ineqAllLede"></p>
+    <div class="finding" style="margin-bottom:18px">
+      <span class="r" id="ineqRatio">—</span>
+      <p id="ineqRatioNote"></p>
+    </div>
+    <div class="scroller"><div class="chart" id="ineqAllChart"></div></div>
+    <div class="legend" id="ineqAllLegend"></div>
+    <p class="note-sm" id="ineqAllNote"></p>
+
+    <div style="height:34px"></div>
+    <h3>その格差は、制度の使われ方に出ている（多摩・島しょ39市町村）</h3>
+    <p class="sub" id="ineqLede"></p>
+    <div class="finding" style="margin-bottom:20px">
+      <span class="r" id="ineqR">—</span>
+      <p id="ineqRNote"></p>
+    </div>
+    <div class="chart" id="ineqChart"></div>
+    <div class="legend" id="ineqLegend"></div>
+    <p class="note-sm" id="ineqNote"></p>
+    <div class="diag-why" style="margin-top:18px" id="ineqFinding"></div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Yen carry trade</div>
+    <h2>円キャリートレードは、どう儲かって、どう損するのか</h2>
+    <p class="sub">ここまでは「自分のお金で外貨の債券を買う」話でした。円キャリートレードは<strong>そこに借入が加わります</strong>。安い金利の円で借りて、高い金利の通貨に替えて運用し、返すときの差額を取る。儲け方と損の出方を、100万円・1年で追いかけます。</p>
+
+    <div class="carry2">
+      <div class="cc win">
+        <span class="lb">こうして儲かる</span>
+        <ol id="carryWin"></ol>
+      </div>
+      <div class="cc lose">
+        <span class="lb">こうして損する</span>
+        <ol id="carryLose"></ol>
+      </div>
+    </div>
+
+    <h3 style="margin-top:26px">為替がどう動くと、いくらになるか</h3>
+    <p class="sub">元手100万円を1年運用した場合の損益。右の列は、同じ元手で3倍の額を動かした場合（借入を上乗せするレバレッジ）です。<strong>利益も損失も、そのまま3倍になります。</strong></p>
+    <div class="tblwrap"><table class="opp" id="carryTable"></table></div>
+    <div class="diag-why" id="carry2Note" style="margin-top:18px"></div>
+
+    <h3 style="margin-top:30px">「円安傾向だから基本は儲かる」は本当か</h3>
+    <p class="sub" id="fxLede"></p>
+    <div class="finding">
+      <span class="r" id="fxR">—</span>
+      <p id="fxRNote"></p>
+    </div>
+    <div class="scroller"><div class="chart" id="fxChart"></div></div>
+    <div class="legend" id="fxLegend"></div>
+    <div class="diag-why" id="fxNote" style="margin-top:16px"></div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Narrow it down</div>
+    <h2>条件から、使える制度を絞り込む</h2>
+    <p class="sub">目的・期間・為替リスクの許容度を選ぶと、<strong>制度の事実に照らして到達できるものだけ</strong>を残します。銘柄や商品を推奨するものではありません。判定は下に書いた条件式のとおりで、根拠も一件ずつ表示します。</p>
+    <div class="controls">
+      <div class="field"><label for="ivPurpose">目的</label>
+        <select id="ivPurpose">
+          <option value="safe" selected>元本の変動を抑えたい</option>
+          <option value="income">定期的な収入がほしい</option>
+          <option value="growth">値上がり益を狙いたい</option>
+          <option value="local">東京の事業や地域に資金を回したい</option>
+        </select></div>
+      <div class="field"><label for="ivTerm">期間</label>
+        <select id="ivTerm">
+          <option value="short">1〜2年</option>
+          <option value="mid" selected>3〜10年</option>
+          <option value="long">10年超</option>
+        </select></div>
+      <div class="field"><label for="ivFx">為替リスク</label>
+        <select id="ivFx">
+          <option value="no" selected>取りたくない</option>
+          <option value="ok">取ってもよい</option>
+        </select></div>
+    </div>
+    <ul class="routes" id="ivResult"></ul>
+    <p class="note-sm" id="ivRule"></p>
+    <div class="diag-why" style="margin-top:16px;border-left-color:var(--st-warn)">
+      <strong>本サービスは投資助言を行いません。</strong>
+      表示しているのは公開統計から取った利回りの実測値と、制度上そこに到達できるかどうかの事実だけです。
+      個別の銘柄や商品の推奨、購入時期の判断、お客様の状況に応じた助言は一切含みません
+      （金融商品取引法上の投資助言・代理業には該当しない設計です）。
+      実際の投資判断は、目論見書・契約締結前交付書面をご確認のうえ、ご自身の責任で行ってください。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Routes for residents</div>
+    <h2>都民の資金が届く経路・届かない経路</h2>
+    <p class="sub">都内勤労者世帯の月次の残額は <b class="num" id="surplus2">—</b> 円（東京都統計年鑑 14-2）。その資金が実際にどこまで届くのかを、制度ごとに並べます。</p>
+    <ul class="routes" id="routeList"></ul>
+    <div class="diag-why" style="margin-top:18px">
+      <strong>資産格差を「入口の差」として見る。</strong>
+      資産の格差は、持っている額の差であると同時に、<em>使える入口の数の差</em>でもあります。上の一覧のうち個人が単独で到達できるのは国債・上場株式・投資信託と外貨建て都債まで。
+      非上場の中小企業（<b class="num" id="ineqSme">—</b>社）へ資金を届ける経路は、株式投資型クラウドファンディングの年間上限50万円を除けば実質的に開いていません。
+      円建ての個人向け都債は<b class="num" id="ineqYears">—</b>年間途絶えたままで、いま出ているのは為替リスクを個人が負う外貨建てのみです。
+      本サービスは所得階層別の資産データを持たないため、格差の大小そのものは推計しません。
+      代わりに<strong>「誰でも同じ条件で使えるか」を制度の事実として並べ</strong>、入口が閉じている箇所を可視化することを役割にしています。
+    </div>
+  </div>
+</section>
+
+<!-- ================= 08 入口をひらく（ツール） ================= -->
+<section class="panel" id="panel-7" role="tabpanel">
+  <div class="hero" style="margin-top:0">
+    <div class="hero-top">
+      <div class="hero-figure">
+        <span class="lab">制度を使わないまま1年で取りこぼしている額</span>
+        <span class="val" id="toolHero">—</span>
+        <span class="note" id="toolHeroNote">条件を選ぶと、あなたの場合の金額を計算します</span>
+      </div>
+      <p class="hero-lede">
+        ここまでの画面で、資産形成の格差が<strong>制度の使われ方の差</strong>として表れていることが分かりました。
+        利用率は所得と r=0.80 で連動し、自治体間で2.5倍の開きがある。
+        だとすれば、埋めにいくべきは知識と手続きの側です。
+        この画面は<strong>「あなたが使える制度と、使わないことで失っている金額」を計算する道具</strong>です。
+        計算式はすべて画面に出します。
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Tool A — for residents</div>
+    <h2>資産形成の入口チェッカー</h2>
+    <p class="sub">4つ選ぶだけです。入力した内容はこの画面の外に出ません（通信を一切行いません）。</p>
+    <div class="controls">
+      <div class="field"><label for="tkMuni">お住まいの区市町村</label><select id="tkMuni"></select></div>
+      <div class="field"><label for="tkInc">年収の目安</label><select id="tkInc"></select></div>
+      <div class="field"><label for="tkWork">働き方</label><select id="tkWork"></select></div>
+      <div class="field"><label for="tkAge">年齢</label>
+        <select id="tkAge">
+          <option value="25">20代</option>
+          <option value="35" selected>30代</option>
+          <option value="45">40代</option>
+          <option value="55">50代</option>
+          <option value="62">60代</option>
+        </select></div>
+    </div>
+
+    <div class="tk-place" id="tkPlace"></div>
+
+    <h3 style="margin-top:24px">使える制度と、1年あたりの節税額</h3>
+    <p class="sub">所得控除による節税は、運用がうまくいくかどうかに関係なく確定します。ここが最初に取りにいける部分です。</p>
+    <div class="tblwrap"><table class="opp" id="tkTable"></table></div>
+    <p class="note-sm" id="tkFormula"></p>
+
+    <h3 style="margin-top:26px">満額使い続けたら、いくらになるか</h3>
+    <p class="sub" id="tkSimLede"></p>
+    <div class="chart" id="tkSim"></div>
+    <div class="legend" id="tkSimLegend"></div>
+    <div class="tk-out" id="tkOut"></div>
+    <p class="note-sm" id="tkNote"></p>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Tool B — for business owners</div>
+    <h2>借入金利の立ち位置チェック</h2>
+    <p class="sub">いまの借入条件が、都内中小企業のなかでどのあたりにあるかを確かめます。金利が上がったときの負担も先に見ておきます。結果は「事業者：資金調達」の相談メモにそのまま使えます。</p>
+    <div class="controls">
+      <div class="field"><label for="lnAmt">借入残高</label>
+        <select id="lnAmt">
+          <option value="3000000">300万円</option>
+          <option value="10000000" selected>1,000万円</option>
+          <option value="30000000">3,000万円</option>
+          <option value="50000000">5,000万円</option>
+          <option value="100000000">1億円</option>
+        </select></div>
+      <div class="field"><label for="lnRate">いまの金利</label>
+        <select id="lnRate">
+          <option value="0.8">0.8％（1％未満）</option>
+          <option value="1.5" selected>1.5％（1％台）</option>
+          <option value="2.5">2.5％（2％台）</option>
+          <option value="3.5">3.5％（3％以上）</option>
+        </select></div>
+      <div class="field"><label for="lnYears">残りの期間</label>
+        <select id="lnYears">
+          <option value="3">3年</option>
+          <option value="5" selected>5年</option>
+          <option value="10">10年</option>
+        </select></div>
+    </div>
+    <div class="metrics m3" id="lnMetrics"></div>
+    <div class="diag-why" id="lnNote" style="margin-top:18px"></div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Where the numbers point</div>
+    <h3>この数字が制度に返すもの</h3>
+    <p class="sub">ツールを使うと、個人の努力では動かせない部分がはっきりします。そこは制度側の論点になります。本サービスからの指摘であり、東京都の方針ではありません。</p>
+    <ul class="pts" id="actList"></ul>
+    <p class="note-sm" id="actLimit"></p>
+  </div>
+</section>
+
+<!-- ================= 09 データとロジック ================= -->
+<section class="panel" id="panel-8" role="tabpanel">
+  <div class="card">
+    <div class="eyebrow">Engine</div>
+    <h2>判定ロジック（全文）</h2>
+    <p class="sub">ブラックボックスを作らないことを設計方針にしています。以下がこのサービスの判定式のすべてです。</p>
+    <div class="tblwrap">
+      <table><thead><tr><th class="l">記号</th><th class="l">定義</th><th class="l">用いる系列</th></tr></thead>
+      <tbody id="defTable"></tbody></table>
+    </div>
+    <div style="height:18px"></div>
+    <ol class="schemes" id="ruleList"></ol>
+    <div style="height:18px"></div>
+    <div class="diag-why" style="border-left-color:var(--s2)">
+      <strong>事業体力スコア</strong>＝ 50 + 0.62 ×〔 2.2·M ＋ 1.4·E ＋ 0.5·(L+25) ＋ 0.6·S ＋ 0.5·P 〕（2〜98に丸め）。<br>
+      <strong>承継緊急度</strong>＝ 0.6 ×（経営者70歳以上の割合）＋ 0.4 ×（1960年以前創業の割合）。<br>
+      <strong>連関</strong>＝ ピアソンの積率相関係数。欠測月は対ごとに除外。加重・しきい値はいずれも設計判断による任意の値で、生データから誰でも再計算できます。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Provenance</div>
+    <h2>利用データセット</h2>
+    <p class="sub">取得元URLと、このサービスでの使い道を一件ずつ明示しています。</p>
+    <ul class="src" id="srcList"></ul>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Full table</div>
+    <h2>24業種 判定一覧</h2>
+    <p class="sub"><span class="mono">L</span>＝業況水準、<span class="mono">M</span>＝モメンタム、<span class="mono">P</span>＝価格転嫁ギャップ、<span class="mono">E</span>＝期待ギャップ、<span class="mono">S</span>＝売上高DI。</p>
+    <div class="tblwrap" id="allTable"></div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Full table</div>
+    <h2>承継データ 全行</h2>
+    <p class="sub">経営者年齢・創業年の構成比（％）。各行の合計が100%になることを検算のうえ採録しています。</p>
+    <div class="tblwrap" id="shokeiTable"></div>
+  </div>
+</section>
+
+<footer>
+  <p style="margin:0 0 6px"><strong>Tokyo Capital Bridge</strong> — 東京の資金循環を四層で可視化し、都民の資産形成と成長企業の資金調達をつなぐ／都知事杯オープンデータ・ハッカソン2026 応募作品プロトタイプ</p>
+  <p style="margin:0">出典：東京都オープンデータカタログサイト（東京都産業労働局・東京都総務局）、財務省、日本取引所グループ。東京都のデータセットはクリエイティブ・コモンズ表示 4.0 国際（CC BY 4.0）で提供されています。本サービスの数値はいずれも公開統計の機械的な加工結果であり、投資勧誘・金融商品の推奨・個別企業の信用評価を目的とするものではありません。利回りは過去の実績または現時点の水準であり、将来の成果を約束するものではありません。制度に関する記述は一次情報の要約であり、適用可否は各窓口・専門家にご確認ください。</p>
+</footer>
+</div>
+
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<script>
+/*__TCB_DATA__*/
+</script>
+
+<script>
+
+(function(){
+"use strict";
+var D=window.TCB, IND=D.industries, MONTHS=D.meta.months, N=MONTHS.length;
+var byFull={}; IND.forEach(function(r){byFull[r.full]=r;});
+var SK=D.shokei, SKby={}; SK.rows.forEach(function(r){SKby[r.name]=r;});
+
+function css(v){ return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+function el(t,a,c){ var e=document.createElementNS("http://www.w3.org/2000/svg",t);
+  if(a) for(var k in a) e.setAttribute(k,a[k]);
+  if(c!=null) e.textContent=c; return e; }
+function fmt(n,d){ if(n==null||isNaN(n)) return "—"; return Number(n).toLocaleString("ja-JP",{minimumFractionDigits:d||0,maximumFractionDigits:d||0}); }
+function sgn(n,d){ if(n==null) return "—"; return (Number(n)>0?"+":"")+Number(n).toFixed(d==null?1:d); }
+function ymJa(v){ var s=String(v); return s.slice(0,4)+"年"+parseInt(s.slice(4),10)+"月"; }
+function hex2rgb(h){ h=h.replace("#",""); if(h.length===3) h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+  return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; }
+function mix(a,b,t){ var A=hex2rgb(a),B=hex2rgb(b);
+  return "rgb("+Math.round(A[0]+(B[0]-A[0])*t)+","+Math.round(A[1]+(B[1]-A[1])*t)+","+Math.round(A[2]+(B[2]-A[2])*t)+")"; }
+function clamp(v,a,b){ return Math.max(a,Math.min(b,v)); }
+function isDark(){ return css("--mode")==="dark"; }
+
+var RAMP={
+  light:{ neg:["#eceef2","#f7cfc9","#e89189","#cf4f47","#9d201b","#5f100d"],
+          pos:["#eceef2","#cde2fb","#86b6ef","#2a78d6","#184f95"] },
+  dark:{  neg:["#2b3644","#523039","#7a2c2c","#ab3a34","#dc5f56","#f38b80"],
+          pos:["#2b3644","#22405f","#25588f","#3987e5","#7cb8f2"] }
+};
+var ORD={
+  age:{ light:["#86b6ef","#5598e7","#2a78d6","#1c5cab","#104281"],
+        dark: ["#184f95","#256abf","#3987e5","#6da7ec","#9ec5f4"] },
+  fnd:{ light:["#8c3714","#c04d1f","#eb6834","#f0a271","#f7c9a8","#fbe4d3"],
+        dark: ["#f2a97f","#e8814f","#d95926","#a34418","#7a3312","#54230c"] }
+};
+function ordScale(k){ return ORD[k][isDark()?"dark":"light"]; }
+function rampColor(stops,t){ t=clamp(t,0,1); var n=stops.length-1, i=Math.min(Math.floor(t*n),n-1);
+  return mix(stops[i],stops[i+1],t*n-i); }
+function diColor(v){ if(v==null) return css("--surface-2");
+  var R=RAMP[isDark()?"dark":"light"];
+  return v<0 ? rampColor(R.neg,-v/70) : rampColor(R.pos,v/25); }
+
+var STATUS={
+  growth:{c:"--st-good",ic:"▲",label:"成長局面"},
+  capex:{c:"--st-good",ic:"■",label:"投資可能"},
+  neutral:{c:"--rule",ic:"—",label:"中立"},
+  cost:{c:"--st-warn",ic:"!",label:"要注意"},
+  defense:{c:"--st-crit",ic:"!!",label:"要支援"}
+};
+
+var tip=document.getElementById("tip");
+function showTip(x,y,html){ tip.innerHTML=html; tip.style.opacity="1";
+  var r=tip.getBoundingClientRect(), left=x+14, top=y-r.height-12;
+  if(left+r.width>window.innerWidth-8) left=x-r.width-14;
+  if(top<8) top=y+18;
+  tip.style.left=left+"px"; tip.style.top=top+"px"; }
+function hideTip(){ tip.style.opacity="0"; }
+function legend(id,items){ var h=document.getElementById(id); if(!h) return; h.innerHTML="";
+  items.forEach(function(it){ var s=document.createElement("span"); s.className="it";
+    var sw=document.createElement("span"); sw.className="sw"+(it[2]?" "+it[2]:"");
+    sw.style.background=it[0].charAt(0)==="-"?css(it[0]):it[0]; s.appendChild(sw);
+    s.appendChild(document.createTextNode(it[1])); h.appendChild(s); }); }
+
+var EVENTS=[{m:200809,t:"リーマン"},{m:201103,t:"震災"},{m:201404,t:"増税"},{m:202004,t:"コロナ"},{m:202203,t:"物価高"}];
+function drawHero(){
+  var host=document.getElementById("heroChart"); host.innerHTML="";
+  var W=1100,H=210,PL=44,PR=14,PT=16,PB=26;
+  var g=byFull["全体"].gyokyo, vals=g.filter(function(v){return v!=null});
+  var lo=Math.floor(Math.min.apply(null,vals)/10)*10, hi=Math.ceil(Math.max(Math.max.apply(null,vals),5)/10)*10;
+  var x=function(i){return PL+(W-PL-PR)*i/(N-1)}, y=function(v){return PT+(H-PT-PB)*(hi-v)/(hi-lo)};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"都内中小企業 業況DI の2005年5月以降の推移"});
+  for(var t=lo;t<=hi;t+=20){
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:y(t),y2:y(t),stroke:css(t===0?"--axis":"--grid"),"stroke-width":t===0?1.5:1}));
+    svg.appendChild(el("text",{x:PL-8,y:y(t)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},t));
+  }
+  EVENTS.forEach(function(e){ var i=MONTHS.indexOf(e.m); if(i<0) return;
+    svg.appendChild(el("line",{x1:x(i),x2:x(i),y1:PT,y2:H-PB,stroke:css("--line-2"),"stroke-dasharray":"2 3"}));
+    svg.appendChild(el("text",{x:x(i)+4,y:PT+11,fill:css("--ink-3"),"font-size":9.5,"font-family":"IBM Plex Mono, monospace"},e.t)); });
+  var dA="M"+x(0)+","+y(0), dL="";
+  for(var i=0;i<N;i++){ if(g[i]==null) continue;
+    dA+=" L"+x(i).toFixed(1)+","+y(g[i]).toFixed(1);
+    dL+=(dL?" L":"M")+x(i).toFixed(1)+","+y(g[i]).toFixed(1); }
+  dA+=" L"+x(N-1)+","+y(0)+" Z";
+  svg.appendChild(el("path",{d:dA,fill:css("--dv-neg"),opacity:.13}));
+  svg.appendChild(el("path",{d:dL,fill:"none",stroke:css("--dv-neg"),"stroke-width":2,"stroke-linejoin":"round"}));
+  svg.appendChild(el("circle",{cx:x(N-1),cy:y(g[N-1]),r:4,fill:css("--dv-neg"),stroke:css("--surface"),"stroke-width":2}));
+  for(var k=0;k<N;k+=24) svg.appendChild(el("text",{x:x(k),y:H-8,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},String(MONTHS[k]).slice(0,4)));
+  var hl=el("line",{x1:0,x2:0,y1:PT,y2:H-PB,stroke:css("--ink-3"),opacity:0}); svg.appendChild(hl);
+  var hit=el("rect",{x:PL,y:PT,width:W-PL-PR,height:H-PT-PB,fill:"transparent"}); svg.appendChild(hit);
+  hit.addEventListener("mousemove",function(ev){ var b=svg.getBoundingClientRect();
+    var i=clamp(Math.round(((ev.clientX-b.left)/b.width*W-PL)/(W-PL-PR)*(N-1)),0,N-1);
+    hl.setAttribute("x1",x(i)); hl.setAttribute("x2",x(i)); hl.setAttribute("opacity",.55);
+    showTip(ev.clientX,ev.clientY,'<div class="th">'+ymJa(MONTHS[i])+'</div><div class="tr"><span>業況DI（全体）</span><b>'+(g[i]==null?"—":g[i])+'</b></div>'); });
+  hit.addEventListener("mouseleave",function(){ hl.setAttribute("opacity",0); hideTip(); });
+  host.appendChild(svg);
+}
+
+function stacked(hostId,legendId,rows,labels,key,ordKey,highlightIdx){
+  var host=document.getElementById(hostId); host.innerHTML="";
+  var LW=92, W=560, RH=24, PT=6, RIGHT=54, H=PT+rows.length*RH+6;
+  var cols=ordScale(ordKey);
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":hostId});
+  rows.forEach(function(r,i){
+    var yy=PT+i*RH, x0=LW, tot=0;
+    r[key].forEach(function(v){tot+=v;});
+    if(r.kind==="size"&&rows[i-1]&&rows[i-1].kind!=="size")
+      svg.appendChild(el("line",{x1:0,x2:W-RIGHT,y1:yy-1,y2:yy-1,stroke:css("--line-2"),"stroke-dasharray":"3 3"}));
+    svg.appendChild(el("text",{x:0,y:yy+RH/2+4,fill:css(r.kind==="total"?"--ink":"--ink-2"),
+      "font-size":11.5,"font-weight":r.kind==="total"?700:400,"font-family":'"Zen Kaku Gothic New",sans-serif'},r.name));
+    r[key].forEach(function(v,j){
+      var w=(W-LW-RIGHT)*v/tot;
+      var rr=el("rect",{x:x0,y:yy+4,width:Math.max(w-2,0.5),height:RH-10,fill:cols[j],rx:2});
+      rr.addEventListener("mouseenter",function(ev){
+        var h='<div class="th">'+r.name+'（n='+r.n+'）</div>';
+        r[key].forEach(function(vv,jj){ h+='<div class="tr"><span>'+labels[jj]+'</span><b>'+vv.toFixed(1)+'%</b></div>'; });
+        showTip(ev.clientX,ev.clientY,h); });
+      rr.addEventListener("mouseleave",hideTip);
+      svg.appendChild(rr); x0+=w;
+    });
+    svg.appendChild(el("text",{x:W-RIGHT+8,y:yy+RH/2+4,fill:css("--ink"),"font-size":11.5,
+      "font-weight":600,"font-family":"IBM Plex Mono, monospace"},r[key][highlightIdx].toFixed(1)+"%"));
+  });
+  host.appendChild(svg);
+  if(legendId) legend(legendId,labels.map(function(l,j){return [cols[j],l,"box"]}));
+}
+
+function singleStack(hostId,legendId,labels,values,ordKey){
+  var host=document.getElementById(hostId); host.innerHTML="";
+  var W=520,H=94,PT=6,BH=34;
+  var cols=ordScale(ordKey), tot=0; values.forEach(function(v){tot+=v});
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":hostId});
+  var x0=0;
+  values.forEach(function(v,j){
+    var w=W*v/tot;
+    var rr=el("rect",{x:x0,y:PT,width:Math.max(w-2,0.5),height:BH,fill:cols[j],rx:2});
+    rr.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,'<div class="th">'+labels[j]+'</div><div class="tr"><span>構成比</span><b>'+v.toFixed(1)+'%</b></div>'); });
+    rr.addEventListener("mouseleave",hideTip);
+    svg.appendChild(rr);
+    if(w>56){
+      svg.appendChild(el("text",{x:x0+w/2-1,y:PT+BH+18,"text-anchor":"middle",fill:css("--ink"),"font-size":13,"font-weight":600,"font-family":"IBM Plex Mono, monospace"},v.toFixed(1)+"%"));
+      svg.appendChild(el("text",{x:x0+w/2-1,y:PT+BH+33,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10.5,"font-family":'"Zen Kaku Gothic New",sans-serif'},labels[j]));
+    }
+    x0+=w;
+  });
+  host.appendChild(svg);
+  legend(legendId,labels.map(function(l,j){return [cols[j],l,"box"]}));
+}
+
+function drawUrgency(){
+  document.getElementById("urgFormula").innerHTML=SK.formula+"<br>"+
+    "<strong>横棒1本が1区分の値そのもので、平均ではありません。</strong>"+
+    "帯の左側が 0.6×（経営者70歳以上の割合）、右側が 0.4×（1960年以前創業の割合）で、"+
+    "2つを足した長さが承継緊急度です。"+
+    "母集団は同一（回答企業1,283社）で、業種別と規模別は同じ集団を切り直したもの。"+
+    "先頭の「全体」は1,283社そのものの値で、下に並ぶ各区分を平均したものではありません。";
+  var rows=SK.rows.slice();
+  var host=document.getElementById("urgChart"); host.innerHTML="";
+  var LW=98, W=680, RH=26, PT=22, RIGHT=54, H=PT+rows.length*RH+10;
+  var maxU=Math.ceil(Math.max.apply(null,rows.map(function(r){return r.urgency}))/5)*5;
+  var x=function(v){return LW+(W-LW-RIGHT)*v/maxU};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"業種別・規模別の承継緊急度"});
+  for(var t=0;t<=maxU;t+=10){
+    svg.appendChild(el("line",{x1:x(t),x2:x(t),y1:PT-6,y2:H-8,stroke:css(t===0?"--axis":"--grid")}));
+    svg.appendChild(el("text",{x:x(t),y:PT-11,"text-anchor":"middle",fill:css("--ink-3"),"font-size":9.5,"font-family":"IBM Plex Mono, monospace"},t));
+  }
+  var c1=ordScale("age")[4], c2=ordScale("fnd")[2];
+  rows.forEach(function(r,i){
+    var yy=PT+i*RH;
+    if(r.kind==="size"&&rows[i-1].kind!=="size")
+      svg.appendChild(el("line",{x1:0,x2:W-RIGHT,y1:yy-3,y2:yy-3,stroke:css("--line-2"),"stroke-dasharray":"3 3"}));
+    svg.appendChild(el("text",{x:0,y:yy+16,fill:css(r.kind==="total"?"--ink":"--ink-2"),"font-size":11.5,
+      "font-weight":r.kind==="total"?700:400,"font-family":'"Zen Kaku Gothic New",sans-serif'},r.name));
+    var a=0.6*r.old70, b=0.4*r.pre1960;
+    var r1=el("rect",{x:LW,y:yy+5,width:Math.max(x(a)-LW,1),height:14,fill:c1,rx:2});
+    var r2=el("rect",{x:x(a)+1,y:yy+5,width:Math.max(x(a+b)-x(a)-2,1),height:14,fill:c2,rx:2});
+    [r1,r2].forEach(function(rr){
+      rr.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+        '<div class="th">'+r.name+'（n='+r.n+'）</div>'+
+        '<div class="tr"><span>承継緊急度</span><b>'+r.urgency.toFixed(1)+'</b></div>'+
+        '<div class="tr"><span>経営者70歳以上</span><b>'+r.old70.toFixed(1)+'%</b></div>'+
+        '<div class="tr"><span>経営者60歳以上</span><b>'+r.over60.toFixed(1)+'%</b></div>'+
+        '<div class="tr"><span>1960年以前創業</span><b>'+r.pre1960.toFixed(1)+'%</b></div>'+
+        '<div class="tr"><span>1980年以前創業</span><b>'+r.pre1980.toFixed(1)+'%</b></div>'); });
+      rr.addEventListener("mouseleave",hideTip);
+    });
+    svg.appendChild(r1); svg.appendChild(r2);
+    svg.appendChild(el("text",{x:x(a+b)+8,y:yy+16,fill:css("--ink"),"font-size":11.5,"font-weight":600,"font-family":"IBM Plex Mono, monospace"},r.urgency.toFixed(1)));
+  });
+  host.appendChild(svg);
+  legend("urgLegend",[[c1,"0.6 × 経営者70歳以上の割合","box"],[c2,"0.4 × 1960年以前創業の割合","box"]]);
+}
+
+function drawScatter(){
+  var names=["製造業","卸売業","小売業","サービス業"];
+  var pts=names.map(function(n){ return {n:n,u:SKby[n].urgency,d:byFull[n].diag.L,old:SKby[n].old70,tag:byFull[n].diag.tag,type:byFull[n].diag.type}; });
+  var all={u:SKby["全体"].urgency,d:byFull["全体"].diag.L};
+  var host=document.getElementById("scatterChart"); host.innerHTML="";
+  var W=720,H=320,PL=56,PR=24,PT=18,PB=46;
+  var xlo=-40,xhi=-8, ylo=26,yhi=46;
+  var X=function(v){return PL+(W-PL-PR)*(v-xlo)/(xhi-xlo)}, Y=function(v){return PT+(H-PT-PB)*(yhi-v)/(yhi-ylo)};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"承継緊急度と業況DIの関係"});
+  for(var t=ylo;t<=yhi;t+=5){
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:Y(t),y2:Y(t),stroke:css("--grid")}));
+    svg.appendChild(el("text",{x:PL-8,y:Y(t)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},t));
+  }
+  for(var v=xlo;v<=xhi;v+=8){
+    svg.appendChild(el("line",{x1:X(v),x2:X(v),y1:PT,y2:H-PB,stroke:css("--grid")}));
+    svg.appendChild(el("text",{x:X(v),y:H-PB+16,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},v));
+  }
+  svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:Y(all.u),y2:Y(all.u),stroke:css("--line-2"),"stroke-dasharray":"4 3"}));
+  svg.appendChild(el("line",{x1:X(all.d),x2:X(all.d),y1:PT,y2:H-PB,stroke:css("--line-2"),"stroke-dasharray":"4 3"}));
+  svg.appendChild(el("text",{x:W-PR-4,y:Y(all.u)-6,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},"全体 緊急度 "+all.u.toFixed(1)));
+  svg.appendChild(el("text",{x:X(all.d)+5,y:PT+11,fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},"全体 DI "+all.d.toFixed(1)));
+  pts.forEach(function(p){
+    var col=css(STATUS[p.type].c);
+    var c=el("circle",{cx:X(p.d),cy:Y(p.u),r:9,fill:col,opacity:.9,stroke:css("--surface"),"stroke-width":2});
+    c.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+      '<div class="th">'+p.n+'</div><div class="tr"><span>承継緊急度</span><b>'+p.u.toFixed(1)+'</b></div>'+
+      '<div class="tr"><span>経営者70歳以上</span><b>'+p.old.toFixed(1)+'%</b></div>'+
+      '<div class="tr"><span>業況DI</span><b>'+p.d.toFixed(1)+'</b></div>'+
+      '<div class="tr"><span>資金タイプ</span><b>'+p.tag+'</b></div>'); });
+    c.addEventListener("mouseleave",hideTip);
+    svg.appendChild(c);
+    svg.appendChild(el("text",{x:X(p.d),y:Y(p.u)-15,"text-anchor":"middle",fill:css("--ink"),"font-size":12,"font-weight":700,"font-family":'"Zen Kaku Gothic New",sans-serif'},p.n));
+  });
+  svg.appendChild(el("text",{x:(PL+W-PR)/2,y:H-10,"text-anchor":"middle",fill:css("--ink-3"),"font-size":11,"font-family":'"Zen Kaku Gothic New",sans-serif'},"← 業況DI（直近3か月平均）　事業の体力がある →"));
+  svg.appendChild(el("text",{x:0,y:PT-4,fill:css("--ink-3"),"font-size":11,"font-family":'"Zen Kaku Gothic New",sans-serif'},"↑ 承継緊急度"));
+  host.appendChild(svg);
+}
+
+function drawArea(){
+  document.getElementById("areaNote").textContent=SK.areaNote;
+  var host=document.getElementById("areaChart"); host.innerHTML="";
+  var L=SK.areaLabels, V=SK.areaShare;
+  var W=760,H=96,PL=8,PT=6,BH=34, tot=0;
+  V.forEach(function(v){tot+=v});
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"回答企業の所在地構成"});
+  /* 地域は順序のない区分なので単一色の構成比バーとし、識別はラベルが担う */
+  var col=css("--s1"), x0=PL;
+  V.forEach(function(v,j){
+    var w=(W-PL*2)*v/tot;
+    var rr=el("rect",{x:x0,y:PT,width:Math.max(w-2,1),height:BH,fill:col,rx:2,opacity:.88});
+    rr.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,'<div class="th">'+L[j]+'</div><div class="tr"><span>構成比</span><b>'+v.toFixed(1)+'%</b></div>'); });
+    rr.addEventListener("mouseleave",hideTip);
+    svg.appendChild(rr);
+    svg.appendChild(el("text",{x:x0+w/2-1,y:PT+BH+18,"text-anchor":"middle",fill:css("--ink"),"font-size":13,"font-weight":600,"font-family":"IBM Plex Mono, monospace"},v.toFixed(1)+"%"));
+    svg.appendChild(el("text",{x:x0+w/2-1,y:PT+BH+34,"text-anchor":"middle",fill:css("--ink-3"),"font-size":11,"font-family":'"Zen Kaku Gothic New",sans-serif'},L[j]));
+    x0+=w;
+  });
+  host.appendChild(svg);
+}
+
+var YEARS=[]; (function(){ for(var y=2005;y<=2026;y++) YEARS.push(y); })();
+function yearAvg(arr,yy){ var s=0,n=0;
+  for(var i=0;i<N;i++){ if(Math.floor(MONTHS[i]/100)===yy&&arr[i]!=null){s+=arr[i];n++;} }
+  return n?s/n:null; }
+var HEAT=null;
+function drawHeat(){
+  if(!HEAT) HEAT=IND.map(function(r){ return {full:r.full,level:r.level,name:r.name,
+    row:YEARS.map(function(yy){return yearAvg(r.gyokyo,yy)})}; });
+  var host=document.getElementById("heatChart"); host.innerHTML="";
+  var LW=176,CW=30,CH=19,GAP=2,PT=30,PB=6;
+  var W=LW+YEARS.length*CW+8, H=PT+HEAT.length*(CH+GAP)+PB;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,width:W,role:"img","aria-label":"業種別・年別の業況DIヒートマップ"});
+  svg.setAttribute("style","min-width:"+W+"px;max-width:100%");
+  YEARS.forEach(function(yy,j){ if(yy%2===1) return;
+    svg.appendChild(el("text",{x:LW+j*CW+CW/2,y:PT-9,"text-anchor":"middle",fill:css("--ink-3"),"font-size":9.5,"font-family":"IBM Plex Mono, monospace"},String(yy).slice(2))); });
+  HEAT.forEach(function(r,i){
+    var y0=PT+i*(CH+GAP);
+    svg.appendChild(el("text",{x:r.level?14:2,y:y0+CH-5,fill:css(r.level?"--ink-2":"--ink"),"font-size":11.5,
+      "font-weight":r.level?400:700,"font-family":'"Zen Kaku Gothic New",sans-serif'},r.level?r.name:r.full));
+    r.row.forEach(function(v,j){
+      var c=el("rect",{x:LW+j*CW,y:y0,width:CW-2,height:CH,fill:diColor(v),rx:2,stroke:css("--surface"),"stroke-width":1});
+      c.style.cursor="pointer";
+      c.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,'<div class="th">'+r.full+' / '+YEARS[j]+'年</div><div class="tr"><span>業況DI 年平均</span><b>'+(v==null?"—":v.toFixed(1))+'</b></div>'); });
+      c.addEventListener("mouseleave",hideTip);
+      c.addEventListener("click",function(){ document.getElementById("dgInd").value=r.full;
+        renderDiag(); document.querySelector('.lens-btn[data-lens="3"]').click(); });
+      svg.appendChild(c);
+    });
+  });
+  host.appendChild(svg);
+  var lg=document.getElementById("heatLegend"); lg.innerHTML="";
+  var strip=document.createElement("span"); strip.className="it";
+  strip.innerHTML='<span style="font-family:IBM Plex Mono,monospace;font-size:11px;color:var(--ink-3)">-70</span>';
+  var bar=document.createElement("span");
+  bar.style.cssText="display:inline-block;height:12px;width:150px;border:1px solid var(--line-2);background:linear-gradient(90deg,"+[-70,-56,-42,-28,-14,0,8,16,25].map(diColor).join(",")+")";
+  strip.appendChild(bar);
+  var e2=document.createElement("span"); e2.style.cssText="font-family:IBM Plex Mono,monospace;font-size:11px;color:var(--ink-3)"; e2.textContent="+25";
+  strip.appendChild(e2);
+  var lab=document.createElement("span"); lab.style.cssText="font-size:12px;color:var(--ink-2)"; lab.textContent="業況DI（年平均）／ 中央の無彩色が 0";
+  lg.appendChild(strip); lg.appendChild(lab);
+}
+
+function drawRatio(){
+  var f=D.finance.ratio, host=document.getElementById("ratioChart"); host.innerHTML="";
+  var W=520,H=190,PL=44,PR=96,PT=14,PB=28;
+  var all=f.bank.concat(f.shinkin);
+  var lo=Math.floor(Math.min.apply(null,all)/5)*5-2, hi=Math.ceil(Math.max.apply(null,all)/5)*5+2;
+  var x=function(i){return PL+(W-PL-PR)*i/(f.years.length-1)}, y=function(v){return PT+(H-PT-PB)*(hi-v)/(hi-lo)};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"銀行と信用金庫の預貸率の推移"});
+  for(var t=lo;t<=hi;t+=5){
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:y(t),y2:y(t),stroke:css("--grid")}));
+    svg.appendChild(el("text",{x:PL-8,y:y(t)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},t+"%"));
+  }
+  [["bank","--s1","銀行"],["shinkin","--s2","信用金庫"]].forEach(function(s){
+    var d="",col=css(s[1]);
+    f[s[0]].forEach(function(v,i){ d+=(d?" L":"M")+x(i)+","+y(v); });
+    svg.appendChild(el("path",{d:d,fill:"none",stroke:col,"stroke-width":2}));
+    f[s[0]].forEach(function(v,i){
+      var c=el("circle",{cx:x(i),cy:y(v),r:4,fill:col,stroke:css("--surface"),"stroke-width":2});
+      c.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,'<div class="th">'+f.years[i]+'年度末</div><div class="tr"><span>'+s[2]+' 預貸率</span><b>'+v+'%</b></div>'); });
+      c.addEventListener("mouseleave",hideTip); svg.appendChild(c);
+    });
+    var lv=f[s[0]][f[s[0]].length-1];
+    svg.appendChild(el("line",{x1:W-PR+6,x2:W-PR+16,y1:y(lv),y2:y(lv),stroke:col,"stroke-width":3,"stroke-linecap":"round"}));
+    svg.appendChild(el("text",{x:W-PR+21,y:y(lv)+4,fill:css("--ink-2"),"font-size":11,"font-family":'"Zen Kaku Gothic New",sans-serif'},s[2]+" "+lv+"%"));
+  });
+  f.years.forEach(function(yy,i){ svg.appendChild(el("text",{x:x(i),y:H-9,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},yy)); });
+  host.appendChild(svg);
+  legend("ratioLegend",[["--s1","銀行 預貸率（15-1）"],["--s2","信用金庫 預貸率（15-2）"]]);
+}
+
+function drawSubro(){
+  var f=D.finance.hosho, host=document.getElementById("subroChart"); host.innerHTML="";
+  var W=520,H=190,PL=52,PR=16,PT=18,PB=28;
+  var hi=Math.ceil(Math.max.apply(null,f.subroCases)/1000)*1000;
+  var bw=(W-PL-PR)/f.years.length, y=function(v){return PT+(H-PT-PB)*(1-v/hi)};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"東京信用保証協会の代位弁済件数の推移"});
+  for(var t=0;t<=hi;t+=2000){
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:y(t),y2:y(t),stroke:css(t===0?"--axis":"--grid")}));
+    svg.appendChild(el("text",{x:PL-8,y:y(t)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},fmt(t)));
+  }
+  f.subroCases.forEach(function(v,i){
+    var last=(i===f.subroCases.length-1), w=bw-14, xx=PL+bw*i+7;
+    var r=el("rect",{x:xx,y:y(v),width:w,height:Math.max((H-PT-PB)*v/hi,1),fill:css(last?"--st-crit":"--dv-neg"),opacity:last?1:.5,rx:3});
+    r.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,'<div class="th">'+f.years[i]+'年度</div><div class="tr"><span>代位弁済 件数</span><b>'+fmt(v)+'</b></div><div class="tr"><span>保証承諾 件数</span><b>'+fmt(f.guarCases[i])+'</b></div>'); });
+    r.addEventListener("mouseleave",hideTip); svg.appendChild(r);
+    svg.appendChild(el("text",{x:xx+w/2,y:y(v)-6,"text-anchor":"middle",fill:css("--ink-2"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace","font-weight":600},fmt(v)));
+    svg.appendChild(el("text",{x:xx+w/2,y:H-9,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},f.years[i]));
+  });
+  host.appendChild(svg);
+  // 過年度の棒は同じ色を50%の濃さで描いているので、凡例の見本も同じ濃さに合わせる
+  legend("subroLegend",[["--st-crit",f.years[f.years.length-1]+"年度（直近）","box"],
+    ["color-mix(in srgb, "+css("--dv-neg")+" 50%, "+css("--surface")+")",
+     f.years[0]+"〜"+f.years[f.years.length-2]+"年度","box"]]);
+  var nEl=document.getElementById("subroNote");
+  if(nEl){
+    var p=f.partial, last=f.years[f.years.length-1];
+    nEl.innerHTML=(f.label||"")+
+      "。"+f.years[0]+"〜2023年度は東京都統計年鑑、"+last+"年度は同協会の事業概況から追加しています"+
+      (f.srcUrl?'（<a href="'+f.srcUrl+'" target="_blank" rel="noopener">出典</a>）':"")+"。"+
+      (p?" "+p.note:"");
+  }
+}
+
+function drawHosho(){
+  var f=D.finance.hosho, host=document.getElementById("hoshoChart"); host.innerHTML="";
+  var SER=[{k:"guarCases",c:"--s1",n:"保証承諾"},{k:"subroCases",c:"--st-crit",n:"代位弁済"}];
+  SER.forEach(function(s){ s.idx=f[s.k].map(function(v){return v/f[s.k][0]*100}); });
+  var W=520,H=190,PL=44,PR=96,PT=14,PB=28;
+  var hi=Math.ceil(Math.max.apply(null,SER[0].idx.concat(SER[1].idx))/50)*50;
+  var x=function(i){return PL+(W-PL-PR)*i/(f.years.length-1)}, y=function(v){return PT+(H-PT-PB)*(hi-v)/hi};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"保証承諾と代位弁済の指数（2019年度=100）"});
+  for(var t=0;t<=hi;t+=100){
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:y(t),y2:y(t),stroke:css(t===100?"--axis":"--grid"),"stroke-width":t===100?1.5:1}));
+    svg.appendChild(el("text",{x:PL-8,y:y(t)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":9.5,"font-family":"IBM Plex Mono, monospace"},t));
+  }
+  var lbl=[];
+  SER.forEach(function(s){
+    var d=""; s.idx.forEach(function(v,i){ d+=(d?" L":"M")+x(i)+","+y(v); });
+    svg.appendChild(el("path",{d:d,fill:"none",stroke:css(s.c),"stroke-width":2}));
+    s.idx.forEach(function(v,i){
+      var c=el("circle",{cx:x(i),cy:y(v),r:3.5,fill:css(s.c),stroke:css("--surface"),"stroke-width":2});
+      c.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,'<div class="th">'+f.years[i]+'年度</div><div class="tr"><span>'+s.n+'</span><b>'+fmt(f[s.k][i])+'件</b></div><div class="tr"><span>2019年度=100</span><b>'+v.toFixed(0)+'</b></div>'); });
+      c.addEventListener("mouseleave",hideTip); svg.appendChild(c);
+    });
+    lbl.push({y:y(s.idx[s.idx.length-1]),c:css(s.c),t:s.n+" "+s.idx[s.idx.length-1].toFixed(0)});
+  });
+  lbl.sort(function(a,b){return a.y-b.y}); if(lbl[1].y-lbl[0].y<14) lbl[1].y=lbl[0].y+14;
+  lbl.forEach(function(L){
+    svg.appendChild(el("line",{x1:W-PR+6,x2:W-PR+16,y1:L.y,y2:L.y,stroke:L.c,"stroke-width":3,"stroke-linecap":"round"}));
+    svg.appendChild(el("text",{x:W-PR+21,y:L.y+4,fill:css("--ink-2"),"font-size":11,"font-family":'"Zen Kaku Gothic New",sans-serif'},L.t));
+  });
+  f.years.forEach(function(yy,i){ svg.appendChild(el("text",{x:x(i),y:H-9,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},yy)); });
+  host.appendChild(svg);
+  legend("hoshoLegend",[["--s1","保証承諾件数（指数）"],["--st-crit","代位弁済件数（指数）"]]);
+}
+
+function drawShikin(){
+  var S=D.shikin;
+  document.getElementById("shikinLede").textContent=
+    "「事業資金に関する調査」（令和8年5月）より。回答企業が実際に何のために、どの金利で資金を求めているか。"+S.bankNote;
+  document.getElementById("shikinMetrics").innerHTML=
+    '<div class="metric"><div class="mk">資金需要DI（今後3か月）</div><div class="mv" style="color:var(--accent)">'+S.demandDI.toFixed(1)+'</div><div class="md">前回 '+S.demandDIPrev.toFixed(1)+'</div></div>'+
+    '<div class="metric"><div class="mk">借入金利「上昇」</div><div class="mv" style="color:var(--st-crit)">'+S.rateTrend[0].toFixed(1)+'<span style="font-size:13px">%</span></div><div class="md">金利2％台が '+S.rate[2].toFixed(1)+'%（前回 '+S.ratePrev[2].toFixed(1)+'%）</div></div>'+
+    '<div class="metric"><div class="mk">コスト増の最大要因</div><div class="mv" style="font-size:15px">'+S.costTop+'</div><div class="md">'+S.costTopPct.toFixed(1)+'%（製造業 '+S.costTopMfg.toFixed(1)+'%）</div></div>';
+  var host=document.getElementById("shikinChart"); host.innerHTML="";
+  var groups=[{t:"資金使途（増加分）",l:S.useLabels,v:S.use,c:"--s1"},
+              {t:"調達手段（増加分）",l:S.sourceLabels,v:S.source,c:"--s3"},
+              {t:"主な取引金融機関",l:S.bankLabels,v:S.bank,c:"--s2"}];
+  var W=520, RH=20, GH=24, H=0;
+  groups.forEach(function(g){ H+=GH+g.v.length*RH+8; });
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"資金使途・調達手段・取引金融機関の構成比"});
+  var yy=0, LW=104, RIGHT=46;
+  groups.forEach(function(g){
+    svg.appendChild(el("text",{x:0,y:yy+13,fill:css("--ink"),"font-size":12,"font-weight":700,"font-family":'"Zen Kaku Gothic New",sans-serif'},g.t));
+    yy+=GH;
+    g.v.forEach(function(v,i){
+      svg.appendChild(el("text",{x:0,y:yy+14,fill:css("--ink-2"),"font-size":11,"font-family":'"Zen Kaku Gothic New",sans-serif'},g.l[i]));
+      var w=(W-LW-RIGHT)*v/70;
+      var rr=el("rect",{x:LW,y:yy+4,width:Math.max(w,2),height:13,fill:css(g.c),opacity:.85,rx:3});
+      rr.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,'<div class="th">'+g.t+'</div><div class="tr"><span>'+g.l[i]+'</span><b>'+v.toFixed(1)+'%</b></div>'); });
+      rr.addEventListener("mouseleave",hideTip); svg.appendChild(rr);
+      svg.appendChild(el("text",{x:LW+Math.max(w,2)+6,y:yy+15,fill:css("--ink-2"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace","font-weight":600},v.toFixed(1)+"%"));
+      yy+=RH;
+    });
+    yy+=8;
+  });
+  host.appendChild(svg);
+  legend("shikinLegend",[["--s1","資金使途","box"],["--s3","調達手段","box"],["--s2","取引金融機関","box"]]);
+}
+
+function drawKakei(){
+  var k=D.finance.kakei, last=k.years.length-1;
+  var surplus=k.years.map(function(_,i){return k.kashobun[i]-k.shohishishutsu[i]});
+  document.getElementById("kakeiTiles").innerHTML=
+    '<div class="tile"><span class="k">実収入 / 月</span><span class="v">'+fmt(k.jitsushunyu[last])+'</span><span class="d">円（'+k.years[last]+'年・世帯人員'+k.persons[last]+'人）</span></div>'+
+    '<div class="tile"><span class="k">可処分所得 / 月</span><span class="v">'+fmt(k.kashobun[last])+'</span><span class="d">円（税・社会保険料を除いた手取り）</span></div>'+
+    '<div class="tile"><span class="k">消費支出 / 月</span><span class="v">'+fmt(k.shohishishutsu[last])+'</span><span class="d">円（生活に使った金額）</span></div>'+
+    '<div class="tile"><span class="k">差引き残る額 / 月</span><span class="v" style="color:var(--accent)">'+fmt(surplus[last])+'</span><span class="d">円。この行き先が問題です</span></div>';
+  document.getElementById("inlineSurplus").textContent=fmt(surplus[last]);
+  document.getElementById("surplus2").textContent=fmt(surplus[last]);
+  var host=document.getElementById("kakeiChart"); host.innerHTML="";
+  var W=760,H=200,PL=56,PR=16,PT=18,PB=28;
+  var hi=Math.ceil(Math.max.apply(null,k.kashobun)/100000)*100000;
+  var bw=(W-PL-PR)/k.years.length, y=function(v){return PT+(H-PT-PB)*(1-v/hi)};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"都内勤労者世帯の可処分所得・消費支出・残額の推移"});
+  for(var t=0;t<=hi;t+=100000){
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:y(t),y2:y(t),stroke:css(t===0?"--axis":"--grid")}));
+    svg.appendChild(el("text",{x:PL-8,y:y(t)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":9.5,"font-family":"IBM Plex Mono, monospace"},(t/10000)+"万"));
+  }
+  k.years.forEach(function(yy,i){
+    var x0=PL+bw*i+10, w=bw-30;
+    var rc=el("rect",{x:x0,y:y(k.shohishishutsu[i]),width:w,height:(H-PT-PB)*k.shohishishutsu[i]/hi,fill:css("--s2"),opacity:.72,rx:3});
+    var rs=el("rect",{x:x0,y:y(k.kashobun[i]),width:w,height:Math.max((H-PT-PB)*surplus[i]/hi-2,1),fill:css("--s1"),rx:3});
+    [rc,rs].forEach(function(p){ p.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+      '<div class="th">'+yy+'年</div><div class="tr"><span>可処分所得</span><b>'+fmt(k.kashobun[i])+'</b></div><div class="tr"><span>消費支出</span><b>'+fmt(k.shohishishutsu[i])+'</b></div><div class="tr"><span>差引き残る額</span><b>'+fmt(surplus[i])+'</b></div>'); });
+      p.addEventListener("mouseleave",hideTip); });
+    svg.appendChild(rc); svg.appendChild(rs);
+    svg.appendChild(el("text",{x:x0+w/2,y:y(k.kashobun[i])-6,"text-anchor":"middle",fill:css("--ink-2"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace","font-weight":600},fmt(surplus[i])));
+    svg.appendChild(el("text",{x:x0+w/2,y:H-9,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},yy));
+  });
+  host.appendChild(svg);
+  legend("kakeiLegend",[["--s1","差引き残る額（可処分所得−消費支出）","box"],["--s2","消費支出","box"]]);
+}
+
+var REACH={reaches:"届く",indirect:"間接的に届く",mismatch:"制度はあるが噛み合わない",blocked:"届かない"};
+function drawRoutes(){
+  document.getElementById("routeList").innerHTML=D.routes.map(function(r){
+    return '<li class="'+r.reach+'"><div><div class="rname">'+r.name+
+      ' <span class="tagr '+r.reach+'">'+REACH[r.reach]+'</span></div>'+
+      '<div class="rmeta">形態：'+r.kind+'<br>最低額：'+r.min+'<br>上限：'+r.cap+'</div></div>'+
+      '<div class="rnote">'+r.note+'</div></li>';
+  }).join("");
+}
+
+function drawYoung(){
+  var rows=SK.rows.filter(function(r){return r.kind!=="total"});
+  var host=document.getElementById("youngChart"); host.innerHTML="";
+  var LW=88,W=470,RH=24,PT=6,RIGHT=92,H=PT+rows.length*RH+6, maxV=50;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"経営者が40歳代以下の割合と70歳以上の割合"});
+  var cOld=ordScale("age")[4];
+  rows.forEach(function(r,i){
+    var yy=PT+i*RH;
+    if(r.kind==="size"&&rows[i-1].kind!=="size")
+      svg.appendChild(el("line",{x1:0,x2:W-RIGHT,y1:yy-1,y2:yy-1,stroke:css("--line-2"),"stroke-dasharray":"3 3"}));
+    svg.appendChild(el("text",{x:0,y:yy+16,fill:css("--ink-2"),"font-size":11.5,"font-family":'"Zen Kaku Gothic New",sans-serif'},r.name));
+    var w1=(W-LW-RIGHT)*r.young/maxV, w2=(W-LW-RIGHT)*r.old70/maxV;
+    var b2=el("rect",{x:LW,y:yy+5,width:Math.max(w2,1),height:14,fill:cOld,opacity:.32,rx:2});
+    var b1=el("rect",{x:LW,y:yy+8,width:Math.max(w1,1),height:8,fill:css("--st-good"),rx:2});
+    [b1,b2].forEach(function(b){ b.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+      '<div class="th">'+r.name+'（n='+r.n+'）</div><div class="tr"><span>40歳代以下</span><b>'+r.young.toFixed(1)+'%</b></div><div class="tr"><span>70歳以上</span><b>'+r.old70.toFixed(1)+'%</b></div>'); });
+      b.addEventListener("mouseleave",hideTip); });
+    svg.appendChild(b2); svg.appendChild(b1);
+    svg.appendChild(el("text",{x:LW+Math.max(w2,1)+6,y:yy+16,fill:css("--ink-2"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace","font-weight":600},r.young.toFixed(1)+"% / "+r.old70.toFixed(1)+"%"));
+  });
+  host.appendChild(svg);
+  legend("youngLegend",[["--st-good","経営者が40歳代以下","box"],[cOld,"経営者が70歳以上（薄い帯）","box"]]);
+}
+
+var SCHEME_LIB={
+  defense:[
+    ["信用保証付きの運転資金融資","保証協会の保証を付けて金融機関から借りる、最も標準的な手段。業況が深く沈んでいる局面では、まず手元資金の厚みを確保することが優先されます。"],
+    ["既存借入の条件変更（リスケジュール）","新たに借りるより先に、いまの返済スケジュールを見直せないかを検討します。代位弁済に至る前の相談が要点です。"],
+    ["資本性劣後ローン","金融機関の審査上は自己資本とみなされる借入。債務超過に近い局面で、財務を痛めずに資金を入れる選択肢になります。"],
+    ["事業再構築・業態転換の補助金","収益構造そのものを変える投資に対する補助。返済不要な代わりに、計画と実行の負担は大きくなります。"]
+  ],
+  cost:[
+    ["短期の運転資金枠（当座貸越・コミットメントライン）","仕入価格の変動を吸収する枠。都度の借入より機動的に動けます。"],
+    ["価格転嫁・取引適正化の相談窓口","資金を入れる前に、そもそも値上げ交渉が可能かを詰めます。下請取引の適正化は行政側の重点施策です。"],
+    ["省エネ・省力化設備への投資と補助金","コスト構造そのものを下げる投資。原材料価格をコスト増の最大要因に挙げた企業は56.3%に上ります。"],
+    ["信用保証付きの運転資金融資","転嫁が進むまでの時間を買うための、つなぎの資金。"]
+  ],
+  growth:[
+    ["設備投資向け長期借入","伸びている需要に供給を合わせるための投資。回収期間と借入期間を合わせるのが原則です。"],
+    ["第三者割当増資（エクイティ）","返済義務のない資金。ただし非上場の中小企業では引受先を見つけること自体が難所で、実務上は取引先・金融機関系ファンド・事業承継ファンドが中心になります。"],
+    ["少人数私募債・購入型クラウドファンディング","顧客や地域を資金の出し手に変える手段。資金調達と同時に需要の検証にもなります。"],
+    ["株式投資型クラウドファンディング","個人投資家から非上場株式で調達する制度。発行は年間5億円未満、投資家1人あたりは同一発行者へ年間50万円（財産状況により最大200万円）が上限です。"]
+  ],
+  capex:[
+    ["設備投資向け長期借入","業況が底堅い局面は、更新投資・省力化投資の実行に適します。"],
+    ["リース・割賦","初期支出を抑えて設備を導入する手段。手元資金を運転資金に残せます。"],
+    ["省エネ・DX関連の補助金","投資額の一部を補助で賄い、実質的な利回りを引き上げます。"],
+    ["信用保証付きの運転資金融資","投資に伴って増える運転資金の手当て。"]
+  ],
+  neutral:[
+    ["当座貸越枠の事前設定","いま借りる必要はなくても、枠だけ用意しておく。シグナルが振れたときの初動が変わります。"],
+    ["四半期ごとの再判定","一方向のシグナルが出ていない局面では、意思決定を急がないことも選択です。"],
+    ["設備投資向け長期借入","個別の投資案件があるなら、判定と無関係に検討する価値があります。"],
+    ["補助金の情報収集","公募時期は限られます。判定が振れる前に候補を洗い出しておきます。"]
+  ]
+};
+var SUCC=["事業承継・引継ぎの相談","譲渡・譲受のどちらでも、東京都事業承継・引継ぎ支援センターとTOKYO版創業・承継マッチング支援事業が無料の入口になります。承継に伴う資金には信用保証協会の事業承継支援があります。"];
+var USE_BOOST={working:"信用保証付き",capex:"設備投資",growth:"第三者割当",restruct:"事業再構築"};
+var SIZE_KEY={micro:"小規模",small:"中小規模",mid:"中規模",large:"大規模"};
+var SIZE_LABEL={micro:"1〜9人",small:"10〜19人",mid:"20〜49人",large:"50人以上"};
+
+function renderDiag(){
+  var full=document.getElementById("dgInd").value;
+  var size=document.getElementById("dgSize").value;
+  var use=document.getElementById("dgUse").value;
+  var r=byFull[full], d=r.diag, st=STATUS[d.type], sk=SKby[SIZE_KEY[size]];
+  var pill=document.getElementById("dgPill");
+  pill.querySelector(".dot").style.background=css(st.c);
+  pill.querySelector(".ic").textContent=st.ic;
+  pill.querySelector(".tx").textContent=st.label;
+  document.getElementById("dgTitle").textContent=d.tag;
+  document.getElementById("dgWhy").innerHTML="<strong>"+r.full+"</strong>："+d.why+
+    '<br><br>同じ調査で、<strong>'+sk.name+'（従業員'+SIZE_LABEL[size]+'）の企業は経営者の '+sk.old70.toFixed(1)+
+    '% が70歳以上、'+sk.pre1960.toFixed(1)+'% が1960年以前の創業</strong>です。資金の手当てと同時に、引き継ぎの段取りが要る規模帯です。';
+  var M=[["L","業況水準",d.L,"直近3か月平均"],["M","モメンタム",d.M,"前年同期比 pt"],
+         ["P","価格転嫁ギャップ",d.P,"販売単価−仕入単価"],["E","期待ギャップ",d.E,"見通し−現状"],
+         ["S","売上高DI",d.S,"前年同月比"]];
+  document.getElementById("dgMetrics").innerHTML=M.map(function(m){
+    var col=(m[2]==null)?"--ink-3":(m[2]<0?"--dv-neg":"--dv-pos");
+    return '<div class="metric"><div class="mk">'+m[0]+' · '+m[1]+'</div><div class="mv" style="color:var('+col+')">'+(m[2]==null?"—":sgn(m[2]))+'</div><div class="md">'+m[3]+'</div></div>';
+  }).join("");
+  var list=SCHEME_LIB[d.type].slice();
+  if(use==="succession") list.unshift(SUCC);
+  else if(use!=="unknown"){ var key=USE_BOOST[use];
+    list.sort(function(a,b){ return (b[0].indexOf(key)>=0?1:0)-(a[0].indexOf(key)>=0?1:0); }); }
+  var sizeNote={micro:"従業員9人以下では、日本政策金融公庫や信用金庫など小口に強い先が現実的な入口です。都内中小企業の38.3%が信用金庫を主な取引先としています。",
+    small:"従業員10〜19人規模では、保証協会付き融資と補助金の組み合わせが基本線です。",
+    mid:"従業員20〜49人規模では、プロパー融資や資本性資金も選択肢に入ります。",
+    large:"従業員50人以上では、シンジケートローンや私募債など、より多様な調達手段が現実的です。"}[size];
+  document.getElementById("dgSchemes").innerHTML=list.map(function(s,i){
+    return '<li><span class="rank">'+(i+1)+'</span><div class="body"><strong>'+s[0]+'</strong><span>'+s[1]+'</span></div></li>';
+  }).join("")+'<li><span class="rank">＊</span><div class="body"><strong>規模に応じた補足</strong><span>'+sizeNote+'</span></div></li>';
+}
+
+/* ---------------- 01 三つの市場と、その外側 ---------------- */
+function drawLadder(){
+  var L=D.ladder, host=document.getElementById("ladderChart"); host.innerHTML="";
+  var LW=190, W=900, RH=42, PT=26, RIGHT=118, H=PT+L.length*RH+14;
+  var maxS=70, x=function(v){return LW+(W-LW-RIGHT)*v/maxS};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"市場区分別の海外投資家シェアと、非上場企業のゼロ"});
+  for(var t=0;t<=maxS;t+=10){
+    svg.appendChild(el("line",{x1:x(t),x2:x(t),y1:PT-8,y2:H-12,stroke:css(t===0?"--axis":"--grid")}));
+    svg.appendChild(el("text",{x:x(t),y:PT-13,"text-anchor":"middle",fill:css("--ink-3"),"font-size":9.5,"font-family":"IBM Plex Mono, monospace"},t+"%"));
+  }
+  var cols=ordScale("age").slice().reverse(); /* 濃い→薄い */
+  L.forEach(function(r,i){
+    var yy=PT+i*RH, unl=(r.kind==="unlisted");
+    svg.appendChild(el("text",{x:0,y:yy+20,fill:css(unl?"--ink":"--ink-2"),"font-size":13,
+      "font-weight":unl?700:500,"font-family":'"Zen Kaku Gothic New",sans-serif'},r.name));
+    svg.appendChild(el("text",{x:0,y:yy+34,fill:css("--ink-3"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace"},
+      fmt(r.listed)+(unl?" 社（調査対象）":" 社")));
+    if(unl){
+      svg.appendChild(el("rect",{x:LW,y:yy+6,width:W-LW-RIGHT,height:22,fill:"none",
+        stroke:css("--st-crit"),"stroke-width":1.5,"stroke-dasharray":"5 4",rx:3}));
+      svg.appendChild(el("text",{x:LW+14,y:yy+21,fill:css("--st-crit"),"font-size":12,"font-weight":700,
+        "font-family":'"Zen Kaku Gothic New",sans-serif'},"海外投資家が入る市場そのものが存在しない"));
+    }else{
+      var w=x(r.share)-LW;
+      var rr=el("rect",{x:LW,y:yy+6,width:Math.max(w,2),height:22,fill:cols[i],rx:3});
+      rr.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+        '<div class="th">'+r.name+'</div><div class="tr"><span>上場会社数</span><b>'+fmt(r.listed)+'</b></div>'+
+        '<div class="tr"><span>海外投資家シェア</span><b>'+r.share.toFixed(1)+'%</b></div>'); });
+      rr.addEventListener("mouseleave",hideTip);
+      svg.appendChild(rr);
+    }
+    svg.appendChild(el("text",{x:W-RIGHT+12,y:yy+23,fill:css(unl?"--st-crit":"--ink"),
+      "font-size":unl?20:18,"font-weight":600,"font-family":"IBM Plex Mono, monospace"},r.share.toFixed(1)+"%"));
+  });
+  host.appendChild(svg);
+  legend("ladderLegend",[[cols[0],"海外投資家の委託売買代金シェア（2025年）","box"],["--st-crit","制度上、海外投資家が売買できない","box"]]);
+}
+
+function drawMarketBars(){
+  var M=D.market, host=document.getElementById("marketBars"); host.innerHTML="";
+  document.getElementById("marketNote").textContent=M.note;
+  var LW=92,W=520,RH=44,PT=8,RIGHT=52,H=PT+M.segments.length*RH+6;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"市場区分別の上場会社数シェアと時価総額シェア"});
+  M.segments.forEach(function(m,i){
+    var yy=PT+i*RH;
+    svg.appendChild(el("text",{x:0,y:yy+22,fill:css("--ink-2"),"font-size":12,"font-family":'"Zen Kaku Gothic New",sans-serif'},m.name));
+    [["listedShare","--s1","会社数"],["capShare","--s2","時価総額"]].forEach(function(p,j){
+      var v=m[p[0]], w=(W-LW-RIGHT)*v/100, yb=yy+4+j*15;
+      var rr=el("rect",{x:LW,y:yb,width:Math.max(w,2),height:12,fill:css(p[1]),opacity:.88,rx:2});
+      rr.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+        '<div class="th">'+m.name+'</div><div class="tr"><span>上場会社数</span><b>'+fmt(m.listed[1])+'社</b></div>'+
+        '<div class="tr"><span>会社数シェア</span><b>'+m.listedShare+'%</b></div>'+
+        '<div class="tr"><span>時価総額シェア</span><b>'+m.capShare+'%</b></div>'+
+        '<div class="tr"><span>売買回転率</span><b>'+m.turnover[1]+'%</b></div>'); });
+      rr.addEventListener("mouseleave",hideTip); svg.appendChild(rr);
+      svg.appendChild(el("text",{x:LW+Math.max(w,2)+6,y:yb+11,fill:css("--ink-2"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace","font-weight":600},v.toFixed(1)+"%"));
+    });
+  });
+  host.appendChild(svg);
+  legend("marketLegend",[["--s1","上場会社数シェア","box"],["--s2","時価総額シェア","box"]]);
+}
+
+function drawRegion(){
+  var F=D.foreign, host=document.getElementById("regionChart"); host.innerHTML="";
+  document.getElementById("regionNote").textContent=F.regionNote+" "+F.unit;
+  var W=520,H=104,PT=6,BH=36;
+  var cols=[css("--s1"),css("--s3"),css("--s2"),css("--rule")];
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"海外投資家の地域別売買代金構成比"});
+  var x0=0, tot=0; F.regionShare.forEach(function(v){tot+=v});
+  F.regionShare.forEach(function(v,j){
+    var w=W*v/tot;
+    var rr=el("rect",{x:x0,y:PT,width:Math.max(w-2,1),height:BH,fill:cols[j],rx:2});
+    rr.addEventListener("mouseenter",function(ev){
+      var net=F.regionNet[j];
+      showTip(ev.clientX,ev.clientY,'<div class="th">'+F.regionLabels[j]+'</div>'+
+        '<div class="tr"><span>売買代金シェア</span><b>'+v.toFixed(2)+'%</b></div>'+
+        (net?'<div class="tr"><span>買越額</span><b>'+(net/1e9).toFixed(2)+'兆円</b></div>':'')); });
+    rr.addEventListener("mouseleave",hideTip); svg.appendChild(rr);
+    if(w>50){
+      svg.appendChild(el("text",{x:x0+w/2-1,y:PT+BH+19,"text-anchor":"middle",fill:css("--ink"),"font-size":13,"font-weight":600,"font-family":"IBM Plex Mono, monospace"},v.toFixed(1)+"%"));
+      svg.appendChild(el("text",{x:x0+w/2-1,y:PT+BH+35,"text-anchor":"middle",fill:css("--ink-3"),"font-size":11,"font-family":'"Zen Kaku Gothic New",sans-serif'},F.regionLabels[j]));
+    }
+    x0+=w;
+  });
+  host.appendChild(svg);
+  legend("regionLegend",F.regionLabels.map(function(l,j){return [cols[j],l+" "+F.regionShare[j].toFixed(2)+"%","box"]}));
+}
+
+function drawForeignTrend(){
+  var F=D.foreign, host=document.getElementById("foreignTrend"); host.innerHTML="";
+  var W=760,H=240,PL=46,PR=118,PT=16,PB=30;
+  var lo=30,hi=75, Y=F.years;
+  var x=function(i){return PL+(W-PL-PR)*i/(Y.length-1)}, y=function(v){return PT+(H-PT-PB)*(hi-v)/(hi-lo)};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"市場区分別 海外投資家シェアの推移"});
+  for(var t=lo;t<=hi;t+=5){
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:y(t),y2:y(t),stroke:css("--grid")}));
+    svg.appendChild(el("text",{x:PL-8,y:y(t)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},t+"%"));
+  }
+  var lbl=[];
+  [["prime","--s1","プライム"],["standard","--s2","スタンダード"],["growth","--s3","グロース"]].forEach(function(s){
+    var v=F.share[s[0]], col=css(s[1]), d="";
+    v.forEach(function(p,i){ d+=(d?" L":"M")+x(i)+","+y(p); });
+    svg.appendChild(el("path",{d:d,fill:"none",stroke:col,"stroke-width":2}));
+    v.forEach(function(p,i){
+      var c=el("circle",{cx:x(i),cy:y(p),r:4,fill:col,stroke:css("--surface"),"stroke-width":2});
+      c.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+        '<div class="th">'+Y[i]+'年</div><div class="tr"><span>'+s[2]+'</span><b>'+p.toFixed(1)+'%</b></div>'); });
+      c.addEventListener("mouseleave",hideTip); svg.appendChild(c);
+    });
+    lbl.push({y:y(v[v.length-1]),c:col,t:s[2]+" "+v[v.length-1].toFixed(1)+"%"});
+  });
+  lbl.sort(function(a,b){return a.y-b.y});
+  for(var i2=1;i2<lbl.length;i2++) if(lbl[i2].y-lbl[i2-1].y<15) lbl[i2].y=lbl[i2-1].y+15;
+  lbl.forEach(function(L){
+    svg.appendChild(el("line",{x1:W-PR+6,x2:W-PR+16,y1:L.y,y2:L.y,stroke:L.c,"stroke-width":3,"stroke-linecap":"round"}));
+    svg.appendChild(el("text",{x:W-PR+21,y:L.y+4,fill:css("--ink-2"),"font-size":11.5,"font-family":'"Zen Kaku Gothic New",sans-serif'},L.t));
+  });
+  Y.forEach(function(yy,i){ svg.appendChild(el("text",{x:x(i),y:H-9,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},yy)); });
+  host.appendChild(svg);
+  legend("foreignLegend",[["--s1","プライム"],["--s2","スタンダード"],["--s3","グロース"]]);
+}
+
+function renderMarketHero(){
+  var M=D.market, F=D.foreign;
+  document.getElementById("heroMarket").textContent=fmt(M.listedTotal)+" / "+fmt(D.meta.sampleSize);
+  document.getElementById("heroMarketNote").textContent=
+    "東証プライム・スタンダード・グロースの上場会社数（2023年末）と、東京都中小企業の景況の調査対象社数";
+  document.getElementById("marketTiles").innerHTML=
+    '<div class="tile"><span class="k">プライム 海外投資家シェア</span><span class="v">'+F.share.prime[3].toFixed(1)+'<span style="font-size:14px">%</span></span><span class="d">2022年 '+F.share.prime[0].toFixed(1)+'% から低下</span></div>'+
+    '<div class="tile"><span class="k">グロース 海外投資家シェア</span><span class="v">'+F.share.growth[3].toFixed(1)+'<span style="font-size:14px">%</span></span><span class="d">新興市場ほど海外マネーは薄い</span></div>'+
+    '<div class="tile"><span class="k">海外マネーの欧州経由比率</span><span class="v">'+F.regionShare[0].toFixed(1)+'<span style="font-size:14px">%</span></span><span class="d">アジア '+F.regionShare[1].toFixed(1)+'%／北米 '+F.regionShare[2].toFixed(1)+'%</span></div>'+
+    '<div class="tile"><span class="k">非上場中小企業への海外マネー</span><span class="v" style="color:var(--st-crit)">0<span style="font-size:14px">%</span></span><span class="d">売買できる市場が制度上存在しません</span></div>';
+}
+
+function renderStamp(){
+  document.getElementById("stamp").innerHTML=
+    "景況　<b>"+D.meta.latestLabel+"</b> / <b>"+D.meta.n+"</b> か月<br>"+
+    "承継　<b>令和8年6月調査</b> / n=<b>1,283</b><br>"+
+    "母集団　<b>"+fmt(D.meta.sampleSize)+"</b> 社（調査対象）";
+}
+function renderHero(){
+  var g=byFull["全体"].gyokyo, last=g[N-1], prev=g[N-13];
+  document.getElementById("heroDI").textContent=last;
+  document.getElementById("heroDINote").textContent=D.meta.latestLabel+"　前年同月 "+prev+" → "+sgn(last-prev,0)+"pt";
+  var vals=g.filter(function(v){return v!=null});
+  var f=D.finance, T=SKby["全体"];
+  document.getElementById("heroTiles").innerHTML=
+    '<div class="tile"><span class="k">DIが0を下回った月</span><span class="v">'+vals.length+'<span style="font-size:14px"> / '+vals.length+'</span></span><span class="d">2005年5月以降、一度も0を超えていません</span></div>'+
+    '<div class="tile"><span class="k">経営者が70歳以上</span><span class="v" style="color:var(--st-crit)">'+T.old70.toFixed(1)+'<span style="font-size:14px">%</span></span><span class="d">60歳以上は '+T.over60.toFixed(1)+'%。40歳代以下は '+T.young.toFixed(1)+'%</span></div>'+
+    '<div class="tile"><span class="k">創業1980年以前</span><span class="v">'+T.pre1980.toFixed(1)+'<span style="font-size:14px">%</span></span><span class="d">2021年以降の創業は '+T.founded[5].toFixed(1)+'%</span></div>'+
+    '<div class="tile"><span class="k">代位弁済 件数</span><span class="v" style="color:var(--st-crit)">'+fmt(f.hosho.subroCases[4])+'</span><span class="d">2021年度 '+fmt(f.hosho.subroCases[2])+'件の '+(f.hosho.subroCases[4]/f.hosho.subroCases[2]).toFixed(1)+'倍</span></div>';
+}
+function renderLogic(){
+  var defs=[["L","直近3か月の業況DI平均","業況（当月）"],["M","L − 前年同期3か月平均（モメンタム）","業況（当月）"],
+    ["P","販売単価DI − 仕入単価DI（直近3か月平均）","販売単価・仕入単価（前月比）"],
+    ["E","見通しDI3か月平均 − L（期待ギャップ）","業況見通し（今後3か月）"],
+    ["S","直近3か月の売上高DI平均","売上高（前年同月比）"],
+    ["U","0.6×（経営者70歳以上％）＋ 0.4×（1960年以前創業％）","付帯調査 経営者の年齢・創業年"]];
+  document.getElementById("defTable").innerHTML=defs.map(function(d){
+    return '<tr><td class="l mono" style="font-weight:600">'+d[0]+'</td><td class="l">'+d[1]+'</td><td class="l">'+d[2]+'</td></tr>'; }).join("");
+  var rules=[["防衛的運転資金・事業再構築","L < -34、または（L < -28 かつ M < 0）","defense"],
+    ["攻めの成長資金（エクイティ適性）","M > +6 かつ E > 0 かつ L > -32","growth"],
+    ["価格転嫁・コスト対応資金","P < -15","cost"],
+    ["安定・設備投資資金","L > -14 かつ S > -14","capex"],
+    ["中立（様子見）","上記のいずれにも該当しない","neutral"]];
+  document.getElementById("ruleList").innerHTML=rules.map(function(r,i){
+    return '<li><span class="rank">'+(i+1)+'</span><div class="body"><strong style="display:flex;align-items:center;gap:8px"><span style="width:9px;height:9px;border-radius:50%;background:'+css(STATUS[r[2]].c)+';display:inline-block"></span>'+r[0]+'</strong><span class="mono">'+r[1]+'</span></div></li>'; }).join("");
+  document.getElementById("srcList").innerHTML=D.sources.map(function(s){
+    return '<li><span class="n">'+s.n+'</span><span class="m">'+s.org+'　/　'+s.lic+'</span><span class="u">'+s.use+'</span>'+
+      '<div style="margin-top:6px"><a href="'+s.url+'" target="_blank" rel="noopener">出典ページ</a>　<a href="'+s.file+'" target="_blank" rel="noopener">'+s.file.split("/").pop()+'</a></div></li>'; }).join("");
+  var h='<table><thead><tr><th class="l">業種</th><th class="l">判定</th><th>スコア</th><th>L</th><th>M</th><th>P</th><th>E</th><th>S</th></tr></thead><tbody>';
+  IND.forEach(function(r){ var d=r.diag;
+    h+='<tr><td style="font-weight:'+(r.level?400:700)+'">'+r.full+'</td><td class="l"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+css(STATUS[d.type].c)+';margin-right:6px"></span>'+d.tag+'</td><td>'+d.score.toFixed(0)+'</td><td>'+sgn(d.L)+'</td><td>'+sgn(d.M)+'</td><td>'+(d.P==null?"—":sgn(d.P))+'</td><td>'+sgn(d.E)+'</td><td>'+sgn(d.S)+'</td></tr>'; });
+  document.getElementById("allTable").innerHTML=h+'</tbody></table>';
+  var h2='<table><thead><tr><th class="l">区分</th><th>n</th><th>承継緊急度</th>'+
+    SK.ageLabels.map(function(l){return "<th>"+l+"</th>"}).join("")+
+    SK.foundedLabels.map(function(l){return "<th>"+l+"</th>"}).join("")+'</tr></thead><tbody>';
+  SK.rows.forEach(function(r){
+    h2+='<tr><td style="font-weight:'+(r.kind==="total"?700:400)+'">'+r.name+'</td><td>'+r.n+'</td><td style="font-weight:600">'+r.urgency.toFixed(1)+'</td>'+
+      r.age.map(function(v){return "<td>"+v.toFixed(1)+"</td>"}).join("")+
+      r.founded.map(function(v){return "<td>"+v.toFixed(1)+"</td>"}).join("")+'</tr>'; });
+  document.getElementById("shokeiTable").innerHTML=h2+'</tbody></table>';
+}
+
+
+/* ============================================================
+   v4.1 追加：政策／増資・成長企業／時差走査／都債の物差し
+             相談メモ／資産形成格差／内外金利差／制度の絞り込み
+   ============================================================ */
+
+/* ---------------- 02 政策 ---------------- */
+function renderPolicy(){
+  var P=D.policy; if(!P) return;
+  var g=P.gfci, up=g.prevRank-g.rank;
+  document.getElementById("policyLede").innerHTML=
+    '東京への資金流入は自然現象ではなく、政策の結果でもあります。国と東京都が何に取り組み、'+
+    'どこまで効いて、何が届いていないのかを、本サービスの実測値と突き合わせて並べます。';
+  document.getElementById("gfciBox").innerHTML=
+    '<div><span class="lv" style="font-family:IBM Plex Mono,monospace;font-size:10px;letter-spacing:.16em;color:var(--ink-3);display:block;margin-bottom:2px">GLOBAL FINANCIAL CENTRES INDEX</span>'+
+    '<span class="rk" style="color:var(--st-good)">'+g.rank+'<span style="font-size:15px;font-weight:400;color:var(--ink-3)"> 位 / 世界</span></span></div>'+
+    '<p class="tx"><strong>'+g.edition+'で東京は'+g.rank+'位。</strong>前版の'+g.prevRank+'位から'+up+'つ上昇し、10位以内に復帰しました。'+
+    'ただしスコアは'+g.prevRating+'→'+g.rating+'と<strong>低下</strong>しており、順位の改善は他都市の後退による面があります。'+
+    '上位は'+g.top.slice(0,4).map(function(t){return t[0]}).join('・')+'。'+
+    '<br><span style="font-size:11.5px;color:var(--ink-3)">出典：'+g.src+'</span></p>';
+  document.getElementById("policyList").innerHTML=P.items.map(function(p){
+    return '<div class="p"><h4>'+p.name+'</h4>'+
+      '<div class="meta">'+p.who+'　/　'+p.when+'</div>'+
+      '<dl>'+
+      '<dt>取組</dt><dd>'+p.what+'</dd>'+
+      '<dt>効果</dt><dd>'+p.evidence+'</dd>'+
+      '<dt class="g">不足</dt><dd>'+p.gap+'</dd>'+
+      '<dt>一次情報</dt><dd><a href="'+p.url+'" target="_blank" rel="noopener">'+p.url.replace(/^https:\/\//,'').slice(0,58)+'…</a></dd>'+
+      '</dl></div>';
+  }).join("");
+}
+
+/* ---------------- 01 預貸率の補足 ---------------- */
+function renderRatioNote(){
+  var r=D.finance.ratio, last=r.years.length-1;
+  var b=r.bank[last], s=r.shinkin[last];
+  var e1=document.getElementById("ratioBank"); if(e1) e1.textContent=b.toFixed(1);
+  var e2=document.getElementById("ratioShinkin"); if(e2) e2.textContent=s.toFixed(1);
+  var el3=document.getElementById("ratioNote"); if(!el3) return;
+  el3.textContent="銀行は "+r.bank[0].toFixed(1)+"%（"+r.years[0]+"年）から "+b.toFixed(1)+"%（"+r.years[last]+"年）へ "+
+    (b-r.bank[0]).toFixed(1)+"ポイント低下。信用金庫は5年間ほぼ横ばいの"+s.toFixed(1)+"%で、差は "+
+    (b-s).toFixed(1)+"ポイントあります。預貸率の高低それ自体に良し悪しはありませんが、"+
+    "中小企業の主力取引先である信用金庫で、預金の半分近くが貸出以外に向かっている点は、資金の目詰まりを見るうえでの手がかりになります。";
+}
+
+/* ---------------- 04 増資の不在と成長企業 ---------------- */
+function renderEquityGap(){
+  var S=D.shikin, M=D.market;
+  var host=document.getElementById("equityGap"); if(!host) return;
+  host.innerHTML=
+    '<div class="metric"><div class="mk">調達手段の選択肢</div><div class="mv">'+S.sourceLabels.length+'<span style="font-size:13px"> 種類</span></div><div class="md">'+S.sourceLabels.join('／')+'</div></div>'+
+    '<div class="metric"><div class="mk">うちエクイティ</div><div class="mv" style="color:var(--st-crit)">0<span style="font-size:13px"> 種類</span></div><div class="md">増資・社債・CFは選択肢に無い</div></div>'+
+    '<div class="metric"><div class="mk">借入に依存する割合</div><div class="mv">'+(S.source[1]+S.source[2]).toFixed(1)+'<span style="font-size:13px">%</span></div><div class="md">自己資金 '+S.source[0].toFixed(1)+'% を除く全て</div></div>';
+  var gr=M.segments[2];
+  document.getElementById("growthNote").innerHTML=
+    '<strong>非上場からエクイティまでの距離。</strong>'+
+    '株式投資型クラウドファンディングは1社あたり年間1億円未満・投資家1人あたり同一発行者へ年50万円まで。'+
+    'ベンチャーキャピタルは事業計画と成長シナリオを求めます。'+
+    '東証グロースは'+fmt(gr.listed[1])+'社で、配当利回りは'+gr.yield.toFixed(2)+'%、売買回転率は'+gr.turnover[1].toFixed(1)+'%。'+
+    '値上がり益で報いる市場であり、安定配当を出す成熟企業の受け皿ではありません。'+
+    '<br><br><strong>そして最大の段差は制度ではなく年齢です。</strong>'+
+    '景況調査の回答企業は創業1980年以前が'+SKby["全体"].pre1980.toFixed(1)+'%、経営者の'+SKby["全体"].old70.toFixed(1)+'%が70歳以上。'+
+    'エクイティが前提とする「これから10年で数倍にする」という物語と、この母集団はそもそも噛み合っていません。'+
+    '成長企業の資金調達難と、既存中小企業の資金繰りは、同じ「資金不足」でも必要な処方が違います。';
+}
+
+function drawGrowth(){
+  var host=document.getElementById("growthChart"); if(!host) return; host.innerHTML="";
+  var M=D.market;
+  var rows=[
+    {n:"東証プライム", v:M.segments[0].listed[1], c:"--s1"},
+    {n:"東証スタンダード", v:M.segments[1].listed[1], c:"--s1"},
+    {n:"東証グロース", v:M.segments[2].listed[1], c:"--s3"},
+    {n:"景況調査の対象（非上場）", v:D.meta.sampleSize, c:"--s2"}
+  ];
+  var W=520,H=190,PL=150,PR=64,PT=10,RH=42;
+  var max=Math.max.apply(null,rows.map(function(r){return r.v}));
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"市場区分別の会社数と景況調査対象企業数の比較"});
+  rows.forEach(function(r,i){
+    var y0=PT+i*RH, w=(W-PL-PR)*r.v/max;
+    svg.appendChild(el("text",{x:0,y:y0+21,fill:css("--ink-2"),"font-size":12,"font-family":'"Zen Kaku Gothic New",sans-serif'},r.n));
+    var rr=el("rect",{x:PL,y:y0+6,width:Math.max(w,2),height:20,fill:css(r.c),opacity:.88,rx:2});
+    rr.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+      '<div class="th">'+r.n+'</div><div class="tr"><span>社数</span><b>'+fmt(r.v)+'</b></div>'); });
+    rr.addEventListener("mouseleave",hideTip); svg.appendChild(rr);
+    svg.appendChild(el("text",{x:PL+Math.max(w,2)+7,y:y0+21,fill:css("--ink-2"),"font-size":11,"font-family":"IBM Plex Mono, monospace","font-weight":600},fmt(r.v)));
+  });
+  host.appendChild(svg);
+  legend("growthLegend",[["--s3","エクイティで資金を集める市場","box"],["--s2","調査対象の非上場企業","box"]]);
+}
+
+/* ---------------- 05 時差走査 ---------------- */
+/* 色は金利の種類だけを表し、水準／前年差は実線・破線で区別する */
+var SCAN_COL={y10_level:"--s1",y10_yoy:"--s1",y2_level:"--s3",y2_yoy:"--s3"};
+function drawRateScan(){
+  var C=D.corr; if(!C.rateScan) return;
+  var host=document.getElementById("rateScanChart"); if(!host) return; host.innerHTML="";
+  document.getElementById("whyY10").textContent=C.whyY10;
+  document.getElementById("lagAnswer").textContent=C.lagAnswer;
+  var W=880,H=300,PL=52,PR=170,PT=18,PB=44;
+  var lo=-0.6,hi=0.6;
+  var x=function(k){return PL+(W-PL-PR)*k/24}, y=function(v){return PT+(H-PT-PB)*(hi-v)/(hi-lo)};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,width:W,role:"img","aria-label":"金利と業況DIのラグ相関の走査"});
+  svg.setAttribute("style","min-width:"+W+"px;max-width:100%");
+  for(var t=-0.6;t<=0.601;t+=0.2){
+    var tv=Math.round(t*10)/10;
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:y(tv),y2:y(tv),stroke:css(Math.abs(tv)<1e-9?"--axis":"--grid"),"stroke-width":Math.abs(tv)<1e-9?1.5:1}));
+    svg.appendChild(el("text",{x:PL-8,y:y(tv)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},tv.toFixed(1)));
+  }
+  [0,6,12,18,24].forEach(function(k){
+    svg.appendChild(el("line",{x1:x(k),x2:x(k),y1:PT,y2:H-PB,stroke:css("--grid")}));
+    svg.appendChild(el("text",{x:x(k),y:H-PB+16,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},k));
+  });
+  svg.appendChild(el("text",{x:(PL+W-PR)/2,y:H-8,"text-anchor":"middle",fill:css("--ink-3"),"font-size":11,"font-family":'"Zen Kaku Gothic New",sans-serif'},"金利を何か月さかのぼるか（か月）"));
+  var ends=[];
+  C.rateScan.forEach(function(s){
+    var col=css(SCAN_COL[s.key]||"--s1"), d="";
+    s.pts.forEach(function(p,i){ d+=(i?" L":"M")+x(p.lag)+","+y(p.r); });
+    svg.appendChild(el("path",{d:d,fill:"none",stroke:col,"stroke-width":2.2,
+      "stroke-dasharray":s.mode==="前年差"?"5 3":""}));
+    var b=s.best;
+    var c=el("circle",{cx:x(b.lag),cy:y(b.r),r:5,fill:col,stroke:css("--surface"),"stroke-width":2});
+    c.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+      '<div class="th">'+s.rate+'（'+s.mode+'） '+b.lag+'か月前</div><div class="tr"><span>相関係数 r</span><b>'+b.r.toFixed(3)+'</b></div><div class="tr"><span>n</span><b>'+b.n+'</b></div>'); });
+    c.addEventListener("mouseleave",hideTip); svg.appendChild(c);
+    var lp=s.pts[s.pts.length-1];
+    ends.push({y:y(lp.r), col:col, t:s.rate+"／"+s.mode, dash:s.mode==="前年差"});
+  });
+  ends.sort(function(a,b){return a.y-b.y});
+  for(var i=1;i<ends.length;i++) if(ends[i].y-ends[i-1].y<15) ends[i].y=ends[i-1].y+15;
+  ends.forEach(function(e){
+    svg.appendChild(el("line",{x1:W-PR+8,x2:W-PR+26,y1:e.y,y2:e.y,stroke:e.col,"stroke-width":2.4,
+      "stroke-dasharray":e.dash?"4 3":"","stroke-linecap":"round"}));
+    svg.appendChild(el("text",{x:W-PR+32,y:e.y+4,fill:css("--ink-2"),"font-size":11.5,"font-family":'"Zen Kaku Gothic New",sans-serif'},e.t));
+  });
+  host.appendChild(svg);
+  legend("rateScanLegend",[["--s1","国債10年"],["--s3","国債2年"],
+    ["--ink-3","実線＝金利の水準／破線＝前年同月差（変化幅）"]]);
+
+  /* 最も強かった組み合わせ */
+  var best=C.rateScan.reduce(function(a,b){return Math.abs(b.best.r)>Math.abs(a.best.r)?b:a});
+  var zero=C.rateScan.filter(function(s){return s.key==="y10_level"})[0].pts[0];
+  document.getElementById("findLag").textContent="r = "+best.best.r.toFixed(2);
+  document.getElementById("findLag").style.color=css("--s1");
+  document.getElementById("findLagNote").innerHTML=
+    '<strong>'+best.rate+'の'+best.mode+'を'+best.best.lag+'か月さかのぼって比べたとき（n='+best.best.n+'）。</strong>'+
+    '同じ月どうしなら r='+zero.r.toFixed(2)+' で無関係に見えたものが、時差を入れると r='+best.best.r.toFixed(2)+' まで上がります。'+
+    'しかも相関はラグを延ばすほど一方向に強まっており、偶然の当たりではありません。'+
+    '<br><br>読み方は二つあります。<strong>水準</strong>（実線）は、金利が高かった時期の約2年後に景況が悪い、という遅れて効く負の関係。'+
+    '<strong>前年差</strong>（破線）は、金利が上がっている局面ほど同時期の景況も良い、という順方向の関係で、'+
+    '景気が良いから金利が上がるという因果の向きと整合します。'+
+    '<br><br>結論は「金利は中小企業に効いていない」ではなく、'+
+    '<strong>「金利は約2年遅れて効く。だから今日の金利で今日の景況を語ってはいけない」</strong>です。'+
+    '相関は因果を示すものではありませんが、施策の効果を測る時間軸の目安にはなります。';
+  var gl=document.getElementById("gapBestLab");
+  if(gl&&C.gapBest) gl.textContent="最大は"+C.gapBest.lag+"か月後の r="+C.gapBest.r.toFixed(2);
+}
+
+/* ---------------- 05 都債を物差しに ---------------- */
+function drawLadderRate(){
+  var host=document.getElementById("ladderRate"); if(!host) return; host.innerHTML="";
+  var G=D.rateGap, T=D.tosai, J=D.jgb;
+  var rows=[
+    {n:"日本国（国債10年）", v:J.curve[9], c:"--s1", d:"財務省・"+J.asOf},
+    {n:"東京都（円建て都債・最終回）", v:T.jpy.lastRate, c:"--s3", d:T.jpy.lastDate+"／以後発行なし"},
+    {n:"東京都（外貨建て・直近）", v:T.fx.rows[0].rate, c:"--s4", d:T.fx.rows[0].yr+"／"+T.fx.rows[0].ccy+"建て"},
+    {n:"都内中小企業（最多価格帯）", v:2.5, c:"--s2", d:"「2％台」が"+G.smeRate[2].toFixed(1)+"%で最多"}
+  ];
+  var W=620,H=210,PL=196,PR=104,PT=10,RH=46;
+  var max=4.6;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"国・都・中小企業の調達金利の比較"});
+  rows.forEach(function(r,i){
+    var y0=PT+i*RH, w=(W-PL-PR)*r.v/max;
+    svg.appendChild(el("text",{x:0,y:y0+19,fill:css("--ink-2"),"font-size":12,"font-family":'"Zen Kaku Gothic New",sans-serif'},r.n));
+    svg.appendChild(el("text",{x:0,y:y0+34,fill:css("--ink-3"),"font-size":10,"font-family":'"Zen Kaku Gothic New",sans-serif'},r.d));
+    var rr=el("rect",{x:PL,y:y0+6,width:Math.max(w,2),height:20,fill:css(r.c),opacity:.88,rx:2});
+    rr.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+      '<div class="th">'+r.n+'</div><div class="tr"><span>金利</span><b>'+r.v.toFixed(2)+'%</b></div><div class="tr"><span>時点</span><b>'+r.d+'</b></div>'); });
+    rr.addEventListener("mouseleave",hideTip); svg.appendChild(rr);
+    svg.appendChild(el("text",{x:PL+Math.max(w,2)+7,y:y0+21,fill:css("--ink-2"),"font-size":11,"font-family":"IBM Plex Mono, monospace","font-weight":600},r.v.toFixed(2)+"%"));
+  });
+  host.appendChild(svg);
+  legend("ladderRateLegend",[["--s1","国","box"],["--s3","東京都（円）","box"],["--s4","東京都（外貨）","box"],["--s2","都内中小企業","box"]]);
+  document.getElementById("ladderRateNote").innerHTML=
+    '<strong>都債を物差しにすると、二つの歪みが見えます。</strong>'+
+    '第一に、東京都が円で個人から資金を集めていた最後の利率は'+T.jpy.lastRate.toFixed(2)+'%（'+T.jpy.lastDate+'）。'+
+    'いま国債10年は'+J.curve[9].toFixed(3)+'%です。金利がこれだけ戻っているのに、円建ての窓口は'+(T.gapYears||12)+'年以上閉じたままです。'+
+    '<br><br>第二に、東京都が外貨で払っている'+T.fx.rows[0].rate.toFixed(2)+'%は、都内中小企業が借りている金利帯とほぼ同じ水準です。'+
+    '同じ「東京」の名の下で、片方は海外の投資家に、もう片方は地元の事業者に、近い値段の資金が動いている。'+
+    '両者をつなぐ経路があれば、という問いが立ちます。'+
+    '<br><br><span style="color:var(--ink-3)">※ 都債と事業融資は信用力も担保も期間も異なり、金利水準を直接比較して優劣を論じられるものではありません。ここでは層ごとの資金の値段を同じ目盛りに並べることを目的としています。</span>';
+}
+
+/* ---------------- 06 事業者：平易な金利の読み方 ---------------- */
+function renderRateGapPlain(){
+  var G=D.rateGap, C=D.corr, host=document.getElementById("rateGapPlain"); if(!host) return;
+  var best=C.rateScan?C.rateScan.reduce(function(a,b){return Math.abs(b.best.r)>Math.abs(a.best.r)?b:a}):null;
+  host.innerHTML=
+    '<strong>いま借りている方への読み方。</strong>'+
+    'いちばん多い借入金利は「2％台」で'+G.smeRate[2].toFixed(1)+'%の企業がここにいます。前回調査では'+G.smeRatePrev[2].toFixed(1)+'%でしたから、'+
+    'この価格帯に入る企業が増えています。実際、金利が「上昇した」と答えた企業は'+G.trendUp.toFixed(1)+'%。'+
+    '<br><br>いっぽう国の金利（国債10年）はすでに'+G.jgb10.toFixed(2)+'%、2年ものでも'+G.jgb2.toFixed(2)+'%です。'+
+    '銀行の貸出金利はこの国の金利を土台に決まるため、<strong>まだ上がる余地が残っている</strong>と読むのが自然です。'+
+    (best?'<br><br>本サービスの分析では、金利の影響が景況に表れるまで<strong>およそ'+best.best.lag+'か月</strong>かかっていました。'+
+      'いま金利が上がっているなら、その影響が事業の実感に届くのはこれからです。':'')+
+    '<br><br><strong>できること。</strong>変動金利で借りている場合は、固定への切替や借換えの条件を一度確認しておくこと。'+
+    '信用保証協会の保証付き融資や制度融資は金利と保証料の合計で比較すること。'+
+    '資金需要が出てから動くと選択肢が減るため、必要になる前に取引金融機関へ相談しておくこと。'+
+    '下の「相談メモ」はそのための下書きです。';
+}
+
+/* ---------------- 06 相談メモ ---------------- */
+var PREP={
+  common:["直近2期分の決算書（貸借対照表・損益計算書・勘定科目内訳明細書）","直近の試算表（決算から3か月以上経っている場合）","資金繰り表（できれば今後6〜12か月分）","会社の概要が分かるもの（沿革・取引先・主要商品）"],
+  capex:["設備の見積書またはカタログ","導入後の効果を書いた簡単な計画（何がどれだけ変わるか）"],
+  growth:["採用計画または事業計画（1〜3年）","売上の見通しと、その根拠になる受注・引合の状況"],
+  restruct:["返済計画の見直し案","経費削減や収益改善の具体策と、その実行時期"],
+  succession:["株主名簿と、後継者候補の有無が分かるもの","自社株の評価に関する資料（あれば）"],
+  working:["直近の売掛・買掛の状況が分かるもの","資金が不足する時期と金額の見込み"]
+};
+function buildMemo(){
+  var ta=document.getElementById("memoText"); if(!ta) return;
+  var ind=document.getElementById("dgInd").value;
+  var size=document.getElementById("dgSize");
+  var use=document.getElementById("dgUse");
+  var amt=document.getElementById("memoAmt").value;
+  var when=document.getElementById("memoWhen").value;
+  var yrs=document.getElementById("memoYears").value;
+  var rec=byFull[ind], dg=rec.diag;
+  var G=D.rateGap, J=D.jgb;
+  var schemes=[];
+  var ol=document.getElementById("dgSchemes");
+  if(ol) schemes=[].slice.call(ol.querySelectorAll("li")).slice(0,3).map(function(li){
+    var s=li.querySelector("strong"); return s?s.textContent:li.textContent.slice(0,26); });
+  var L=[];
+  L.push("【資金調達のご相談】");
+  L.push("");
+  L.push("■ 事業の概要");
+  L.push("・業種："+ind);
+  L.push("・従業員規模："+size.options[size.selectedIndex].text);
+  L.push("・創業からの年数："+yrs);
+  L.push("");
+  L.push("■ ご相談したいこと");
+  L.push("・資金の使いみち："+use.options[use.selectedIndex].text);
+  L.push("・希望金額："+amt);
+  L.push("・必要な時期："+when);
+  L.push("");
+  L.push("■ 業界の状況（東京都の公開統計より）");
+  L.push("・「東京都中小企業の景況」"+D.meta.latestLabel+"時点で、"+ind+"の業況DIは直近3か月平均で "+dg.L+"。");
+  L.push("　1年前との差は "+sgn(dg.M,1)+"ポイントです。");
+  if(dg.P!=null) L.push("・仕入価格を販売価格に転嫁できていない度合い（価格転嫁ギャップ）は "+dg.P+"。");
+  L.push("・以上から、当社に必要な資金は「"+dg.tag+"」に分類されると考えています。");
+  L.push("");
+  L.push("■ 検討している調達の方向");
+  if(schemes.length) schemes.forEach(function(s,i){ L.push("・"+(i+1)+". "+s); });
+  else L.push("・まだ絞り込めていないため、あわせてご相談させてください。");
+  L.push("");
+  L.push("■ 金利環境について（財務省「国債金利情報」"+J.asOf+"時点）");
+  L.push("・国債10年 "+G.jgb10.toFixed(3)+"%、国債2年 "+G.jgb2.toFixed(3)+"%。");
+  L.push("・都内中小企業の借入金利は「2％台」が "+G.smeRate[2].toFixed(1)+"% で最多、"
+        +"金利が上昇したと回答した企業は "+G.trendUp.toFixed(1)+"% です。");
+  L.push("・固定・変動の選択と、借換えの可否についてもご意見をいただきたいです。");
+  L.push("");
+  L.push("■ ご用意できる資料");
+  var pre=PREP.common.concat(PREP[use.value]||[]);
+  pre.forEach(function(p){ L.push("・"+p); });
+  L.push("");
+  L.push("※ 数値は東京都・財務省の公開統計をもとに Tokyo Capital Bridge が機械的に算出したものです。");
+  L.push("　 出典：東京都「中小企業の景況」「事業資金に関する調査」、財務省「国債金利情報」。");
+  ta.value=L.join("\n");
+
+  var pl=document.getElementById("prepList");
+  if(pl) pl.innerHTML=pre.map(function(p){
+    return '<li><strong>'+p+'</strong></li>'; }).join("");
+}
+function wireMemo(){
+  ["memoAmt","memoWhen","memoYears"].forEach(function(id){
+    var e=document.getElementById(id); if(e) e.addEventListener("change",buildMemo); });
+  var b=document.getElementById("memoCopy");
+  if(b) b.addEventListener("click",function(){
+    var ta=document.getElementById("memoText");
+    ta.select(); ta.setSelectionRange(0,99999);
+    var ok=false;
+    try{ ok=document.execCommand("copy"); }catch(e){}
+    var m=document.getElementById("memoMsg");
+    m.textContent=ok?"コピーしました":"⌘/Ctrl+C でコピーしてください";
+    m.style.color=ok?css("--st-good"):css("--ink-3");
+    setTimeout(function(){ m.textContent=""; },3200);
+  });
+}
+
+/* ---------------- 01 格差のちらばり（ドットストリップ） ---------------- */
+var GRP_COL={"区部":"--s1","市部":"--s3","郡部":"--s2","島部":"--s4"};
+function drawIneqStrip(){
+  var A=(D.inequality||{}).all; if(!A) return;
+  var host=document.getElementById("ineqStrip"); if(!host) return; host.innerHTML="";
+  document.getElementById("stripH").textContent=
+    "同じ都民でも、投資に回せる余力の出発点が"+A.ratio.toFixed(1)+"倍ちがう";
+  var W=980,H=168,PL=16,PR=16,PT=22,PB=42;
+  var max=620000;
+  var X=function(v){return PL+(W-PL-PR)*v/max};
+  var BAND=[PT+8, H-PB-10];
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img",
+    "aria-label":"全62区市町村の住民1人当たり個人住民税負担額のちらばり"});
+  /* 軸 */
+  svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:H-PB+6,y2:H-PB+6,stroke:css("--axis")}));
+  for(var v=0;v<=600000;v+=100000){
+    svg.appendChild(el("line",{x1:X(v),x2:X(v),y1:H-PB+6,y2:H-PB+11,stroke:css("--line-2")}));
+    svg.appendChild(el("text",{x:X(v),y:H-PB+25,"text-anchor":"middle",fill:css("--ink-3"),
+      "font-size":10.5,"font-family":"IBM Plex Mono, monospace"},v===0?"0":(v/10000)+"万円"));
+  }
+  /* 都平均 */
+  var tx=X(A.tokyo);
+  svg.appendChild(el("line",{x1:tx,x2:tx,y1:PT-4,y2:H-PB+6,stroke:css("--st-crit"),"stroke-width":1.5,"stroke-dasharray":"4 3"}));
+  svg.appendChild(el("text",{x:tx,y:PT-9,"text-anchor":"middle",fill:css("--st-crit"),"font-size":11,
+    "font-family":'"Zen Kaku Gothic New",sans-serif',"font-weight":700},"都平均 "+fmt(A.tokyo)+"円"));
+  /* ドット（重なりを避けるため決定論的に縦へ散らす） */
+  var slots=[];
+  A.rows.forEach(function(r,i){
+    var x=X(r.v), row=0;
+    while(slots[row]!=null && Math.abs(slots[row]-x)<9) row++;
+    slots[row]=x;
+    var y=BAND[0]+row*11;
+    if(y>BAND[1]){ y=BAND[1]; }
+    var c=el("circle",{cx:x,cy:y,r:4.5,fill:css(GRP_COL[r.g]||"--s1"),opacity:.82,
+      stroke:css("--surface"),"stroke-width":1});
+    c.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+      '<div class="th">'+r.n+'（'+r.g+'）</div>'+
+      '<div class="tr"><span>1人当たり負担額</span><b>'+fmt(r.v)+'円</b></div>'+
+      '<div class="tr"><span>都平均との比</span><b>'+(r.v/A.tokyo).toFixed(2)+'倍</b></div>'); });
+    c.addEventListener("mouseleave",hideTip);
+    svg.appendChild(c);
+    if(r.n===A.top.n||r.n===A.bottom.n||r.n===A.wardBottom.n){
+      svg.appendChild(el("text",{x:x,y:y-9,"text-anchor":"middle",fill:css("--ink"),"font-size":11,
+        "font-family":'"Zen Kaku Gothic New",sans-serif',"font-weight":700},r.n));
+    }
+  });
+  host.appendChild(svg);
+  legend("ineqStripLegend",[["--s1","区部（23区）"],["--s3","市部（26市）"],
+    ["--s2","郡部（西多摩）"],["--s4","島部"],["--st-crit","都平均","box"]]);
+  document.getElementById("stripMetrics").innerHTML=
+    '<div class="metric"><div class="mk">最も高い'+A.top.n+'</div><div class="mv">'+fmt(A.top.v)+'<span style="font-size:13px">円</span></div><div class="md">都平均の'+(A.top.v/A.tokyo).toFixed(1)+'倍</div></div>'+
+    '<div class="metric"><div class="mk">最も低い'+A.bottom.n+'</div><div class="mv" style="color:var(--st-crit)">'+fmt(A.bottom.v)+'<span style="font-size:13px">円</span></div><div class="md">都平均の'+(A.bottom.v/A.tokyo).toFixed(2)+'倍</div></div>'+
+    '<div class="metric"><div class="mk">23区の中だけでも</div><div class="mv">'+A.wardRatio.toFixed(1)+'<span style="font-size:13px">倍</span></div><div class="md">'+A.wardTop.n+' ↔ '+A.wardBottom.n+'</div></div>';
+  document.getElementById("stripNote").innerHTML=
+    A.metric+"（"+A.label.replace(/^東京都統計年鑑\s*/,"東京都統計年鑑 ")+"）。"+
+    "ここでは格差の<strong>大きさ</strong>だけを示しています。この差が資産形成の制度の使われ方にどう表れるかは、"+
+    "<strong>パネル07「投資家：投資機会」</strong>で、iDeCo等の利用率との相関（r="+
+    ((D.inequality||{}).rIde||0).toFixed(2)+"）として扱います。";
+}
+
+/* ---------------- 07 格差の大きさ（全62区市町村・区部を含む） ---------------- */
+function drawIneqAll(){
+  var A=(D.inequality||{}).all; if(!A) return;
+  var host=document.getElementById("ineqAllChart"); if(!host) return; host.innerHTML="";
+  document.getElementById("ineqAllLede").innerHTML=
+    '住民1人あたりの個人住民税の負担額を、'+A.n+'すべての区市町村で並べます。'+
+    '所得の水準と、税を納めている人の割合の両方が反映されるため、地域の担税力の目安になります。'+
+    '出典：<a href="'+A.url+'" target="_blank" rel="noopener">'+A.label+'</a>';
+  document.getElementById("ineqRatio").textContent=A.ratio.toFixed(1)+" 倍";
+  document.getElementById("ineqRatioNote").innerHTML=
+    '<strong>最も高い'+A.top.n+'（'+fmt(A.top.v)+'円）と、最も低い'+A.bottom.n+'（'+fmt(A.bottom.v)+'円）の差。</strong>'+
+    '23区の中だけで見ても'+A.wardTop.n+'と'+A.wardBottom.n+'で <b class="num">'+A.wardRatio.toFixed(1)+'倍</b>あります。'+
+    '東京都の平均は'+fmt(A.tokyo)+'円ですが、平均の周りに集まっているわけではありません。'+
+    '同じ「都民」でも、投資に回せる余力の出発点がこれだけ違います。';
+
+  var R=A.rows, W=980, RH=17, PL=104, PR=88, PT=12;
+  var H=PT+R.length*RH+8;
+  var max=600000;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,width:W,role:"img","aria-label":"区市町村別の住民1人当たり個人住民税負担額"});
+  svg.setAttribute("style","min-width:"+W+"px;max-width:100%");
+  /* 都平均の基準線 */
+  var tx=PL+(W-PL-PR)*A.tokyo/max;
+  svg.appendChild(el("line",{x1:tx,x2:tx,y1:PT,y2:H-6,stroke:css("--st-crit"),"stroke-width":1.4,"stroke-dasharray":"4 3"}));
+  svg.appendChild(el("text",{x:tx+5,y:H-8,fill:css("--st-crit"),"font-size":10.5,"font-family":'"Zen Kaku Gothic New",sans-serif',"font-weight":700},"都平均 "+fmt(A.tokyo)+"円"));
+  R.forEach(function(r,i){
+    var y0=PT+i*RH, w=(W-PL-PR)*r.v/max;
+    svg.appendChild(el("text",{x:PL-7,y:y0+12,"text-anchor":"end",fill:css("--ink-2"),"font-size":11,"font-family":'"Zen Kaku Gothic New",sans-serif'},r.n));
+    var rr=el("rect",{x:PL,y:y0+3,width:Math.max(w,1.5),height:11,fill:css(GRP_COL[r.g]||"--s1"),opacity:.85,rx:1.5});
+    rr.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+      '<div class="th">'+r.n+'（'+r.g+'）</div>'+
+      '<div class="tr"><span>1人当たり負担額</span><b>'+fmt(r.v)+'円</b></div>'+
+      '<div class="tr"><span>都平均との比</span><b>'+(r.v/A.tokyo).toFixed(2)+'倍</b></div>'); });
+    rr.addEventListener("mouseleave",hideTip); svg.appendChild(rr);
+    if(i<3||i>=R.length-3)
+      svg.appendChild(el("text",{x:PL+Math.max(w,1.5)+6,y:y0+12,fill:css("--ink-2"),"font-size":10,"font-family":"IBM Plex Mono, monospace","font-weight":600},fmt(r.v)));
+  });
+  host.appendChild(svg);
+  legend("ineqAllLegend",[["--s1","区部","box"],["--s3","市部","box"],["--s2","郡部","box"],["--s4","島部","box"]]);
+  document.getElementById("ineqAllNote").textContent=
+    A.metric+"。"+A.note+" 区部の平均は"+fmt(A.groups["区部"])+"円、市部は"+fmt(A.groups["市部"])+
+    "円、郡部は"+fmt(A.groups["郡部"])+"円、島部は"+fmt(A.groups["島部"])+"円です。";
+}
+
+/* ---------------- 07 資産形成格差 ---------------- */
+function renderInequality(){
+  drawIneqAll();
+  var Q=D.inequality; if(!Q) return;
+  var host=document.getElementById("ineqChart"); if(!host) return;
+  document.getElementById("ineqLede").innerHTML=
+    '「都民の平均」では格差は見えません。そこで多摩・島しょの'+Q.n+'市町村について、'+
+    '<strong>納税義務者1人あたりの課税標準額</strong>（所得の代理指標）と、'+
+    '<strong>資産形成に使う制度の利用率</strong>を突き合わせました。'+
+    '対象は'+Q.label+'。<a href="'+Q.url+'" target="_blank" rel="noopener">データセット</a>';
+  document.getElementById("ineqR").textContent="r = "+Q.rIde.toFixed(2);
+  document.getElementById("ineqRNote").innerHTML=
+    '<strong>所得水準 × iDeCo・小規模企業共済等の利用率（n='+Q.n+'）。</strong>'+
+    '所得の高い自治体ほど、資産を積み上げる制度が使われています。'+
+    '利用率は '+Q.ideRange[0].toFixed(2)+'% 〜 '+Q.ideRange[1].toFixed(2)+'% で、最大 '+
+    (Q.ideRange[1]/Q.ideRange[0]).toFixed(1)+'倍の開き。'+
+    '同じ制度が同じ条件で用意されていても、実際に使われる度合いは所得によって大きく違います。';
+
+  host.innerHTML="";
+  var W=760,H=330,PL=60,PR=204,PT=18,PB=48;
+  var xs=Q.muni.map(function(m){return m.base});
+  var xlo=140e4, xhi=400e4, ylo=0, yhi=14;
+  var X=function(v){return PL+(W-PL-PR)*(v-xlo)/(xhi-xlo)};
+  var Y=function(v){return PT+(H-PT-PB)*(yhi-v)/(yhi-ylo)};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"市町村ごとの所得水準と制度利用率の散布図"});
+  for(var t=0;t<=yhi;t+=2){
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:Y(t),y2:Y(t),stroke:css("--grid")}));
+    svg.appendChild(el("text",{x:PL-8,y:Y(t)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},t+"%"));
+  }
+  for(var v=150e4;v<=400e4;v+=50e4){
+    svg.appendChild(el("line",{x1:X(v),x2:X(v),y1:PT,y2:H-PB,stroke:css("--grid")}));
+    svg.appendChild(el("text",{x:X(v),y:H-PB+16,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},(v/1e4)+"万"));
+  }
+  svg.appendChild(el("text",{x:(PL+W-PR)/2,y:H-8,"text-anchor":"middle",fill:css("--ink-3"),"font-size":11,"font-family":'"Zen Kaku Gothic New",sans-serif'},"納税義務者1人あたり課税標準額の目安（円）"));
+  /* 生命保険料控除（比較用・薄く） */
+  Q.muni.forEach(function(m){
+    if(m.ins>yhi) return;
+    svg.appendChild(el("circle",{cx:X(m.base),cy:Y(m.ins),r:2.5,fill:css("--ink-3"),opacity:.25}));
+  });
+  Q.muni.forEach(function(m){
+    var c=el("circle",{cx:X(m.base),cy:Y(m.ide),r:Math.max(3,Math.min(11,Math.sqrt(m.nz)/70)),
+      fill:css("--s1"),opacity:.6,stroke:css("--surface"),"stroke-width":1});
+    c.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+      '<div class="th">'+m.n+'</div>'+
+      '<div class="tr"><span>課税標準額の目安</span><b>'+fmt(Math.round(m.base/1e4))+'万円</b></div>'+
+      '<div class="tr"><span>iDeCo・小規模企業共済等</span><b>'+m.ide.toFixed(2)+'%</b></div>'+
+      '<div class="tr"><span>生命保険料控除</span><b>'+m.ins.toFixed(1)+'%</b></div>'+
+      '<div class="tr"><span>所得割の納税義務者</span><b>'+fmt(m.nz)+'人</b></div>'); });
+    c.addEventListener("mouseleave",hideTip); svg.appendChild(c);
+  });
+  /* 目立つ2点だけ直接ラベル */
+  [Q.muni[0], Q.muni[Q.muni.length-1]].forEach(function(m){
+    svg.appendChild(el("text",{x:X(m.base),y:Y(m.ide)-13,"text-anchor":"middle",fill:css("--ink"),
+      "font-size":11,"font-family":'"Zen Kaku Gothic New",sans-serif',"font-weight":700},m.n));
+  });
+  /* 凡例（右側に直接） */
+  var LX=W-PR+18, LT=LX+14;
+  svg.appendChild(el("circle",{cx:LX,cy:PT+30,r:6,fill:css("--s1"),opacity:.6}));
+  svg.appendChild(el("text",{x:LT,y:PT+34,fill:css("--ink-2"),"font-size":11.5,"font-family":'"Zen Kaku Gothic New",sans-serif'},"iDeCo・小規模企業共済等"));
+  svg.appendChild(el("text",{x:LT,y:PT+50,fill:css("--ink-3"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace"},"r = "+Q.rIde.toFixed(2)));
+  svg.appendChild(el("text",{x:LT,y:PT+65,fill:css("--ink-3"),"font-size":10.5,"font-family":'"Zen Kaku Gothic New",sans-serif'},"（右上がり）"));
+  svg.appendChild(el("circle",{cx:LX,cy:PT+96,r:3,fill:css("--ink-3"),opacity:.4}));
+  svg.appendChild(el("text",{x:LT,y:PT+100,fill:css("--ink-2"),"font-size":11.5,"font-family":'"Zen Kaku Gothic New",sans-serif'},"生命保険料控除"));
+  svg.appendChild(el("text",{x:LT,y:PT+116,fill:css("--ink-3"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace"},"r = "+Q.rIns.toFixed(2)));
+  svg.appendChild(el("text",{x:LT,y:PT+131,fill:css("--ink-3"),"font-size":10.5,"font-family":'"Zen Kaku Gothic New",sans-serif'},"（ほぼ横ばい）"));
+  svg.appendChild(el("text",{x:LX,y:PT+160,fill:css("--ink-3"),"font-size":10,"font-family":'"Zen Kaku Gothic New",sans-serif'},"円の大きさ＝納税義務者数"));
+  host.appendChild(svg);
+  legend("ineqLegend",[]);
+  document.getElementById("ineqNote").textContent=
+    "縦軸は所得控除を使った納税義務者の割合。生命保険料控除は "+Q.insRange[0].toFixed(1)+"%〜"+Q.insRange[1].toFixed(1)+
+    "% の範囲に収まり、所得との相関は r="+Q.rIns.toFixed(2)+"。iDeCo・小規模企業共済等は "+
+    Q.ideRange[0].toFixed(2)+"%〜"+Q.ideRange[1].toFixed(2)+"% で、相関は r="+Q.rIde.toFixed(2)+"です。";
+  document.getElementById("ineqFinding").innerHTML="<strong>読み取れること。</strong>"+Q.finding+
+    '<br><br><strong>この散布図に23区が入っていない理由。</strong>'+(Q.wardNote||"")+
+    '<br><br><span style="color:var(--ink-3)">※ 課税標準額は所得割額を標準税率6%で割り戻した目安です。小規模企業共済等掛金控除にはiDeCoのほか小規模企業共済・企業型DCの加入者掛金が含まれます。上の全62区市町村の図は令和4年度、この散布図は令和5年度のデータです。</span>';
+}
+
+/* ---------------- 07 円キャリートレード：儲け方と損の出方 ---------------- */
+function drawCarry2(){
+  var T=D.tosai, J=D.jgb;
+  var borrow=J.curve[0];               /* 円を1年借りるときの目安：国債1年 */
+  var invest=T.fx.rows[0].rate;        /* 外貨で運用する利率 */
+  var ccy=T.fx.rows[0].ccy;
+  var P=1000000, LEV=3;
+  var spread=invest-borrow;
+  var be=-(spread/(1+invest/100));     /* 損益ゼロになる為替変動率（円高側・％） */
+
+  function yen(n){ return (n>0?"+":(n<0?"−":"±"))+fmt(Math.abs(n))+"円"; }
+  function pl(fxPct, mult){
+    var gross = P*mult*(1+invest/100)*(1+fxPct/100);   /* 外貨で運用した結果を円に戻した額 */
+    var repay = P*mult*(1+borrow/100);                 /* 借りた円に利息を付けて返す額 */
+    return Math.round(gross-repay);
+  }
+
+  var w=document.getElementById("carryWin");
+  var l=document.getElementById("carryLose");
+  if(w) w.innerHTML=
+    '<li>円を<b>年'+borrow.toFixed(2)+'%</b>で借りる。<br><span style="color:var(--ink-3);font-size:11.5px">円の金利が低いこと自体が、この取引の元手です。</span></li>'+
+    '<li>借りた円を'+ccy+'に替えて、<b>年'+invest.toFixed(2)+'%</b>で運用する。</li>'+
+    '<li>1年後に円へ戻して返済する。為替が動いていなければ、<strong>金利の差だけが手元に残る</strong>。<br>'+
+    invest.toFixed(2)+'% − '+borrow.toFixed(2)+'% ＝ <b>'+spread.toFixed(2)+'%</b>（'+sgn(pl(0,1),0)+'円）</li>'+
+    '<li class="tot">さらに円安が10%進めば、金利差に<strong>為替差益が上乗せ</strong>される。<br>1年後の損益 <b>'+yen(pl(10,1))+'</b></li>';
+  if(l) l.innerHTML=
+    '<li>手順は同じ。借りて、替えて、運用する。<br><span style="color:var(--ink-3);font-size:11.5px">違うのは1年後の為替だけです。</span></li>'+
+    '<li>円高が'+Math.abs(be).toFixed(2)+'%進むと、金利差<b>'+spread.toFixed(2)+'%</b>が為替差損でちょうど消える。<br><span style="color:var(--ink-3);font-size:11.5px">ここが損益の分かれ目です。</span></li>'+
+    '<li>それ以上の円高では、<strong>返す円が足りなくなる</strong>。運用で増えた'+ccy+'を円に戻しても、借りた額に届きません。</li>'+
+    '<li class="tot">円高が10%進むと、1年後の損益 <b>'+yen(pl(-10,1))+'</b><br><span style="color:var(--ink-3);font-size:11.5px">金利差'+spread.toFixed(2)+'%では埋まらない大きさです。</span></li>';
+
+  var host=document.getElementById("carryTable"); if(!host) return;
+  var h='<thead><tr><th>1年後の為替</th><th>元手100万円のみ</th><th>3倍を動かした場合</th><th class="note">状態</th></tr></thead><tbody>';
+  [20,10,0,be,-10,-20].forEach(function(f){
+    var isBe=Math.abs(f-be)<1e-9;
+    var a=pl(f,1), b=pl(f,LEV);
+    var cls=isBe?"be":(a>0?"pos":(a<0?"neg":""));
+    var st=isBe?"損益ゼロ（分かれ目）":(f>0?"円安：金利差＋為替差益":(f===0?"金利差だけが残る":"円高：金利差を為替差損が食う"));
+    var lab=f>0?("円安 +"+f.toFixed(0)+"%"):(f<0?("円高 "+Math.abs(f).toFixed(f===Math.round(f)?0:2)+"%"):"変わらず 0%");
+    h+='<tr class="'+cls+'"><td>'+lab+'</td>'+
+       '<td class="v">'+yen(a)+'</td><td class="v">'+yen(b)+'</td>'+
+       '<td class="note">'+st+'</td></tr>';
+  });
+  host.innerHTML=h+'</tbody>';
+
+  document.getElementById("carry2Note").innerHTML=
+    '<strong>要するに、こういう取引です。</strong>'+
+    '儲けの源は<strong>金利差'+spread.toFixed(2)+'%</strong>で、これは為替が動かなければ確実に入ります。'+
+    '損の源は<strong>為替</strong>で、円高が'+Math.abs(be).toFixed(2)+'%を超えた瞬間に金利差を食いつぶします。'+
+    '<strong>小さく確実に稼いで、たまに大きく損をする</strong>——これが円キャリーの形です。'+
+    '<br><br><strong>そして借入を重ねると、その形が増幅されます。</strong>'+
+    '3倍を動かせば金利差の利益も3倍ですが、円高'+Math.abs(be).toFixed(0)+'%超えの損失も3倍です。'+
+    '為替が'+(100/LEV).toFixed(0)+'%動けば元手が消える計算になります。'+
+    '損失を止めるために一斉に'+ccy+'を売って円を買い戻す動きが起きると、それ自体がさらに円高を呼ぶ。'+
+    'これが<strong>「円キャリーの巻き戻し」</strong>と呼ばれ、市場が急変する理由になります。'+
+    '<br><br><span style="color:var(--ink-3)">※ 借入金利は日本国債1年（'+borrow.toFixed(2)+'%・'+J.asOf+'）を目安に置いた単純化です。'+
+    '実際の調達金利・取引コスト・税金・追加担保の請求は考慮していません。'+
+    '本サービスはこの取引を勧めるものではなく、外貨建て商品の利率がどこから来るのかを説明するために構造を示しています。</span>';
+}
+
+/* ---------------- 07 制度の絞り込み ---------------- */
+function renderIvFilter(){
+  var host=document.getElementById("ivResult"); if(!host) return;
+  var p=document.getElementById("ivPurpose").value;
+  var t=document.getElementById("ivTerm").value;
+  var fxOk=document.getElementById("ivFx").value==="ok";
+  var O=D.opportunities;
+  var out=[];
+  O.forEach(function(o){
+    var why=[], ng=null;
+    var isFx=/外貨/.test(o.name)||/為替/.test(o.risk);
+    var isBond=/債券/.test(o.kind);
+    var isEq=/株式|エクイティ/.test(o.kind);
+    if(o.access==="blocked"){ ng="いまは募集そのものがありません"; }
+    else if(isFx&&!fxOk){ ng="為替リスクを取らない条件に合いません"; }
+    else{
+      if(p==="safe"){
+        if(isEq) ng="値動きが大きく、元本の変動を抑える目的に合いません";
+        else if(/高/.test(o.risk)) ng="リスク区分が「"+o.risk+"」で、元本の変動を抑える目的に合いません";
+        else why.push("償還時に額面が戻る債券で、リスク区分が「"+o.risk+"」であること"); }
+      if(p==="income"){ if(o.ret==null||o.ret<0.5) ng="定期的な収入として意味のある利回りが出ていません";
+        else why.push("利回り "+o.ret.toFixed(2)+"% の定期収入が見込めること"); }
+      if(p==="growth"){ if(isBond) ng="満期まで利率が固定で、値上がり益を狙う目的に合いません";
+        else why.push("値上がり益を取りにいく資産であること"); }
+      if(p==="local"){ if(!/都債|クラウドファンディング|中小企業|信用金庫/.test(o.name+o.note))
+          ng="東京の事業や地域に資金が向かう経路ではありません";
+        else why.push("資金が都内の事業者・東京都に向かう経路であること"); }
+      var mt=/(\d+)\s*年/.exec(o.name);
+      var yr=mt?parseInt(mt[1],10):null;      /* 年限が定義されない手段は null */
+      if(!ng&&yr!=null){
+        if(t==="short"&&yr>2) ng="年限"+yr+"年は、想定している1〜2年より長すぎます";
+        else if(t==="mid"&&(yr<3||yr>10)) ng="年限"+yr+"年は、想定している3〜10年から外れます";
+        else if(t==="long"&&yr<=10) ng="年限"+yr+"年は、想定している10年超より短すぎます";
+        else why.push("年限"+yr+"年が想定期間に収まること");
+      }
+      if(!ng&&yr==null) why.push("満期の定めがなく、期間の制約を受けないこと");
+      if(!ng&&!isFx) why.push("為替の影響を受けないこと");
+    }
+    out.push({o:o, ok:!ng, why:ng||why.join("／")||"条件に反する項目がないこと"});
+  });
+  var ok=out.filter(function(x){return x.ok}), no=out.filter(function(x){return !x.ok});
+  host.innerHTML=(ok.length?ok:[]).map(function(x){
+    return '<li class="reaches"><div class="rname"><strong>'+x.o.name+'</strong><span class="tagr reaches">条件に合う</span></div>'+
+      '<div class="rnote"><b>利回り '+(x.o.ret==null?"—":x.o.ret.toFixed(2)+"%")+'</b>／'+x.o.kind+'／リスク'+x.o.risk+
+      '<br>残った理由：'+x.why+'<br><span style="color:var(--ink-3)">'+x.o.note+'</span></div></li>';
+  }).join("")
+  +'<li style="border-left-color:var(--line-2)"><div class="rname"><strong>条件に合わなかったもの（'+no.length+'件）</strong></div>'+
+   '<div class="rnote">'+no.map(function(x){return '<div style="margin-bottom:4px">・<b>'+x.o.name+'</b> — '+x.why+'</div>'}).join("")+'</div></li>';
+  if(!ok.length) host.insertAdjacentHTML("afterbegin",
+    '<li style="border-left-color:var(--st-warn)"><div class="rname"><strong>条件に合うものがありませんでした</strong></div>'+
+    '<div class="rnote">条件を緩めると候補が出ます。とくに「為替リスク」と「目的」の組み合わせで絞られやすくなっています。</div></li>');
+  document.getElementById("ivRule").textContent=
+    "判定は上の3条件を順に当てはめた結果です。利回りは公開統計の実測値（国債は財務省、株式の配当利回りは東京都統計年鑑 15-6、都債は東京都財務局）で、"+
+    "将来の成果を示すものではありません。手数料・税金は考慮していません。";
+}
+function wireIv(){
+  ["ivPurpose","ivTerm","ivFx"].forEach(function(id){
+    var e=document.getElementById(id); if(e) e.addEventListener("change",renderIvFilter); });
+}
+
+
+/* ---------------- 07 「円安だから儲かる」を実績で検かめる ---------------- */
+function drawFxHistory(){
+  var F=D.fx; if(!F) return;
+  var host=document.getElementById("fxChart"); if(!host) return; host.innerHTML="";
+  document.getElementById("fxLede").innerHTML=
+    'よく聞く感覚を、20年の実績で確かめます。ドル円の月中平均から'+
+    '<strong>「12か月後に円安になっていたか」を'+F.n+'回ぶん</strong>数え直しました。'+
+    '出典：<a href="'+F.url+'" target="_blank" rel="noopener">'+F.label+'</a>';
+  document.getElementById("fxR").textContent=F.losePct.toFixed(1)+" %";
+  document.getElementById("fxRNote").innerHTML=
+    '<strong>損益分岐（円高'+Math.abs(F.breakEven).toFixed(2)+'％）を下回った12か月の割合。</strong>'+
+    'およそ3回に1回は、金利差を為替差損が食いつぶしていました。'+
+    '最も悪かった12か月では<b class="num">'+Math.abs(F.worst).toFixed(1)+'％</b>の円高が起きています。'+
+    '一方で最も良かった12か月は'+F.best.toFixed(1)+'％の円安でした。';
+
+  var W=880,H=290,PL=52,PR=124,PT=18,PB=42;
+  var c=F.chg, ms=F.chgMonths;
+  var lo=-25,hi=35;
+  var x=function(i){return PL+(W-PL-PR)*i/(c.length-1)};
+  var y=function(v){return PT+(H-PT-PB)*(hi-v)/(hi-lo)};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,width:W,role:"img",
+    "aria-label":"ドル円の12か月変化率の推移と円キャリーの損益分岐"});
+  svg.setAttribute("style","min-width:"+W+"px;max-width:100%");
+  for(var t=-20;t<=hi;t+=10){
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:y(t),y2:y(t),stroke:css(t===0?"--axis":"--grid"),"stroke-width":t===0?1.5:1}));
+    svg.appendChild(el("text",{x:PL-8,y:y(t)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},(t>0?"+":"")+t+"%"));
+  }
+  /* 損益分岐より下＝負けの帯 */
+  svg.appendChild(el("rect",{x:PL,y:y(F.breakEven),width:W-PR-PL,height:(H-PB)-y(F.breakEven),
+    fill:css("--st-crit"),opacity:.08}));
+  svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:y(F.breakEven),y2:y(F.breakEven),
+    stroke:css("--st-crit"),"stroke-width":1.4,"stroke-dasharray":"5 3"}));
+  /* 棒（円安＝緑／円高＝赤） */
+  var bw=Math.max((W-PL-PR)/c.length-0.4,1);
+  c.forEach(function(v,i){
+    var top=v>=0?y(v):y(0), h=Math.abs(y(v)-y(0));
+    var r=el("rect",{x:x(i)-bw/2,y:top,width:bw,height:Math.max(h,0.6),
+      fill:css(v>=F.breakEven?"--st-good":"--st-crit"),opacity:v>=F.breakEven?.55:.75});
+    r.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+      '<div class="th">'+ymJa(ms[i])+'までの12か月</div>'+
+      '<div class="tr"><span>ドル円の変化</span><b>'+(v>0?"+":"")+v.toFixed(1)+'%（'+(v>0?"円安":"円高")+'）</b></div>'+
+      '<div class="tr"><span>キャリーの損益</span><b>'+(v>=F.breakEven?"プラス":"マイナス")+'</b></div>'); });
+    r.addEventListener("mouseleave",hideTip); svg.appendChild(r);
+  });
+  [0,60,120,180,c.length-1].forEach(function(i){
+    svg.appendChild(el("text",{x:x(i),y:H-PB+16,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},String(ms[i]).slice(0,4)));
+  });
+  svg.appendChild(el("text",{x:W-PR+8,y:y(F.breakEven)+4,fill:css("--st-crit"),"font-size":10.5,"font-family":'"Zen Kaku Gothic New",sans-serif',"font-weight":700},"損益分岐 "+F.breakEven.toFixed(2)+"%"));
+  svg.appendChild(el("text",{x:W-PR+8,y:PT+30,fill:css("--ink-2"),"font-size":11.5,"font-family":'"Zen Kaku Gothic New",sans-serif'},"↑ 円安（勝ち）"));
+  svg.appendChild(el("text",{x:W-PR+8,y:H-PB-14,fill:css("--ink-2"),"font-size":11.5,"font-family":'"Zen Kaku Gothic New",sans-serif'},"↓ 円高（負け）"));
+  host.appendChild(svg);
+  legend("fxLegend",[["--st-good","キャリーが黒字だった12か月","box"],
+    ["--st-crit","赤字だった12か月（"+F.loseCount+"回 / "+F.n+"回）","box"]]);
+
+  document.getElementById("fxNote").innerHTML=
+    '<strong>結論から言うと、感覚は「直近5年については」正しいです。</strong>'+
+    'この5年に限れば、12か月後に円安になっていた月は<b class="num">'+F.r5UpPct.toFixed(0)+'％</b>、'+
+    '平均で年<b class="num">'+F.r5Mean.toFixed(1)+'％</b>の円安でした。図の右側がずっと緑なのはそのためです。'+
+    '<br><br><strong>ただし20年に伸ばすと、話が変わります。</strong>'+
+    '円安だった月は'+F.upPct.toFixed(1)+'％で、ほぼ五分五分。'+
+    '損益分岐を割った月は'+F.losePct.toFixed(1)+'％あり、'+
+    '2008年前後には12か月で'+Math.abs(F.worst).toFixed(1)+'％の円高が起きています。'+
+    'この規模の円高が来ると、金利差'+(4.22-1.43).toFixed(2)+'％では到底埋まりません。'+
+    '<br><br>つまりこれは<strong>「円安が続くほうに賭ける取引」</strong>です。'+
+    '賭けが当たっている間は静かに儲かり、外れる年に大きく戻す。'+
+    '過去5年の勝率をそのまま将来の確率と読み替えられない、というのが20年の記録が示すことです。'+
+    '<br><br><span style="color:var(--ink-3)">※ ドル円で計算しています。外貨建て都債は豪ドル建てのため動きは一致しません。'+
+    '金利差は現在の値（外貨建て都債4.22％、日本国債1年1.43％）で固定して計算した簡略版です。</span>';
+}
+
+/* ============================================================
+   08 入口をひらく：都民向け／事業者向けの2つのツール
+   ============================================================ */
+var TK={};
+function tkInit(){
+  var T=D.tools; if(!T) return;
+  var m=document.getElementById("tkMuni"); if(!m||m.options.length) return;
+  T.muni.forEach(function(x){
+    var o=document.createElement("option"); o.value=x.n;
+    o.textContent=x.n+"（"+x.g+"）"; m.appendChild(o); });
+  m.value="世田谷区";
+  var i=document.getElementById("tkInc");
+  T.income.forEach(function(x,k){ var o=document.createElement("option");
+    o.value=k; o.textContent=x.k; i.appendChild(o); });
+  i.value=1;
+  var w=document.getElementById("tkWork");
+  T.work.forEach(function(x,k){ var o=document.createElement("option");
+    o.value=k; o.textContent=x.k; w.appendChild(o); });
+  ["tkMuni","tkInc","tkWork","tkAge"].forEach(function(id){
+    document.getElementById(id).addEventListener("change",runTool); });
+  ["lnAmt","lnRate","lnYears"].forEach(function(id){
+    var e=document.getElementById(id); if(e) e.addEventListener("change",runLoan); });
+}
+
+function runTool(){
+  var T=D.tools; if(!T) return;
+  var host=document.getElementById("tkTable"); if(!host) return;
+  var mn=document.getElementById("tkMuni").value;
+  var inc=T.income[+document.getElementById("tkInc").value];
+  var wk=T.work[+document.getElementById("tkWork").value];
+  var age=+document.getElementById("tkAge").value;
+  var mu=T.muni.filter(function(x){return x.n===mn})[0]||T.muni[0];
+
+  /* --- 自治体の状況 --- */
+  var ideTxt=mu.ide==null
+    ? '<span class="v" style="color:var(--ink-3);font-size:15px">データなし</span><span class="d">特別区は本調査の対象外です</span>'
+    : '<span class="v">'+mu.ide.toFixed(2)+'<span style="font-size:12px">%</span></span><span class="d">39市町村の平均 '+T.ideAvg.toFixed(2)+'%</span>';
+  document.getElementById("tkPlace").innerHTML=
+    '<div class="q"><span class="k">住民1人あたりの住民税負担額</span><span class="v">'+fmt(mu.v)+'<span style="font-size:12px">円</span></span><span class="d">都平均 '+fmt(T.tokyoAvg)+'円</span></div>'+
+    '<div class="q"><span class="k">都内'+T.muniN+'区市町村での順位</span><span class="v">'+mu.rank+'<span style="font-size:12px"> 位</span></span><span class="d">上位ほど担税力が高い</span></div>'+
+    '<div class="q"><span class="k">iDeCo・小規模企業共済等の利用率</span>'+ideTxt+'</div>'+
+    '<div class="q"><span class="k">想定した課税所得と税率</span><span class="v">'+inc.rt+'<span style="font-size:12px">%</span></span><span class="d">課税所得 '+fmt(inc.taxable)+'円と仮定（所得税'+inc.it+'%＋住民税10%）</span></div>';
+
+  /* --- 制度ごとの節税額 --- */
+  var rows=[];
+  if(wk.ideco) rows.push({n:"iDeCo（個人型確定拠出年金）", limit:wk.ideco,
+    save:Math.round(wk.ideco*inc.rt/100), kind:"所得控除",
+    note:"掛金の全額が所得控除。原則60歳まで引き出せません。"});
+  if(wk.kyosai) rows.push({n:"小規模企業共済", limit:wk.kyosai,
+    save:Math.round(wk.kyosai*inc.rt/100), kind:"所得控除",
+    note:"掛金の全額が所得控除。廃業・退職時に共済金を受け取ります。"});
+  var nisa=T.nisaTsumitate;
+  rows.push({n:"NISA（つみたて投資枠）", limit:nisa, save:null, kind:"運用益が非課税",
+    note:"拠出時の節税はありませんが、運用益にかかる"+T.taxOnGain+"%が非課税になります。いつでも売却できます。"});
+
+  var totalSave=rows.reduce(function(a,b){return a+(b.save||0)},0);
+  var totalLimit=rows.reduce(function(a,b){return a+b.limit},0);
+  var h='<thead><tr><th>制度</th><th>年間の上限</th><th>1年あたりの節税額</th><th>効き方</th><th class="note">条件</th></tr></thead><tbody>';
+  rows.forEach(function(r){
+    h+='<tr><td>'+r.n+'</td><td>'+fmt(r.limit)+'円</td>'+
+      '<td style="font-weight:600'+(r.save?';color:var(--st-good)':'')+'">'+(r.save==null?"—":"+"+fmt(r.save)+"円")+'</td>'+
+      '<td>'+r.kind+'</td><td class="note">'+r.note+'</td></tr>';
+  });
+  h+='<tr style="border-top:2px solid var(--line-2)"><td style="font-weight:700">合計</td><td style="font-weight:700">'+fmt(totalLimit)+'円</td>'+
+     '<td style="font-weight:700;color:var(--st-good)">+'+fmt(totalSave)+'円</td><td>—</td><td class="note">上限まで使った場合</td></tr>';
+  host.innerHTML=h+'</tbody>';
+
+  document.getElementById("tkFormula").textContent=
+    "節税額の計算式：年間の拠出額 × ( 所得税の限界税率 "+inc.it+"% ＋ 住民税 10% ) = 拠出額 × "+inc.rt+"%。"+
+    T.limitNote;
+
+  document.getElementById("toolHero").textContent="+"+fmt(totalSave)+"円";
+  document.getElementById("toolHeroNote").textContent=
+    mu.n+"／"+inc.k+"／"+wk.k+" の場合。所得控除を上限まで使ったときに、税金が減る額です。";
+
+  /* --- 20年シミュレーション --- */
+  var yrs=Math.max(5, Math.min(30, 65-age));
+  var monthly=Math.round(totalLimit/12);
+  var W=780,H=300,PL=64,PR=178,PT=18,PB=42;
+  var rates=[
+    {n:"日本国債10年", r:D.jgb.curve[9], c:"--s1", fx:false},
+    {n:"米国債10年", r:D.world.us["10"], c:"--s2", fx:true},
+    {n:"外貨建て都債", r:D.tosai.fx.rows[0].rate, c:"--s4", fx:true},
+    {n:"預金のまま", r:0.2, c:"--rule", fx:false}
+  ];
+  var host2=document.getElementById("tkSim"); host2.innerHTML="";
+  function fv(r){ var m=r/100/12, n=yrs*12;
+    return m===0?monthly*n:monthly*((Math.pow(1+m,n)-1)/m); }
+  var maxV=Math.max.apply(null,rates.map(function(x){return fv(x.r)}))*1.06;
+  var X=function(t){return PL+(W-PL-PR)*t/yrs}, Y=function(v){return PT+(H-PT-PB)*(1-v/maxV)};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"積立の推移シミュレーション"});
+  var NICE=[1e6,2e6,5e6,1e7,2e7,2.5e7,5e7];
+  var step=NICE.filter(function(x){return maxV/x<=6})[0]||1e8;
+  for(var v=0;v<=maxV;v+=step){
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:Y(v),y2:Y(v),stroke:css("--grid")}));
+    svg.appendChild(el("text",{x:PL-8,y:Y(v)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},(v/10000).toFixed(0)+"万"));
+  }
+  for(var t=0;t<=yrs;t+=Math.max(1,Math.round(yrs/6))){
+    svg.appendChild(el("text",{x:X(t),y:H-PB+16,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},t+"年"));
+  }
+  var ends=[];
+  rates.forEach(function(x){
+    var d="", m=x.r/100/12;
+    for(var t=0;t<=yrs;t+=0.25){ var n=t*12;
+      var v=m===0?monthly*n:monthly*((Math.pow(1+m,n)-1)/m);
+      d+=(d?" L":"M")+X(t)+","+Y(v); }
+    svg.appendChild(el("path",{d:d,fill:"none",stroke:css(x.c),"stroke-width":2.2,
+      "stroke-dasharray":x.fx?"5 3":""}));
+    ends.push({y:Y(fv(x.r)), c:css(x.c), t:x.n+" "+x.r.toFixed(2)+"%", v:fv(x.r), dash:x.fx});
+  });
+  /* ラベルは2行ぶんの高さが要るので、最低32px空ける */
+  ends.sort(function(a,b){return a.y-b.y});
+  for(var i=1;i<ends.length;i++) if(ends[i].y-ends[i-1].y<32) ends[i].y=ends[i-1].y+32;
+  var over=ends.length?ends[ends.length-1].y-(H-PB-4):0;
+  if(over>0) ends.forEach(function(e){ e.y-=over; });
+  ends.forEach(function(e){
+    svg.appendChild(el("line",{x1:W-PR+6,x2:W-PR+22,y1:e.y,y2:e.y,stroke:e.c,"stroke-width":2.4,
+      "stroke-dasharray":e.dash?"4 3":"","stroke-linecap":"round"}));
+    svg.appendChild(el("text",{x:W-PR+27,y:e.y+3,fill:css("--ink-2"),"font-size":10.5,"font-family":'"Zen Kaku Gothic New",sans-serif'},e.t));
+    svg.appendChild(el("text",{x:W-PR+27,y:e.y+16,fill:css("--ink-3"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace","font-weight":600},fmt(Math.round(e.v/10000))+"万円"));
+  });
+  host2.appendChild(svg);
+  legend("tkSimLegend",[["--s1","実線＝円のまま（為替の影響を受けない）"],
+    ["--s4","破線＝為替リスクを取る場合"]]);
+
+  document.getElementById("tkSimLede").textContent=
+    "上の上限を毎月に割ると月 "+fmt(monthly)+"円。これを"+age+"歳から65歳まで（"+yrs+"年）積み立てた場合です。"+
+    "利回りはすべて公開統計の実測値で、将来を予測するものではありません。";
+  var base=fv(0.2), best=fv(D.tosai.fx.rows[0].rate), jp=fv(D.jgb.curve[9]);
+  document.getElementById("tkOut").innerHTML=
+    '<strong>いま動かせる分。</strong>制度を上限まで使うと、税金が減る分だけで年 <b class="big">'+fmt(totalSave)+'円</b>。'+
+    yrs+'年ぶんでは '+fmt(totalSave*yrs)+'円になります。これは運用の成績に関係なく確定する部分です。'+
+    '<br><br><strong>運用でつく差。</strong>同じ月'+fmt(monthly)+'円を預金のまま置くと'+yrs+'年後に '+fmt(Math.round(base))+'円。'+
+    '円のまま国債で運用すると '+fmt(Math.round(jp))+'円（差 +'+fmt(Math.round(jp-base))+'円）。'+
+    '為替リスクを取って外貨建てなら '+fmt(Math.round(best))+'円（差 +'+fmt(Math.round(best-base))+'円）ですが、'+
+    '円高が進めばこの差は縮み、逆転もします（詳しくはパネル07）。';
+  document.getElementById("tkNote").innerHTML=
+    "積立の計算は複利・毎月末払い・手数料と税金を考慮しない単純化です。"+
+    "利回りの出典：日本国債＝財務省（"+D.jgb.asOf+"）、米国債＝"+D.world.label+"（"+D.world.asOf+"）、"+
+    "外貨建て都債＝東京都財務局。"+D.world.note+
+    "　制度の詳細は "+T.links.map(function(l){
+      return '<a href="'+l[1]+'" target="_blank" rel="noopener">'+l[0]+'</a>'; }).join(" ／ ")+" でご確認ください。";
+}
+
+function runLoan(){
+  var G=D.rateGap, J=D.jgb;
+  var host=document.getElementById("lnMetrics"); if(!host) return;
+  var amt=+document.getElementById("lnAmt").value;
+  var rate=+document.getElementById("lnRate").value;
+  var yrs=+document.getElementById("lnYears").value;
+  var band=rate<1?0:(rate<2?1:2);
+  var share=G.smeRate[band];
+  var spread=rate-J.curve[1];        /* 国債2年との差 */
+  var addPerYear=Math.round(amt*0.01);
+  host.innerHTML=
+    '<div class="metric"><div class="mk">同じ金利帯にいる企業</div><div class="mv">'+share.toFixed(1)+'<span style="font-size:13px">%</span></div><div class="md">'+G.smeRateLabels[band]+'（前回 '+G.smeRatePrev[band].toFixed(1)+'%）</div></div>'+
+    '<div class="metric"><div class="mk">国債2年との差</div><div class="mv" style="color:'+(spread<0?"var(--st-warn)":"var(--ink)")+'">'+sgn(spread,2)+'<span style="font-size:13px">pt</span></div><div class="md">国債2年 '+J.curve[1].toFixed(3)+'%（'+J.asOf+'）</div></div>'+
+    '<div class="metric"><div class="mk">金利が1%上がったら</div><div class="mv" style="color:var(--st-crit)">+'+fmt(addPerYear)+'<span style="font-size:13px">円/年</span></div><div class="md">'+yrs+'年で +'+fmt(addPerYear*yrs)+'円</div></div>';
+  var C=D.corr;
+  var best=C.rateScan?C.rateScan.reduce(function(a,b){return Math.abs(b.best.r)>Math.abs(a.best.r)?b:a}):null;
+  document.getElementById("lnNote").innerHTML=
+    '<strong>読み方。</strong>いまの'+rate.toFixed(1)+'％は、都内中小企業では「'+G.smeRateLabels[band]+'」に入り、回答企業の'+share.toFixed(1)+'％がこの帯にいます。'+
+    (spread<0
+      ? '国債2年（'+J.curve[1].toFixed(3)+'％）を<strong>下回っています</strong>。制度融資や保証付きなど、金利が抑えられている条件である可能性があります。市場金利が上がるほど、この条件の価値は大きくなります。'
+      : '国債2年に対する上乗せは '+spread.toFixed(2)+'ポイントです。')+
+    '<br><br><strong>備えるべき金額。</strong>借入'+fmt(amt)+'円で金利が1％上がると、年 '+fmt(addPerYear)+'円、'+yrs+'年で '+fmt(addPerYear*yrs)+'円の追加負担になります。'+
+    (best?'本サービスの分析では、金利の影響が景況に表れるまで約'+best.best.lag+'か月かかっていました。いま動くほうが選択肢は多く残ります。':'')+
+    '<br><br><strong>次にやること。</strong>変動で借りているなら固定への切替条件を、固定なら借換えの手数料込みの損益を、取引金融機関に確認する。'+
+    '信用保証協会の保証付き融資は金利と保証料の合計で比べる。'+
+    'パネル06の「相談メモをつくる」に業種と使いみちを入れると、この数字を含んだ相談文が出ます。'+
+    '<br><br><span style="color:var(--ink-3)">※ 追加負担額は残高が一定と仮定した単純計算です。元金均等・元利均等など返済方式により実際の金額は変わります。</span>';
+}
+
+/* ---------------- 08 数字が制度に返すもの ---------------- */
+/* ---------------- 08 打ち手 ---------------- */
+function renderActions(){
+  var A=D.actions; if(!A) return;
+  var host=document.getElementById("actList"); if(!host) return;
+  host.innerHTML=A.map(function(a){
+    var both=a.to.length>1;
+    return '<li>'+a.to.map(function(t){
+        return '<span class="tg'+(both?' both':'')+'">'+t+'</span>'; }).join("")+
+      '<strong>'+a.name+'</strong>'+a.fact+'　<span style="color:var(--ink-3)">'+a.risk+'</span></li>';
+  }).join("");
+
+  document.getElementById("actLimit").innerHTML=
+    'これらは<strong>本サービスが計算した数字だけを根拠にした提案</strong>であり、東京都の方針でも、実現可能性を検証した政策案でもありません。'+
+    '相関は因果を示すものではなく、費用の試算も制度設計の詰めも行っていません。'+
+    '資産形成制度の利用率は特別区（23区）のデータが取れておらず、最も人口の多い地域が測れていない点も未解決です。'+
+    '打ち手ごとに留意点を併記しているのは、この提案がどこまで言えてどこから言えないかを、読む側が判断できるようにするためです。';
+}
+
+/* ============================================================
+   v4 追加：資金地図・上場市場・連関・投資機会
+   ============================================================ */
+
+function renderMapHero(){
+  var C=D.corr, k=D.finance.kakei, last=k.years.length-1;
+  var surplus=k.kashobun[last]-k.shohishishutsu[last];
+  var i=C.labels.indexOf("国債10年"), j=C.labels.indexOf("業況DI");
+  var r=C.matrix[i][j];
+  var best=C.rateScan?C.rateScan.reduce(function(a,b){return Math.abs(b.best.r)>Math.abs(a.best.r)?b:a}):null;
+  document.getElementById("heroCorr").textContent=best?("r = "+best.best.r.toFixed(2)):("r = "+r.toFixed(2));
+  var hn=document.getElementById("heroCorrNote");
+  if(hn&&best) hn.textContent="同じ月で並べると r = "+r.toFixed(2)+"。"+best.best.lag+"か月ずらすと関係が現れます";
+  var el2=document.getElementById("surplus2"); if(el2) el2.textContent=fmt(surplus);
+  var f=D.finance, F=D.foreign, M=D.market;
+  document.getElementById("mapTiles").innerHTML=
+    '<div class="tile"><span class="k">海外投資家シェア（プライム）</span><span class="v">'+F.share.prime[3].toFixed(1)+'<span style="font-size:14px">%</span></span><span class="d">委託売買代金ベース・2025年</span></div>'+
+    '<div class="tile"><span class="k">上場会社数 / 景況調査対象</span><span class="v">'+fmt(M.listedTotal)+'<span style="font-size:14px"> / '+fmt(D.meta.sampleSize)+'</span></span><span class="d">ほぼ同数の企業が別の市場に生きています</span></div>'+
+    '<div class="tile"><span class="k">業況DIが0を下回った月</span><span class="v" style="color:var(--st-crit)">'+D.meta.n+'<span style="font-size:14px"> / '+D.meta.n+'</span></span><span class="d">2005年5月以降、一度も0を超えていません</span></div>'+
+    '<div class="tile"><span class="k">都内勤労者世帯の月次残額</span><span class="v" style="color:var(--accent)">'+fmt(surplus)+'</span><span class="d">円（可処分所得−消費支出・2023年）</span></div>';
+}
+
+function drawFlowMap(){
+  var F=D.foreign, M=D.market, k=D.finance.kakei, last=k.years.length-1;
+  var surplus=k.kashobun[last]-k.shohishishutsu[last];
+  var jgb=D.jgb.curve[9];
+  var nodes=[
+    {lv:"Layer 1 — Global", nm:"海外投資家", big:F.share.prime[3].toFixed(1)+"%",
+     dt:"東証プライムの委託売買代金に占めるシェア。75.3%が欧州経由。"},
+    {lv:"Layer 2 — Listed", nm:"上場企業", big:fmt(M.listedTotal)+"社",
+     dt:"プライム1,656／スタンダード1,619／グロース562。時価総額の96.1%がプライムに集中。"},
+    {lv:"Layer 3 — SME", nm:"非上場の中小企業", big:fmt(D.meta.sampleSize)+"社",
+     dt:"景況調査の対象。業況DIは255か月連続でマイナス。海外投資家が売買できる市場はありません。", cut:true},
+    {lv:"Layer 4 — Households", nm:"都民の家計", big:fmt(surplus)+"円",
+     dt:"勤労者世帯の月次残額。NISAで買えるのは上場3,837社まで。国債10年は"+jgb.toFixed(3)+"%。"}
+  ];
+  document.getElementById("flowMap").innerHTML=nodes.map(function(n){
+    return '<div class="node'+(n.cut?' cut':'')+'"><span class="lv">'+n.lv+'</span>'+
+      '<span class="nm">'+n.nm+'</span><span class="big">'+n.big+'</span><span class="dt">'+n.dt+'</span></div>';
+  }).join("");
+}
+
+function renderForeign(){
+  var F=D.foreign;
+  document.getElementById("foreignTiles").innerHTML=
+    '<div class="tile"><span class="k">プライム</span><span class="v">'+F.share.prime[3].toFixed(1)+'<span style="font-size:14px">%</span></span><span class="d">2022年 '+F.share.prime[0].toFixed(1)+'% から低下</span></div>'+
+    '<div class="tile"><span class="k">スタンダード</span><span class="v">'+F.share.standard[3].toFixed(1)+'<span style="font-size:14px">%</span></span><span class="d">2022年 '+F.share.standard[0].toFixed(1)+'% から上昇</span></div>'+
+    '<div class="tile"><span class="k">グロース</span><span class="v">'+F.share.growth[3].toFixed(1)+'<span style="font-size:14px">%</span></span><span class="d">新興市場ほど海外マネーは薄い</span></div>'+
+    '<div class="tile"><span class="k">プライム 買越額（2025年）</span><span class="v" style="color:var(--st-good)">+'+(F.net2025Prime/1e9).toFixed(1)+'<span style="font-size:14px">兆円</span></span><span class="d">売り'+(F.value2025.prime/2/1e9).toFixed(0)+'兆円規模の売買のなかでの差引き</span></div>';
+  document.getElementById("foreignMetrics").innerHTML=
+    '<div class="metric"><div class="mk">欧州経由</div><div class="mv">'+F.regionShare[0].toFixed(1)+'<span style="font-size:13px">%</span></div><div class="md">買越 +'+(F.regionNet[0]/1e9).toFixed(2)+'兆円</div></div>'+
+    '<div class="metric"><div class="mk">アジア経由</div><div class="mv">'+F.regionShare[1].toFixed(1)+'<span style="font-size:13px">%</span></div><div class="md">買越 +'+(F.regionNet[1]/1e9).toFixed(2)+'兆円</div></div>'+
+    '<div class="metric"><div class="mk">北米経由</div><div class="mv">'+F.regionShare[2].toFixed(1)+'<span style="font-size:13px">%</span></div><div class="md">買越 +'+(F.regionNet[2]/1e9).toFixed(2)+'兆円</div></div>';
+}
+
+function drawMarketTable(){
+  var M=D.market, F=D.foreign;
+  var h='<table><thead><tr><th class="l">市場区分</th><th>上場会社数</th><th>会社数シェア</th><th>時価総額シェア</th><th>売買回転率</th><th>配当利回り</th><th>海外投資家シェア</th></tr></thead><tbody>';
+  M.segments.forEach(function(m){
+    h+='<tr><td style="font-weight:700">'+m.name+'</td><td>'+fmt(m.listed[1])+'</td><td>'+m.listedShare.toFixed(1)+'%</td><td>'+m.capShare.toFixed(1)+'%</td><td>'+m.turnover[1].toFixed(1)+'%</td><td>'+m.yield.toFixed(2)+'%</td><td>'+F.share[m.key][3].toFixed(1)+'%</td></tr>';
+  });
+  h+='<tr><td style="font-weight:700">非上場の都内中小企業</td><td>'+fmt(D.meta.sampleSize)+'</td><td>—</td><td>—</td><td>—</td><td>—</td><td style="color:var(--st-crit);font-weight:600">0.0%</td></tr>';
+  document.getElementById("marketTable").innerHTML=h+'</tbody></table>';
+}
+
+function drawTurnYield(){
+  var M=D.market, host=document.getElementById("turnYield"); host.innerHTML="";
+  var LW=92,W=520,RH=46,PT=8,RIGHT=58,H=PT+M.segments.length*RH+6;
+  var maxT=450, maxY=2.5;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"市場区分別の売買回転率と配当利回り"});
+  M.segments.forEach(function(m,i){
+    var yy=PT+i*RH;
+    svg.appendChild(el("text",{x:0,y:yy+24,fill:css("--ink-2"),"font-size":12,"font-family":'"Zen Kaku Gothic New",sans-serif'},m.name));
+    [[m.turnover[1]/maxT,"--s2","売買回転率",m.turnover[1].toFixed(1)+"%"],
+     [m.yield/maxY,"--s1","配当利回り",m.yield.toFixed(2)+"%"]].forEach(function(p,j){
+      var w=(W-LW-RIGHT)*Math.min(p[0],1), yb=yy+6+j*16;
+      var rr=el("rect",{x:LW,y:yb,width:Math.max(w,2),height:12,fill:css(p[1]),opacity:.88,rx:2});
+      rr.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+        '<div class="th">'+m.name+'</div><div class="tr"><span>売買回転率</span><b>'+m.turnover[1].toFixed(1)+'%</b></div><div class="tr"><span>配当利回り</span><b>'+m.yield.toFixed(2)+'%</b></div>'); });
+      rr.addEventListener("mouseleave",hideTip); svg.appendChild(rr);
+      svg.appendChild(el("text",{x:LW+Math.max(w,2)+6,y:yb+10,fill:css("--ink-2"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace","font-weight":600},p[3]));
+    });
+  });
+  host.appendChild(svg);
+  legend("turnYieldLegend",[["--s2","売買回転率（右端の目盛 450%）","box"],["--s1","配当利回り（右端の目盛 2.5%）","box"]]);
+}
+
+var TSE_M={202301:[704862290,990.99],202302:[709953448,1021.69],202303:[713395363,1023.64],
+  202304:[730509365,1037.58],202305:[754195866,1093.84],202306:[810720413,1160.91],
+  202307:[823128416,1169.75],202308:[826779912,1175.48],202310:[796750455,1168.64],
+  202311:[840545330,1212.69],202312:[833007509,1208.20]};
+function drawTseMonthly(){
+  var host=document.getElementById("tseMonthly"); host.innerHTML="";
+  var ks=Object.keys(TSE_M).map(Number).sort();
+  var W=760,H=220,PL=52,PR=108,PT=16,PB=30;
+  var idx=ks.map(function(k){return TSE_M[k][1]});
+  var lo=950, hi=1250;
+  var x=function(i){return PL+(W-PL-PR)*i/(ks.length-1)}, y=function(v){return PT+(H-PT-PB)*(hi-v)/(hi-lo)};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"東証プライム株価指数の月次推移（2023年）"});
+  for(var t=lo;t<=hi;t+=50){
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:y(t),y2:y(t),stroke:css("--grid")}));
+    svg.appendChild(el("text",{x:PL-8,y:y(t)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},t));
+  }
+  var d="";
+  idx.forEach(function(v,i){ d+=(d?" L":"M")+x(i)+","+y(v); });
+  svg.appendChild(el("path",{d:d,fill:"none",stroke:css("--s1"),"stroke-width":2}));
+  idx.forEach(function(v,i){
+    var c=el("circle",{cx:x(i),cy:y(v),r:4,fill:css("--s1"),stroke:css("--surface"),"stroke-width":2});
+    c.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+      '<div class="th">'+ymJa(ks[i])+'</div><div class="tr"><span>株価指数</span><b>'+v.toFixed(2)+'</b></div><div class="tr"><span>時価総額</span><b>'+fmt(TSE_M[ks[i]][0])+'</b></div>'); });
+    c.addEventListener("mouseleave",hideTip); svg.appendChild(c);
+  });
+  var lv=idx[idx.length-1];
+  svg.appendChild(el("line",{x1:W-PR+6,x2:W-PR+16,y1:y(lv),y2:y(lv),stroke:css("--s1"),"stroke-width":3,"stroke-linecap":"round"}));
+  svg.appendChild(el("text",{x:W-PR+21,y:y(lv)+4,fill:css("--ink-2"),"font-size":11,"font-family":'"Zen Kaku Gothic New",sans-serif'},"プライム指数 "+lv.toFixed(0)));
+  ks.forEach(function(k,i){ if(i%2) return;
+    svg.appendChild(el("text",{x:x(i),y:H-9,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},String(k).slice(4)+"月")); });
+  host.appendChild(svg);
+  legend("tseMonthlyLegend",[["--s1","東証プライム市場株価指数（月中平均）"]]);
+}
+
+/* ---------------- 連関 ---------------- */
+function corrColor(v){
+  if(v==null) return css("--surface-2");
+  var R=RAMP[isDark()?"dark":"light"];
+  return v<0 ? rampColor(R.neg, -v*0.9) : rampColor(R.pos, v*0.85);
+}
+function drawCorr(){
+  var C=D.corr, L=C.labels, host=document.getElementById("corrChart"); host.innerHTML="";
+  document.getElementById("corrNote").textContent=C.note+"（n="+C.n+"）";
+  var LW=124, CW=52, CH=30, PT=112, PB=6;
+  var W=LW+L.length*CW+8, H=PT+L.length*CH+PB;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,width:W,role:"img","aria-label":"月次系列どうしの相関マトリクス"});
+  svg.setAttribute("style","min-width:"+W+"px;max-width:100%");
+  L.forEach(function(l,j){
+    var cx=LW+j*CW+CW/2;
+    svg.appendChild(el("text",{x:cx,y:PT-10,fill:css("--ink-2"),"font-size":10.5,
+      "font-family":'"Zen Kaku Gothic New",sans-serif',transform:"rotate(-52 "+cx+" "+(PT-10)+")"},l));
+  });
+  L.forEach(function(rl,i){
+    var y0=PT+i*CH;
+    svg.appendChild(el("text",{x:0,y:y0+CH/2+4,fill:css("--ink-2"),"font-size":11,"font-family":'"Zen Kaku Gothic New",sans-serif'},rl));
+    L.forEach(function(cl,j){
+      var v=C.matrix[i][j];
+      var c=el("rect",{x:LW+j*CW,y:y0,width:CW-2,height:CH-2,fill:corrColor(v),rx:2,stroke:css("--surface"),"stroke-width":1});
+      c.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+        '<div class="th">'+rl+' × '+cl+'</div><div class="tr"><span>相関係数 r</span><b>'+(v==null?"—":v.toFixed(3))+'</b></div><div class="tr"><span>サンプル</span><b>'+C.n+'か月</b></div>'); });
+      c.addEventListener("mouseleave",hideTip);
+      svg.appendChild(c);
+      if(v!=null){
+        var strong=Math.abs(v)>0.55;
+        svg.appendChild(el("text",{x:LW+j*CW+(CW-2)/2,y:y0+CH/2+4,"text-anchor":"middle",
+          fill:strong?"#fff":css("--ink"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace",
+          "font-weight":Math.abs(v)>0.5?600:400},v.toFixed(2)));
+      }
+    });
+  });
+  host.appendChild(svg);
+  var lg=document.getElementById("corrLegend"); lg.innerHTML="";
+  var s=document.createElement("span"); s.className="it";
+  s.innerHTML='<span style="font-family:IBM Plex Mono,monospace;font-size:11px;color:var(--ink-3)">-1.0</span>';
+  var bar=document.createElement("span");
+  bar.style.cssText="display:inline-block;height:12px;width:150px;border:1px solid var(--line-2);background:linear-gradient(90deg,"+[-1,-0.6,-0.3,0,0.3,0.6,1].map(corrColor).join(",")+")";
+  s.appendChild(bar);
+  var e2=document.createElement("span"); e2.style.cssText="font-family:IBM Plex Mono,monospace;font-size:11px;color:var(--ink-3)"; e2.textContent="+1.0";
+  s.appendChild(e2);
+  var lab=document.createElement("span"); lab.style.cssText="font-size:12px;color:var(--ink-2)"; lab.textContent="ピアソンの積率相関係数 r";
+  lg.appendChild(s); lg.appendChild(lab);
+}
+
+function renderFindings(){
+  var C=D.corr;
+  var i=C.labels.indexOf("国債10年"), j=C.labels.indexOf("業況DI");
+  document.getElementById("findR").textContent="r = "+C.matrix[i][j].toFixed(2);
+  document.getElementById("findR2").textContent="r = "+(C.tseVsSme.r==null?"—":C.tseVsSme.r.toFixed(2));
+}
+
+function drawLag(){
+  var C=D.corr, host=document.getElementById("lagChart"); host.innerHTML="";
+  var d=C.lagForecast, W=520,H=220,PL=44,PR=16,PT=18,PB=34;
+  var lo=0.6,hi=0.9;
+  var bw=(W-PL-PR)/d.length, y=function(v){return PT+(H-PT-PB)*(hi-v)/(hi-lo)};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"見通しDIと業況DIのラグ相関"});
+  for(var t=lo;t<=hi+0.001;t+=0.05){
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:y(t),y2:y(t),stroke:css("--grid")}));
+    svg.appendChild(el("text",{x:PL-8,y:y(t)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},t.toFixed(2)));
+  }
+  var best=d.reduce(function(a,b){return b.r>a.r?b:a});
+  d.forEach(function(p,i){
+    var x0=PL+bw*i+8, w=bw-16, h=(H-PT-PB)*(p.r-lo)/(hi-lo);
+    var isBest=(p.lag===best.lag);
+    var rr=el("rect",{x:x0,y:y(p.r),width:w,height:Math.max(h,1),fill:css(isBest?"--s1":"--rule"),opacity:isBest?1:.45,rx:3});
+    rr.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+      '<div class="th">'+p.lag+'か月後</div><div class="tr"><span>相関係数 r</span><b>'+p.r.toFixed(3)+'</b></div><div class="tr"><span>n</span><b>'+p.n+'</b></div>'); });
+    rr.addEventListener("mouseleave",hideTip); svg.appendChild(rr);
+    svg.appendChild(el("text",{x:x0+w/2,y:y(p.r)-6,"text-anchor":"middle",fill:css(isBest?"--ink":"--ink-3"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace","font-weight":isBest?600:400},p.r.toFixed(3)));
+    svg.appendChild(el("text",{x:x0+w/2,y:H-16,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace"},"+"+p.lag));
+  });
+  svg.appendChild(el("text",{x:(PL+W-PR)/2,y:H-3,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10.5,"font-family":'"Zen Kaku Gothic New",sans-serif'},"見通しDI から k か月後の業況DI へ"));
+  host.appendChild(svg);
+  legend("lagLegend",[["--s1","相関が最大の遅れ（+"+best.lag+"か月, r="+best.r.toFixed(3)+"）","box"],["--rule","その他の遅れ","box"]]);
+}
+
+function drawScatterRate(){
+  var host=document.getElementById("scatterRate"); host.innerHTML="";
+  var g=byFull["全体"], jg=D.jgb.monthly.y10;
+  var pts=[];
+  for(var i=0;i<N;i++){
+    var hb=g.hanbai[i], sh=g.shiire[i];
+    if(hb==null||sh==null||jg[i]==null) continue;
+    pts.push({x:jg[i], y:hb-sh, m:MONTHS[i]});
+  }
+  var W=520,H=260,PL=48,PR=16,PT=16,PB=38;
+  var xlo=-0.4,xhi=3.0, ylo=-70,yhi=30;
+  var X=function(v){return PL+(W-PL-PR)*(v-xlo)/(xhi-xlo)}, Y=function(v){return PT+(H-PT-PB)*(yhi-v)/(yhi-ylo)};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"国債10年利回りと価格転嫁ギャップの散布図"});
+  for(var t=ylo;t<=yhi;t+=20){
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:Y(t),y2:Y(t),stroke:css(t===0?"--axis":"--grid"),"stroke-width":t===0?1.5:1}));
+    svg.appendChild(el("text",{x:PL-8,y:Y(t)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},t));
+  }
+  for(var v=0;v<=3;v+=0.5){
+    svg.appendChild(el("line",{x1:X(v),x2:X(v),y1:PT,y2:H-PB,stroke:css("--grid")}));
+    svg.appendChild(el("text",{x:X(v),y:H-PB+16,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},v.toFixed(1)));
+  }
+  pts.forEach(function(p){
+    var c=el("circle",{cx:X(p.x),cy:Y(p.y),r:3,fill:css("--s2"),opacity:.5});
+    c.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+      '<div class="th">'+ymJa(p.m)+'</div><div class="tr"><span>国債10年</span><b>'+p.x.toFixed(3)+'%</b></div><div class="tr"><span>価格転嫁ギャップ</span><b>'+p.y+'</b></div>'); });
+    c.addEventListener("mouseleave",hideTip); svg.appendChild(c);
+  });
+  svg.appendChild(el("text",{x:(PL+W-PR)/2,y:H-4,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10.5,"font-family":'"Zen Kaku Gothic New",sans-serif'},"国債10年利回り（%）"));
+  host.appendChild(svg);
+}
+
+/* ---------------- 投資機会 ---------------- */
+function drawCurve(){
+  var J=D.jgb, host=document.getElementById("curveChart"); host.innerHTML="";
+  document.getElementById("jgbNote").textContent=
+    J.label+"（"+J.asOf+"時点）。10年は "+J.curve[9].toFixed(3)+"%。東証プライムの配当利回り2.21%を上回っており、"+
+    "「株より国債」が成り立つ水準に戻っています。";
+  var W=760,H=250,PL=48,PR=90,PT=16,PB=34;
+  var T=J.tenors, C=J.curve;
+  var lo=1.0,hi=4.5;
+  var x=function(i){return PL+(W-PL-PR)*i/(T.length-1)}, y=function(v){return PT+(H-PT-PB)*(hi-v)/(hi-lo)};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"国債イールドカーブ"});
+  for(var t=1;t<=4.5;t+=0.5){
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:y(t),y2:y(t),stroke:css("--grid")}));
+    svg.appendChild(el("text",{x:PL-8,y:y(t)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},t.toFixed(1)+"%"));
+  }
+  /* 東証プライム配当利回りの基準線 */
+  var pd=D.market.segments[0].yield;
+  svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:y(pd),y2:y(pd),stroke:css("--s2"),"stroke-width":1.5,"stroke-dasharray":"5 4"}));
+  svg.appendChild(el("text",{x:W-PR+6,y:y(pd)+4,fill:css("--s2"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace"},"株式配当 "+pd.toFixed(2)+"%"));
+  var d="", dA="M"+PL+","+(H-PB);
+  C.forEach(function(v,i){ d+=(d?" L":"M")+x(i)+","+y(v); dA+=" L"+x(i)+","+y(v); });
+  dA+=" L"+x(T.length-1)+","+(H-PB)+" Z";
+  svg.appendChild(el("path",{d:dA,fill:css("--s1"),opacity:.12}));
+  svg.appendChild(el("path",{d:d,fill:"none",stroke:css("--s1"),"stroke-width":2.5}));
+  C.forEach(function(v,i){
+    var c=el("circle",{cx:x(i),cy:y(v),r:4,fill:css("--s1"),stroke:css("--surface"),"stroke-width":2});
+    c.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+      '<div class="th">'+T[i]+'年債</div><div class="tr"><span>利回り</span><b>'+v.toFixed(3)+'%</b></div>'); });
+    c.addEventListener("mouseleave",hideTip); svg.appendChild(c);
+    if([0,4,9,11,14].indexOf(i)>=0){
+      svg.appendChild(el("text",{x:x(i),y:y(v)-10,"text-anchor":"middle",fill:css("--ink"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace","font-weight":600},v.toFixed(2)));
+      svg.appendChild(el("text",{x:x(i),y:H-PB+16,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},T[i]+"年"));
+    }
+  });
+  host.appendChild(svg);
+  legend("curveLegend",[["--s1","国債利回り（"+J.asOf+"）"],["--s2","東証プライム 配当利回り（2023年）"]]);
+}
+
+var ACC={ok:"個人でも可",capped:"上限あり",blocked:"経路なし"};
+function drawOpp(){
+  var O=D.opportunities;
+  var h='<thead><tr><th>手段</th><th>利回り</th><th>種類</th><th>リスク</th><th>個人のアクセス</th><th class="note">補足</th></tr></thead><tbody>';
+  O.forEach(function(o){
+    h+='<tr class="'+(o.access==="blocked"?"blocked":"")+'"><td>'+o.name+'</td>'+
+      '<td style="font-weight:600">'+(o.ret==null?"—":o.ret.toFixed(2)+"%")+'</td>'+
+      '<td>'+o.kind+'</td><td>'+o.risk+'</td>'+
+      '<td><span class="acc '+o.access+'">'+ACC[o.access]+'</span></td>'+
+      '<td class="note">'+o.note+'<br><span style="font-family:IBM Plex Mono,monospace;font-size:10.5px">出典：'+o.src+'</span></td></tr>';
+  });
+  document.getElementById("oppTable").innerHTML=h+'</tbody>';
+}
+
+function drawRateGap(){
+  var G=D.rateGap, host=document.getElementById("rateGapChart"); host.innerHTML="";
+  document.getElementById("rateGapNote").textContent=G.note;
+  var W=520,H=180,PL=64,PR=54,PT=14,PB=30;
+  var maxV=45, LW=PL;
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"中小企業の借入金利水準の分布と国債利回り"});
+  var RH=34;
+  G.smeRateLabels.forEach(function(l,i){
+    var yy=PT+i*RH;
+    svg.appendChild(el("text",{x:0,y:yy+18,fill:css("--ink-2"),"font-size":11.5,"font-family":'"Zen Kaku Gothic New",sans-serif'},l));
+    [[G.smeRatePrev[i],"--rule",.45],[G.smeRate[i],"--s1",.9]].forEach(function(p,j){
+      var w=(W-LW-PR)*p[0]/maxV, yb=yy+4+j*13;
+      var rr=el("rect",{x:LW,y:yb,width:Math.max(w,2),height:11,fill:css(p[1]),opacity:p[2],rx:2});
+      rr.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+        '<div class="th">'+l+'</div><div class="tr"><span>今回</span><b>'+G.smeRate[i].toFixed(1)+'%</b></div><div class="tr"><span>前回</span><b>'+G.smeRatePrev[i].toFixed(1)+'%</b></div>'); });
+      rr.addEventListener("mouseleave",hideTip); svg.appendChild(rr);
+    });
+    svg.appendChild(el("text",{x:LW+(W-LW-PR)*G.smeRate[i]/maxV+6,y:yy+18,fill:css("--ink-2"),"font-size":10.5,"font-family":"IBM Plex Mono, monospace","font-weight":600},G.smeRate[i].toFixed(1)+"%"));
+  });
+  host.appendChild(svg);
+  legend("rateGapLegend",[["--s1","今回調査（令和8年5月）","box"],["--rule","前回調査","box"]]);
+  document.getElementById("rateGapMetrics").innerHTML=
+    '<div class="metric"><div class="mk">国債 2年</div><div class="mv">'+G.jgb2.toFixed(3)+'<span style="font-size:13px">%</span></div><div class="md">財務省 2026/8/20</div></div>'+
+    '<div class="metric"><div class="mk">国債 10年</div><div class="mv" style="color:var(--st-crit)">'+G.jgb10.toFixed(3)+'<span style="font-size:13px">%</span></div><div class="md">同上</div></div>'+
+    '<div class="metric"><div class="mk">借入金利「上昇」</div><div class="mv">'+G.trendUp.toFixed(1)+'<span style="font-size:13px">%</span></div><div class="md">回答企業の割合</div></div>';
+}
+
+function renderSmeHero(){
+  var g=byFull["全体"].gyokyo, last=g[N-1], prev=g[N-13];
+  document.getElementById("heroDI").textContent=last;
+  document.getElementById("heroDINote").textContent=D.meta.latestLabel+"　前年同月 "+prev+" → "+sgn(last-prev,0)+"pt";
+  var f=D.finance, S=D.shikin, T=SKby["全体"];
+  document.getElementById("smeTiles").innerHTML=
+    '<div class="tile"><span class="k">資金需要DI（今後3か月）</span><span class="v" style="color:var(--accent)">'+S.demandDI.toFixed(1)+'</span><span class="d">前回 '+S.demandDIPrev.toFixed(1)+'。資金需要は強まっています</span></div>'+
+    '<div class="tile"><span class="k">代位弁済 件数</span><span class="v" style="color:var(--st-crit)">'+fmt(f.hosho.subroCases[4])+'</span><span class="d">2021年度 '+fmt(f.hosho.subroCases[2])+'件の '+(f.hosho.subroCases[4]/f.hosho.subroCases[2]).toFixed(1)+'倍</span></div>'+
+    '<div class="tile"><span class="k">主な取引先が信用金庫</span><span class="v">'+S.bank[1].toFixed(1)+'<span style="font-size:14px">%</span></span><span class="d">都市銀行 '+S.bank[0].toFixed(1)+'%</span></div>'+
+    '<div class="tile"><span class="k">経営者が70歳以上</span><span class="v">'+T.old70.toFixed(1)+'<span style="font-size:14px">%</span></span><span class="d">創業1980年以前が '+T.pre1980.toFixed(1)+'%</span></div>';
+}
+
+function renderStampV4(){
+  document.getElementById("stamp").innerHTML=
+    "景況　<b>"+D.meta.latestLabel+"</b> / <b>"+D.meta.n+"</b> か月<br>"+
+    "国債　<b>"+D.jgb.asOf+"</b> 10年 <b>"+D.jgb.curve[9].toFixed(3)+"%</b><br>"+
+    "海外　<b>2025年</b> プライム <b>"+D.foreign.share.prime[3].toFixed(1)+"%</b>";
+}
+
+/* ---------------- ④ 今月のファイナンス環境 ---------------- */
+var VKEY_COL={loose:"--st-good",tight:"--st-crit",neutral:"--ink"};
+function drawClimate(){
+  var C=D.climate, host=document.getElementById("climate"); if(!host) return;
+  var col=css(VKEY_COL[C.vkey]||"--ink");
+  var h='<div class="clim-top"><span class="vd" style="color:'+col+'">'+C.verdict+'</span>'+
+    '<span class="sc">スコア '+(C.score>0?"+":"")+C.score.toFixed(1)+'</span>'+
+    '<span class="as">'+C.label+'</span></div>'+
+    '<p style="margin:0;font-size:13px;color:var(--ink-2);line-height:1.8">'+
+    '海外・上場・中小・調達コストの四つを同じ月でそろえた結果です。数値はすべて前月比で、判定式は下に全文を置いています。</p>'+
+    '<div class="clim-grid">';
+  C.items.forEach(function(it){
+    var dtxt="—", dcol=css("--ink-3");
+    if(it.d!=null){
+      var better=(it.good==="up")?(it.d>0):(it.d<0);
+      dcol=css(it.d===0?"--ink-3":(better?"--st-good":"--st-crit"));
+      dtxt=(it.d>0?"▲ +":(it.d<0?"▼ ":"– "))+it.d;
+    }
+    h+='<div class="ci"><span class="k">'+it.k+'</span>'+
+       '<span class="v">'+it.v+(it.unit?'<span style="font-size:12px">'+it.unit+'</span>':'')+'</span>'+
+       '<span class="dd" style="color:'+dcol+'">'+(it.d==null?'前月差 —':'前月差 '+dtxt)+'</span>'+
+       '<span class="sr">'+it.src+'</span></div>';
+  });
+  host.innerHTML=h+'</div>';
+  document.getElementById("climFormula").textContent=C.formula+" 判定は毎月の更新データでそのまま再計算されます。";
+}
+
+/* ---------------- ⑥ 個人向け都債 ---------------- */
+function drawTosai(){
+  var T=D.tosai; if(!T) return;
+  var host=document.getElementById("tosaiChart"); if(!host) return;
+  var gap=T.gapYears||12;
+  document.getElementById("tosaiLede").innerHTML=
+    '都民が「東京そのもの」に投資できる唯一の公式な入口が個人向け都債です。'+
+    '円建ては<strong>'+T.jpy.since+'から'+T.jpy.count+'回</strong>発行され、'+T.jpy.lastDate+'の'+T.jpy.lastNo+
+    '（'+T.jpy.term+'年・表面利率'+T.jpy.lastRate.toFixed(2)+'％・'+T.jpy.amountOku+'億円）を最後に止まっています。'+
+    '出典：<a href="'+T.url+'" target="_blank" rel="noopener">'+T.label+'</a>。';
+
+  var rows=T.jpy.rows.slice().reverse();   /* 第1回 → 第18回 */
+  var W=520,H=230,PL=42,PR=94,PT=16,PB=42;
+  var hi=1.2, bw=(W-PL-PR)/rows.length;
+  var y=function(v){return PT+(H-PT-PB)*(hi-v)/hi};
+  var svg=el("svg",{viewBox:"0 0 "+W+" "+H,role:"img","aria-label":"円建て個人向け都債の表面利率の推移"});
+  for(var t=0;t<=hi+0.001;t+=0.2){
+    svg.appendChild(el("line",{x1:PL,x2:W-PR,y1:y(t),y2:y(t),stroke:css(t===0?"--axis":"--grid")}));
+    svg.appendChild(el("text",{x:PL-8,y:y(t)+4,"text-anchor":"end",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},t.toFixed(1)+"%"));
+  }
+  rows.forEach(function(r,i){
+    var x0=PL+bw*i+2, w=Math.max(bw-4,2);
+    var rr=el("rect",{x:x0,y:y(r.rate),width:w,height:Math.max((H-PT-PB)*r.rate/hi,1),fill:css("--s1"),opacity:.85,rx:2});
+    rr.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,
+      '<div class="th">'+r.no+'（'+r.yr+'）</div><div class="tr"><span>表面利率</span><b>'+r.rate.toFixed(2)+'%</b></div>'); });
+    rr.addEventListener("mouseleave",hideTip); svg.appendChild(rr);
+    if(i===0||i===rows.length-1)
+      svg.appendChild(el("text",{x:x0+w/2,y:H-PB+16,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10,"font-family":"IBM Plex Mono, monospace"},r.yr));
+  });
+  /* 発行停止の帯 */
+  var gx=PL+bw*rows.length;
+  svg.appendChild(el("rect",{x:gx,y:PT,width:(W-PR)-gx,height:H-PT-PB,fill:css("--st-crit"),opacity:.07}));
+  svg.appendChild(el("line",{x1:gx,x2:gx,y1:PT,y2:H-PB,stroke:css("--st-crit"),"stroke-width":1.5,"stroke-dasharray":"4 3"}));
+  svg.appendChild(el("text",{x:W-PR+6,y:PT+38,fill:css("--st-crit"),"font-size":11.5,"font-family":'"Zen Kaku Gothic New",sans-serif',"font-weight":700},"発行なし"));
+  svg.appendChild(el("text",{x:W-PR+6,y:PT+54,fill:css("--ink-3"),"font-size":11,"font-family":"IBM Plex Mono, monospace"},gap+"年以上"));
+  svg.appendChild(el("text",{x:(PL+W-PR)/2,y:H-6,"text-anchor":"middle",fill:css("--ink-3"),"font-size":10.5,"font-family":'"Zen Kaku Gothic New",sans-serif'},"第1回（"+rows[0].yr+"）→ 第18回（"+rows[rows.length-1].yr+"）"));
+  host.innerHTML=""; host.appendChild(svg);
+  legend("tosaiLegend",[["--s1","円建て個人向け都債 表面利率","box"],["--st-crit","第18回以降 発行なし","box"]]);
+  document.getElementById("tosaiNote").textContent=
+    "同じ期間に国債10年は "+D.jgb.curve[9].toFixed(3)+"％（"+D.jgb.asOf+"）まで上昇しました。金利が戻ったいま、円建ての窓口は閉じたままです。";
+
+  var f=T.fx, hh='<thead><tr><th>回号</th><th>発行</th><th>年限</th><th>表面利率</th><th>通貨</th><th>発行額</th></tr></thead><tbody>';
+  f.rows.forEach(function(r,i){
+    hh+='<tr'+(i===0?' style="font-weight:700"':'')+'><td>'+r.no+'</td><td>'+r.yr+'</td><td>'+r.term+'年</td><td>'+r.rate.toFixed(2)+'%</td><td>'+r.ccy+'</td><td>'+r.amt+'</td></tr>';
+  });
+  document.getElementById("tosaiFx").innerHTML=hh+'</tbody>';
+  document.getElementById("tosaiFinding").innerHTML='<strong>読み取れること。</strong>'+T.finding;
+
+  var e1=document.getElementById("ineqSme"); if(e1) e1.textContent=fmt(D.meta.sampleSize);
+  var e2=document.getElementById("ineqYears"); if(e2) e2.textContent=gap;
+}
+
+/* ---------------- ② 債券市場・投資環境の概要 ---------------- */
+function drawBondEnv(){
+  var host=document.getElementById("bondEnv"); if(!host) return;
+  var G=D.rateGap, pd=D.market.segments[0].yield, sp=G.jgb10-G.jgb2;
+  host.innerHTML=
+    '<div class="metric"><div class="mk">国債10年（調達コストの土台）</div><div class="mv">'+G.jgb10.toFixed(3)+'<span style="font-size:13px">%</span></div><div class="md">財務省・'+D.jgb.asOf+'</div></div>'+
+    '<div class="metric"><div class="mk">プライム 配当利回り</div><div class="mv">'+pd.toFixed(2)+'<span style="font-size:13px">%</span></div><div class="md">東京都統計年鑑 15-6・2023年</div></div>'+
+    '<div class="metric"><div class="mk">国債10年 − 配当利回り</div><div class="mv" style="color:var(--st-crit)">'+sgn(G.jgb10-pd,2)+'<span style="font-size:13px">pt</span></div><div class="md">プラスなら「配当より国債」</div></div>';
+  var set=function(id,v){ var e=document.getElementById(id); if(e) e.textContent=v; };
+  set("beY10",G.jgb10.toFixed(3)); set("beY10b",G.jgb10.toFixed(3));
+  set("beY2",G.jgb2.toFixed(3)); set("beSpread",sgn(sp,3)); set("beDiv",pd.toFixed(2));
+}
+
+/* ---------------- wiring ---------------- */
+function fillSelect(id){ var s=document.getElementById(id); if(!s) return; s.innerHTML="";
+  IND.forEach(function(r){ var o=document.createElement("option");
+    o.value=r.full; o.textContent=(r.level?"　　":"")+r.full; s.appendChild(o); }); }
+
+/* ---------------- 狭い画面での図の可読性 ----------------
+   SVG は viewBox ごと縮小されるため、画面が狭いと軸ラベルが 3〜7px まで小さくなる。
+   縮めても文字が MINPX を下回らない図はそのまま、下回る図は原寸のまま横スクロールさせる。
+   スクロールが必要になった図にだけ .pan を付け、右端のぼかしと注記で操作できることを示す。 */
+var MINPX = 9;
+function fitCharts(){
+  /* 横スクロールに切り替えるのは、画面そのものが狭いときだけ。
+     広い画面では2段組の中に図が収まっているので、そのまま縮小して表示する。 */
+  var narrow = window.innerWidth < 760;
+  document.querySelectorAll(".chart").forEach(function(host){
+    var svg=host.firstElementChild;
+    if(!svg||svg.tagName.toLowerCase()!=="svg") return;
+    if(svg.dataset.mw===undefined) svg.dataset.mw=svg.style.minWidth||"";   /* 図が自分で指定した下限 */
+    var vb=svg.viewBox.baseVal.width;
+    var avail=host.clientWidth;
+    if(!vb||!avail) return;
+    var small=99;
+    svg.querySelectorAll("text").forEach(function(t){
+      var f=parseFloat(t.getAttribute("font-size"));
+      if(f&&f<small) small=f;
+    });
+    var own=parseFloat(svg.dataset.mw)||0;
+    var need=own;
+    /* 原寸まで広げても文字は small px にしかならないので、そこが上限 */
+    if(narrow&&small<99&&small*avail/vb<MINPX) need=Math.max(own,Math.min(vb,Math.ceil(vb*MINPX/small)));
+    svg.style.minWidth=need?need+"px":"";
+    var pan=need>avail+1;
+    host.classList.toggle("pan",pan);
+    var hint=host.nextElementSibling;
+    var isHint=hint&&hint.classList&&hint.classList.contains("panhint");
+    if(pan&&!isHint){
+      var h=document.createElement("p"); h.className="panhint";
+      h.textContent="図は横にスクロールできます →";
+      host.parentNode.insertBefore(h,host.nextSibling);
+    }else if(!pan&&isHint){ hint.remove(); }
+  });
+}
+
+function renderAll(){
+  renderStampV4();
+  renderMapHero(); drawFlowMap(); drawIneqStrip(); drawLadder(); drawRatio(); renderRatioNote();
+  renderForeign(); drawRegion(); drawForeignTrend(); renderPolicy();
+  drawBondEnv(); drawMarketTable(); drawMarketBars(); drawTurnYield(); drawTseMonthly();
+  renderSmeHero(); drawHero(); drawShikin(); drawSubro(); drawHosho(); drawHeat();
+  renderEquityGap(); drawGrowth();
+  drawUrgency(); singleStack("ageOverview","ageOverviewLegend",SK.ageLabels,SKby["全体"].age,"age");
+  drawClimate(); renderFindings(); drawRateScan(); drawLadderRate();
+  drawCorr(); drawLag(); drawScatterRate();
+  renderDiag(); drawRateGap(); renderRateGapPlain(); buildMemo();
+  drawCurve(); drawTosai(); renderInequality(); drawCarry2(); drawFxHistory(); renderIvFilter();
+  drawOpp(); drawRoutes();
+  renderActions(); runTool(); runLoan();
+  renderLogic();
+  fitCharts();
+}
+
+document.querySelectorAll(".lens-btn").forEach(function(b){
+  b.addEventListener("click",function(){
+    document.querySelectorAll(".lens-btn").forEach(function(x){x.setAttribute("aria-selected","false")});
+    b.setAttribute("aria-selected","true");
+    document.querySelectorAll(".panel").forEach(function(p){p.classList.remove("on")});
+    document.getElementById("panel-"+b.dataset.lens).classList.add("on");
+    fitCharts();
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+});
+fillSelect("dgInd");
+document.getElementById("dgInd").value="製造業";
+["dgInd","dgSize","dgUse"].forEach(function(id){
+  document.getElementById(id).addEventListener("change",function(){ renderDiag(); buildMemo(); }); });
+wireMemo(); wireIv(); tkInit();
+renderAll();
+var mq=window.matchMedia("(prefers-color-scheme: dark)");
+if(mq.addEventListener) mq.addEventListener("change",renderAll);
+new MutationObserver(renderAll).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+var rt; window.addEventListener("resize",function(){ clearTimeout(rt); rt=setTimeout(function(){HEAT=null;drawHeat();drawCorr();fitCharts();},200); });
+})();
+
+</script>
