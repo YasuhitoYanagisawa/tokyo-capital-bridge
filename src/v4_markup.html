@@ -165,13 +165,14 @@ ul.pts li .tg.both{color:var(--st-good);border-color:var(--st-good)}
   <div class="lenses-inner">
     <button class="lens-btn" role="tab" aria-selected="true" data-lens="0"><span class="idx">01</span>東京の資金地図</button>
     <button class="lens-btn" role="tab" aria-selected="false" data-lens="1"><span class="idx">02</span>外国からの資金</button>
-    <button class="lens-btn" role="tab" aria-selected="false" data-lens="2"><span class="idx">03</span>上場企業の資金</button>
-    <button class="lens-btn" role="tab" aria-selected="false" data-lens="3"><span class="idx">04</span>中小企業の資金</button>
-    <button class="lens-btn" role="tab" aria-selected="false" data-lens="4"><span class="idx">05</span>連関</button>
-    <button class="lens-btn" role="tab" aria-selected="false" data-lens="5"><span class="idx">06</span>事業者：資金調達</button>
-    <button class="lens-btn" role="tab" aria-selected="false" data-lens="6"><span class="idx">07</span>投資家：投資機会</button>
-    <button class="lens-btn" role="tab" aria-selected="false" data-lens="7"><span class="idx">08</span>入口をひらく</button>
-    <button class="lens-btn" role="tab" aria-selected="false" data-lens="8"><span class="idx">09</span>データと判定ロジック</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="2"><span class="idx">03</span>日本から海外へ</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="3"><span class="idx">04</span>上場企業の資金</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="4"><span class="idx">05</span>中小企業の資金</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="5"><span class="idx">06</span>連関</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="6"><span class="idx">07</span>事業者：資金調達</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="7"><span class="idx">08</span>投資家：投資機会</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="8"><span class="idx">09</span>入口をひらく</button>
+    <button class="lens-btn" role="tab" aria-selected="false" data-lens="9"><span class="idx">10</span>データと判定ロジック</button>
   </div>
 </nav>
 
@@ -266,8 +267,101 @@ ul.pts li .tg.both{color:var(--st-good);border-color:var(--st-good)}
   </div>
 </section>
 
-<!-- ================= 03 上場企業の資金 ================= -->
+<!-- ================= 03 日本から海外へ ================= -->
 <section class="panel" id="panel-2" role="tabpanel">
+
+  <div class="hero">
+    <div class="hero-top">
+      <div class="hero-figure">
+        <span class="lab">Outward assets</span>
+        <span class="val" id="obAsset">—</span>
+        <span class="note">日本の対外資産（2025年末）</span>
+      </div>
+      <div class="hero-figure">
+        <span class="lab">Net</span>
+        <span class="val" id="obNet">—</span>
+        <span class="note">対外純資産</span>
+      </div>
+      <p class="hero-lede" id="obLede"></p>
+    </div>
+    <div class="tiles" id="obTiles"></div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Where the money goes</div>
+    <h2>証券投資 768.7兆円は、どこへ行っているか</h2>
+    <p class="sub" id="obSecLede"></p>
+    <div class="finding">
+      <span class="r" id="obSecR">—</span>
+      <p id="obSecNote"></p>
+    </div>
+    <div class="chart" id="obSecChart"></div>
+    <div class="legend" id="obSecLegend"></div>
+    <p class="note-sm" id="obSecFoot"></p>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Two kinds of money</div>
+    <h2>お金の種類で、行き先が違う</h2>
+    <p class="sub" id="obMixLede"></p>
+    <div class="chart" id="obMixChart"></div>
+    <div class="legend" id="obMixLegend"></div>
+    <div class="diag-why" style="margin-top:16px" id="obMixFinding"></div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Lending</div>
+    <h2>投資だけではない。貸してもいる</h2>
+    <p class="sub" id="obLoanLede"></p>
+    <div class="chart" id="obLoanChart"></div>
+    <div class="legend" id="obLoanLegend"></div>
+    <p class="note-sm" id="obLoanFoot"></p>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Carry trade, measured</div>
+    <h2>円キャリートレードの規模</h2>
+    <p class="sub" id="obYenLede"></p>
+    <div class="finding">
+      <span class="r" id="obYenR">—</span>
+      <p id="obYenNote"></p>
+    </div>
+    <div class="grid g2">
+      <div>
+        <h3 style="font-size:14px;margin-bottom:8px">通貨別（海外の非銀行向け）</h3>
+        <div class="chart" id="obYenSplit"></div>
+        <div class="legend" id="obYenSplitLegend"></div>
+      </div>
+      <div>
+        <h3 style="font-size:14px;margin-bottom:8px">円建て債権の相手国</h3>
+        <div class="chart" id="obYenChart"></div>
+        <p class="note-sm" id="obYenFoot"></p>
+      </div>
+    </div>
+    <div class="diag-why" style="margin-top:18px" id="obYenCaution"></div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">One address, three statistics</div>
+    <h2>ケイマン諸島という通り道</h2>
+    <p class="sub">別々に集計された3つの統計に、同じ地名が上位で現れます。</p>
+    <div class="tblwrap"><table class="opp" id="obCayTable"></table></div>
+    <div class="diag-why" style="margin-top:18px" id="obCayFinding"></div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow">Both directions</div>
+    <h2>出ていく資金と、入ってくる資金</h2>
+    <p class="sub" id="obInLede"></p>
+    <div class="chart" id="obInChart"></div>
+    <div class="legend" id="obInLegend"></div>
+    <p class="note-sm" id="obInFoot"></p>
+  </div>
+
+</section>
+
+<!-- ================= 04 上場企業の資金 ================= -->
+<section class="panel" id="panel-3" role="tabpanel">
   <div class="card">
     <div class="eyebrow">Overview</div>
     <h2>投資環境の概要</h2>
@@ -315,8 +409,8 @@ ul.pts li .tg.both{color:var(--st-good);border-color:var(--st-good)}
   </div>
 </section>
 
-<!-- ================= 04 中小企業の資金 ================= -->
-<section class="panel" id="panel-3" role="tabpanel">
+<!-- ================= 05 中小企業の資金 ================= -->
+<section class="panel" id="panel-4" role="tabpanel">
   <div class="hero" style="margin-top:0">
     <div class="hero-top">
       <div class="hero-figure">
@@ -404,8 +498,8 @@ ul.pts li .tg.both{color:var(--st-good);border-color:var(--st-good)}
   </div>
 </section>
 
-<!-- ================= 05 連関 ================= -->
-<section class="panel" id="panel-4" role="tabpanel">
+<!-- ================= 06 連関 ================= -->
+<section class="panel" id="panel-5" role="tabpanel">
   <div class="card">
     <div class="eyebrow">This month</div>
     <h2>今月のファイナンス環境</h2>
@@ -479,8 +573,8 @@ ul.pts li .tg.both{color:var(--st-good);border-color:var(--st-good)}
   </div>
 </section>
 
-<!-- ================= 06 事業者：資金調達 ================= -->
-<section class="panel" id="panel-5" role="tabpanel">
+<!-- ================= 07 事業者：資金調達 ================= -->
+<section class="panel" id="panel-6" role="tabpanel">
   <div class="card">
     <div class="eyebrow">Diagnosis</div>
     <h2>いま必要な資金の種類を判定する</h2>
@@ -572,8 +666,8 @@ ul.pts li .tg.both{color:var(--st-good);border-color:var(--st-good)}
   </div>
 </section>
 
-<!-- ================= 07 投資家：投資機会 ================= -->
-<section class="panel" id="panel-6" role="tabpanel">
+<!-- ================= 08 投資家：投資機会 ================= -->
+<section class="panel" id="panel-7" role="tabpanel">
   <div class="card">
     <div class="eyebrow">Yield curve</div>
     <h2>いまの利回り：国債イールドカーブ</h2>
@@ -724,8 +818,8 @@ ul.pts li .tg.both{color:var(--st-good);border-color:var(--st-good)}
   </div>
 </section>
 
-<!-- ================= 08 入口をひらく（ツール） ================= -->
-<section class="panel" id="panel-7" role="tabpanel">
+<!-- ================= 09 入口をひらく（ツール） ================= -->
+<section class="panel" id="panel-8" role="tabpanel">
   <div class="hero" style="margin-top:0">
     <div class="hero-top">
       <div class="hero-figure">
@@ -816,8 +910,8 @@ ul.pts li .tg.both{color:var(--st-good);border-color:var(--st-good)}
   </div>
 </section>
 
-<!-- ================= 09 データとロジック ================= -->
-<section class="panel" id="panel-8" role="tabpanel">
+<!-- ================= 10 データとロジック ================= -->
+<section class="panel" id="panel-9" role="tabpanel">
   <div class="card">
     <div class="eyebrow">Engine</div>
     <h2>判定ロジック（全文）</h2>

@@ -850,3 +850,333 @@ function renderActions(){
     '資産形成制度の利用率は特別区（23区）のデータが取れておらず、最も人口の多い地域が測れていない点も未解決です。'+
     '打ち手ごとに留意点を併記しているのは、この提案がどこまで言えてどこから言えないかを、読む側が判断できるようにするためです。';
 }
+
+/* ================= 03 日本から海外へ =================
+   財務省「本邦対外資産負債残高（地域別）」と、日本銀行が公表するBIS統計の日本分。
+   東京への流入（パネル02）と向きが逆のデータで、同じ資金循環の裏側にあたる。 */
+
+/* 国名は図の中では短く出す */
+var OB_SHORT = {"アメリカ合衆国":"アメリカ","ケイマン諸島":"ケイマン","ルクセンブルク":"ルクセンブルク",
+  "中華人民共和国":"中国","バミューダ諸島":"バミューダ","オーストラリア":"豪州","大韓民国":"韓国",
+  "シンガポール":"シンガポール","アイルランド":"アイルランド"};
+function obN(n){ return OB_SHORT[n] || n; }
+
+function renderOutHero(){
+  var O = D.outbound; if(!O) return;
+  var I = O.iip;
+  var a = document.getElementById("obAsset"); if(!a) return;
+  a.textContent = fmt(I["対外資産"], 1) + "兆円";
+  document.getElementById("obNet").textContent = fmt(I["対外純資産"], 1) + "兆円";
+  document.getElementById("obLede").innerHTML =
+    "パネル02は東証に入ってくる海外マネーを見ました。ここは<strong>逆向き</strong>です。" +
+    "日本が海外に持っている資産は" + fmt(I["対外資産"], 1) + "兆円、" +
+    "負債を差し引いた純資産は" + fmt(I["対外純資産"], 1) + "兆円あります。" +
+    "その内訳と行き先を、国別に見ます。" +
+    '出典：<a href="' + I.url + '" target="_blank" rel="noopener">財務省 本邦対外資産負債残高（2025年末）</a>';
+
+  var t = [["証券投資", I["証券投資"], "株式・投資信託・債券"],
+           ["直接投資", I["直接投資"], "現地法人・工場・買収"],
+           ["その他投資", I["その他投資"], "貸付・現預金・貿易信用"],
+           ["外貨準備", I["外貨準備"], "政府・日銀が持つ外貨"]];
+  document.getElementById("obTiles").innerHTML = t.map(function(x){
+    return '<div class="tile"><span class="k">' + x[0] + '</span>' +
+      '<span class="v">' + fmt(x[1], 1) + '<span style="font-size:14px"> 兆円</span></span>' +
+      '<span class="d">' + x[2] + '</span></div>'; }).join("");
+}
+
+/* 証券投資の行き先（国別・積み上げ横棒） */
+function drawObSec(){
+  var O = D.outbound; if(!O) return;
+  var S = O.sec, host = document.getElementById("obSecChart"); if(!host) return;
+  host.innerHTML = "";
+  var us = S.rows[0].v, cay = S.rows[1].v, share = (us + cay) / S.total * 100;
+
+  document.getElementById("obSecLede").innerHTML =
+    "証券の発行者がどこの国にいるかで分類したものです。単位は兆円。" +
+    "株式・投資ファンド持分と債券に分けています。" +
+    '出典：<a href="' + S.url + '" target="_blank" rel="noopener">' + S.label + '</a>';
+  document.getElementById("obSecR").textContent = share.toFixed(0) + " %";
+  document.getElementById("obSecNote").innerHTML =
+    "<strong>アメリカとケイマン諸島の2か国で、証券投資残高の" + share.toFixed(0) + "%を占めます。</strong>" +
+    "アメリカが" + (us / 10000).toFixed(1) + "兆円、ケイマン諸島が" + (cay / 10000).toFixed(1) + "兆円。" +
+    "3位のフランス" + (S.rows[2].v / 10000).toFixed(1) + "兆円とは桁がひとつ違います。" +
+    "資金は分散しているように見えて、実際には二か所に寄っています。";
+
+  var R = S.rows, W = 880, RH = 26, PL = 110, PR = 96, PT = 26;
+  var H = PT + R.length * RH + 12, max = R[0].v;
+  var x = function(v){ return PL + (W - PL - PR) * v / max; };
+  var svg = el("svg", {viewBox:"0 0 " + W + " " + H, role:"img",
+    "aria-label":"国別の対外証券投資残高（株式・投資ファンド持分と債券の内訳）"});
+  [0, 100e4, 200e4, 300e4, 400e4].forEach(function(t){
+    if(t > max) return;
+    svg.appendChild(el("line",{x1:x(t),x2:x(t),y1:PT-8,y2:H-8,stroke:css(t===0?"--axis":"--grid")}));
+    svg.appendChild(el("text",{x:x(t),y:PT-13,"text-anchor":"middle",fill:css("--ink-3"),
+      "font-size":10,"font-family":"IBM Plex Mono, monospace"}, (t/10000) + "兆"));
+  });
+  R.forEach(function(r,i){
+    var y0 = PT + i * RH;
+    svg.appendChild(el("text",{x:PL-8,y:y0+17,"text-anchor":"end",fill:css("--ink-2"),
+      "font-size":11.5,"font-family":'"Zen Kaku Gothic New",sans-serif'}, obN(r.n)));
+    var w1 = Math.max(x(r.eq) - PL, 0), w2 = Math.max(x(r.db) - PL, 0);
+    var a = el("rect",{x:PL,y:y0+6,width:Math.max(w1,1),height:14,fill:css("--s1"),rx:2});
+    var b = el("rect",{x:PL+w1+1,y:y0+6,width:Math.max(w2-1,1),height:14,fill:css("--s3"),rx:2});
+    [a,b].forEach(function(e){
+      e.addEventListener("mouseenter", function(ev){ showTip(ev.clientX, ev.clientY,
+        '<div class="th">' + r.n + '</div>' +
+        '<div class="tr"><span>合計</span><b>' + (r.v/10000).toFixed(1) + '兆円</b></div>' +
+        '<div class="tr"><span>株式・投資ファンド持分</span><b>' + (r.eq/10000).toFixed(1) + '兆円</b></div>' +
+        '<div class="tr"><span>債券</span><b>' + (r.db/10000).toFixed(1) + '兆円</b></div>' +
+        '<div class="tr"><span>全体に占める割合</span><b>' + (r.v/S.total*100).toFixed(1) + '%</b></div>'); });
+      e.addEventListener("mouseleave", hideTip);
+    });
+    svg.appendChild(a); svg.appendChild(b);
+    svg.appendChild(el("text",{x:PL+w1+w2+8,y:y0+17,fill:css("--ink"),"font-size":11.5,
+      "font-weight":600,"font-family":"IBM Plex Mono, monospace"}, (r.v/10000).toFixed(1)));
+  });
+  host.appendChild(svg);
+  legend("obSecLegend", [["--s1","株式・投資ファンド持分","box"],["--s3","債券","box"]]);
+  document.getElementById("obSecFoot").textContent =
+    "上位12か国。合計は" + (S.total/10000).toFixed(1) + "兆円で、地域別では北米" +
+    (S.regions["北米"]/10000).toFixed(0) + "兆円、欧州" + (S.regions["欧州"]/10000).toFixed(0) +
+    "兆円、中南米" + (S.regions["中南米"]/10000).toFixed(0) + "兆円、アジア" +
+    (S.regions["アジア"]/10000).toFixed(0) + "兆円です。";
+}
+
+/* 証券投資と直接投資で、地域の構成比がどう違うか */
+function drawObMix(){
+  var O = D.outbound; if(!O) return;
+  var M = O.mix, host = document.getElementById("obMixChart"); if(!host) return;
+  host.innerHTML = "";
+  var asia = M.filter(function(m){ return m.n === "アジア"; })[0];
+
+  document.getElementById("obMixLede").textContent =
+    "同じ「海外投資」でも、証券投資（株や債券を買う）と直接投資（現地法人をつくる・買う）では" +
+    "行き先の構成がまったく違います。それぞれの合計を100%としたときの地域構成比で、" +
+    "主要5地域を表示しています（このほかに国際機関・中東・アフリカがあり、証券投資では合計98.7%になります）。";
+
+  var W = 880, RH = 46, PL = 92, PR = 70, PT = 26;
+  var H = PT + M.length * RH + 14, max = 55;
+  var x = function(v){ return PL + (W - PL - PR) * v / max; };
+  var svg = el("svg", {viewBox:"0 0 " + W + " " + H, role:"img",
+    "aria-label":"証券投資と直接投資の地域構成比の比較"});
+  for(var t = 0; t <= max; t += 10){
+    svg.appendChild(el("line",{x1:x(t),x2:x(t),y1:PT-8,y2:H-10,stroke:css(t===0?"--axis":"--grid")}));
+    svg.appendChild(el("text",{x:x(t),y:PT-13,"text-anchor":"middle",fill:css("--ink-3"),
+      "font-size":10,"font-family":"IBM Plex Mono, monospace"}, t + "%"));
+  }
+  M.forEach(function(m,i){
+    var y0 = PT + i * RH;
+    svg.appendChild(el("text",{x:PL-8,y:y0+24,"text-anchor":"end",fill:css("--ink-2"),
+      "font-size":12.5,"font-family":'"Zen Kaku Gothic New",sans-serif',"font-weight":500}, m.n));
+    [[m.sec,"--s1","証券投資",0],[m.fdi,"--s2","直接投資",17]].forEach(function(p){
+      var r = el("rect",{x:PL,y:y0+4+p[3],width:Math.max(x(p[0])-PL,1.5),height:14,fill:css(p[1]),rx:2});
+      r.addEventListener("mouseenter", function(ev){ showTip(ev.clientX, ev.clientY,
+        '<div class="th">' + m.n + '　' + p[2] + '</div>' +
+        '<div class="tr"><span>構成比</span><b>' + p[0].toFixed(1) + '%</b></div>'); });
+      r.addEventListener("mouseleave", hideTip);
+      svg.appendChild(r);
+      svg.appendChild(el("text",{x:x(p[0])+7,y:y0+15+p[3],fill:css("--ink-2"),"font-size":10.5,
+        "font-weight":600,"font-family":"IBM Plex Mono, monospace"}, p[0].toFixed(1) + "%"));
+    });
+  });
+  host.appendChild(svg);
+  legend("obMixLegend", [["--s1","証券投資 768.7兆円の構成比","box"],["--s2","直接投資 384.5兆円の構成比","box"]]);
+  document.getElementById("obMixFinding").innerHTML =
+    "<strong>アジアの扱いが正反対です。</strong>直接投資ではアジアが" + asia.fdi.toFixed(1) +
+    "%を占めるのに、証券投資ではわずか" + asia.sec.toFixed(1) + "%。" +
+    (asia.fdi / asia.sec).toFixed(0) + "倍の開きがあります。" +
+    "工場や現地法人はアジアに置き、金融資産は北米に置く。日本の対外投資は、" +
+    "実物と金融で行き先が分かれています。" +
+    "中南米が証券投資で" + M.filter(function(m){return m.n==="中南米"})[0].sec.toFixed(1) +
+    "%と大きいのは、そのほとんどがケイマン諸島だからです。";
+}
+
+/* 融資（邦銀の対外与信・部門別） */
+function drawObLoan(){
+  var O = D.outbound; if(!O) return;
+  var L = O.loan, host = document.getElementById("obLoanChart"); if(!host) return;
+  host.innerHTML = "";
+  document.getElementById("obLoanLede").innerHTML =
+    "財務省の地域別統計は直接投資と証券投資しか国別に分けていません。" +
+    "「貸している」ぶんの国別内訳は、日本銀行が公表するBIS国際与信統計にあります。" +
+    "邦銀が海外に対して持つ与信残高（最終リスクベース）で、単位は億ドル。相手の部門別に分けています。" +
+    '出典：<a href="' + L.url + '" target="_blank" rel="noopener">' + L.label + '</a>';
+
+  var R = L.rows, W = 880, RH = 26, PL = 110, PR = 104, PT = 26;
+  var H = PT + R.length * RH + 12, max = R[0].v / 100;
+  var x = function(v){ return PL + (W - PL - PR) * v / max; };
+  var svg = el("svg", {viewBox:"0 0 " + W + " " + H, role:"img",
+    "aria-label":"邦銀の対外与信残高（国別・相手部門別）"});
+  [0, 5000, 10000, 15000, 20000, 25000].forEach(function(t){
+    if(t > max) return;
+    svg.appendChild(el("line",{x1:x(t),x2:x(t),y1:PT-8,y2:H-8,stroke:css(t===0?"--axis":"--grid")}));
+    svg.appendChild(el("text",{x:x(t),y:PT-13,"text-anchor":"middle",fill:css("--ink-3"),
+      "font-size":10,"font-family":"IBM Plex Mono, monospace"}, fmt(t)));
+  });
+  var SEG = [["off","--s4","公的機関"],["bk","--s3","民間銀行"],["nb","--s1","民間非銀行"]];
+  R.forEach(function(r,i){
+    var y0 = PT + i * RH, acc = 0;
+    svg.appendChild(el("text",{x:PL-8,y:y0+17,"text-anchor":"end",fill:css("--ink-2"),
+      "font-size":11.5,"font-family":'"Zen Kaku Gothic New",sans-serif'}, obN(r.n)));
+    SEG.forEach(function(sg){
+      var v = r[sg[0]] / 100, x0 = x(acc), w = Math.max(x(acc+v) - x0, v > 0 ? 1 : 0);
+      acc += v;
+      if(w <= 0) return;
+      var e = el("rect",{x:x0,y:y0+6,width:w,height:14,fill:css(sg[1]),rx:1.5});
+      e.addEventListener("mouseenter", function(ev){ showTip(ev.clientX, ev.clientY,
+        '<div class="th">' + r.n + '</div>' +
+        '<div class="tr"><span>与信合計</span><b>' + fmt(r.v/100) + '億ドル</b></div>' +
+        '<div class="tr"><span>公的機関</span><b>' + fmt(r.off/100) + '億ドル</b></div>' +
+        '<div class="tr"><span>民間銀行</span><b>' + fmt(r.bk/100) + '億ドル</b></div>' +
+        '<div class="tr"><span>民間非銀行</span><b>' + fmt(r.nb/100) + '億ドル</b></div>'); });
+      e.addEventListener("mouseleave", hideTip);
+      svg.appendChild(e);
+    });
+    svg.appendChild(el("text",{x:x(r.v/100)+8,y:y0+17,fill:css("--ink"),"font-size":11,
+      "font-weight":600,"font-family":"IBM Plex Mono, monospace"}, fmt(r.v/100)));
+  });
+  host.appendChild(svg);
+  legend("obLoanLegend", [["--s4","公的機関","box"],["--s3","民間銀行","box"],["--s1","民間非銀行","box"]]);
+  document.getElementById("obLoanFoot").textContent =
+    "上位12か国。対非居住者の与信合計は" + fmt(L.total/100) + "億ドルで、うち公的機関向けが" +
+    fmt(L.sector["公的機関"]/100) + "億ドル、民間非銀行向けが" + fmt(L.sector["民間非銀行"]/100) +
+    "億ドルです。アメリカ向けの公的機関" + fmt(R[0].off/100) + "億ドルは、主に米国債などにあたります。";
+}
+
+/* 円建て＝円キャリーの規模 */
+function drawObYen(){
+  var O = D.outbound; if(!O) return;
+  var Y = O.yen;
+  var h1 = document.getElementById("obYenSplit"); if(!h1) return;
+  h1.innerHTML = "";
+  var jpyShare = Y.jpy / Y.all * 100;
+
+  document.getElementById("obYenLede").innerHTML =
+    "円キャリートレードは「円を借りて、外貨で運用する」取引です。" +
+    "借りている円の総額は直接には測れませんが、" +
+    "<strong>日本所在の銀行が海外の非銀行に対して持つ円建ての債権</strong>が代理指標になります。" +
+    "BISが2024年8月の巻き戻しを分析したときも、この系列を使っています。単位は億ドル。";
+  document.getElementById("obYenR").textContent = fmt(Y.jpy/100) + " 億ドル";
+  document.getElementById("obYenNote").innerHTML =
+    "<strong>海外の非銀行向け円建てクロスボーダー債権の残高。</strong>" +
+    "同じ相手への債権は全通貨で" + fmt(Y.all/100) + "億ドルあり、そのうち円建ては" +
+    jpyShare.toFixed(1) + "%です。銀行向けも含めた全セクターでは" + fmt(Y.allSectorJpy/100) + "億ドル。" +
+    "「円を借りた人が、その円をどこで使っているか」の入口にあたる数字です。";
+
+  /* 通貨別の帯 */
+  var W = 460, H = 88, PL = 0, PR = 0;
+  var svg = el("svg", {viewBox:"0 0 " + W + " " + H, role:"img", "aria-label":"円建てと外貨建ての内訳"});
+  var wj = W * Y.jpy / Y.all, wf = W - wj;
+  [[0,wj,"--s2","円建",Y.jpy],[wj,wf,"--ink-3","外貨建",Y.fx]].forEach(function(p){
+    var r = el("rect",{x:p[0],y:20,width:Math.max(p[1],1),height:30,
+      fill:css(p[2]),opacity:p[2]==="--ink-3"?.35:1});
+    r.addEventListener("mouseenter", function(ev){ showTip(ev.clientX, ev.clientY,
+      '<div class="th">' + p[3] + '</div>' +
+      '<div class="tr"><span>残高</span><b>' + fmt(p[4]/100) + '億ドル</b></div>' +
+      '<div class="tr"><span>構成比</span><b>' + (p[4]/Y.all*100).toFixed(1) + '%</b></div>'); });
+    r.addEventListener("mouseleave", hideTip);
+    svg.appendChild(r);
+  });
+  svg.appendChild(el("text",{x:2,y:14,fill:css("--s2"),"font-size":11.5,"font-weight":700,
+    "font-family":'"Zen Kaku Gothic New",sans-serif'}, "円建 " + jpyShare.toFixed(1) + "%"));
+  svg.appendChild(el("text",{x:W-2,y:14,"text-anchor":"end",fill:css("--ink-3"),"font-size":11.5,
+    "font-family":'"Zen Kaku Gothic New",sans-serif'}, "外貨建 " + (100-jpyShare).toFixed(1) + "%"));
+  svg.appendChild(el("text",{x:2,y:68,fill:css("--ink-2"),"font-size":11,
+    "font-family":"IBM Plex Mono, monospace"}, fmt(Y.jpy/100) + " 億ドル"));
+  svg.appendChild(el("text",{x:W-2,y:68,"text-anchor":"end",fill:css("--ink-3"),"font-size":11,
+    "font-family":"IBM Plex Mono, monospace"}, fmt(Y.fx/100) + " 億ドル"));
+  h1.appendChild(svg);
+  legend("obYenSplitLegend", [["--s2","円建","box"],["--ink-3","外貨建","box"]]);
+
+  /* 相手国別 */
+  var h2 = document.getElementById("obYenChart"); h2.innerHTML = "";
+  var R = Y.rows, W2 = 460, RH = 24, PL2 = 108, PR2 = 62, PT2 = 8;
+  var H2 = PT2 + R.length * RH + 6, max = R[0].jpy / 100;
+  var x2 = function(v){ return PL2 + (W2 - PL2 - PR2) * v / max; };
+  var s2 = el("svg", {viewBox:"0 0 " + W2 + " " + H2, role:"img",
+    "aria-label":"円建て債権の相手国別残高"});
+  s2.appendChild(el("line",{x1:PL2,x2:PL2,y1:PT2,y2:H2-4,stroke:css("--axis")}));
+  R.forEach(function(r,i){
+    var y0 = PT2 + i * RH, v = r.jpy / 100;
+    s2.appendChild(el("text",{x:PL2-8,y:y0+16,"text-anchor":"end",fill:css("--ink-2"),
+      "font-size":11.5,"font-family":'"Zen Kaku Gothic New",sans-serif'}, obN(r.n)));
+    var e = el("rect",{x:PL2,y:y0+5,width:Math.max(x2(v)-PL2,1.5),height:13,fill:css("--s2"),
+      opacity:i===0?1:.6,rx:2});
+    e.addEventListener("mouseenter", function(ev){ showTip(ev.clientX, ev.clientY,
+      '<div class="th">' + r.n + '</div>' +
+      '<div class="tr"><span>円建て債権</span><b>' + fmt(r.jpy/100) + '億ドル</b></div>' +
+      '<div class="tr"><span>全通貨</span><b>' + fmt(r.all/100) + '億ドル</b></div>' +
+      '<div class="tr"><span>円建ての割合</span><b>' + (r.jpy/r.all*100).toFixed(0) + '%</b></div>'); });
+    e.addEventListener("mouseleave", hideTip);
+    s2.appendChild(e);
+    s2.appendChild(el("text",{x:x2(v)+7,y:y0+16,fill:css("--ink-2"),"font-size":10.5,
+      "font-weight":600,"font-family":"IBM Plex Mono, monospace"}, fmt(v)));
+  });
+  h2.appendChild(s2);
+  document.getElementById("obYenFoot").textContent =
+    "円を借りている相手の" + (R[0].jpy/Y.jpy*100).toFixed(0) +
+    "%がケイマン諸島です。相手はファンドとSPCで、事業会社ではありません。";
+  document.getElementById("obYenCaution").innerHTML =
+    "<strong>数字の読み方に注意。</strong>" + Y.caution +
+    " ここに出しているのは「日本所在の銀行が海外の非銀行に円建てで持っている債権」であって、" +
+    "円キャリートレードそのものの残高ではありません。" +
+    "借り手が円を売って外貨に換えたかどうかまでは、この統計では分かりません。" +
+    "規模の上限を示す目安として見てください。";
+}
+
+/* ケイマンの3統計 */
+function renderObCayman(){
+  var O = D.outbound; if(!O) return;
+  var C = O.cayman, t = document.getElementById("obCayTable"); if(!t) return;
+  t.innerHTML = "<thead><tr><th class=\"l\">統計</th><th>ケイマン諸島</th><th>順位</th>" +
+    "<th class=\"note\">内訳</th></tr></thead><tbody>" +
+    C.rows.map(function(r){
+      return "<tr><td>" + r.k + "</td><td>" + r.v + "</td><td>" + r.rank +
+        "</td><td class=\"note\">" + r.note + "</td></tr>"; }).join("") + "</tbody>";
+  document.getElementById("obCayFinding").innerHTML =
+    "<strong>読み取れること。</strong>" + C.finding;
+}
+
+/* 出ていく／入ってくる */
+function drawObIn(){
+  var O = D.outbound; if(!O) return;
+  var IN = O.inbound, S = O.sec, host = document.getElementById("obInChart"); if(!host) return;
+  host.innerHTML = "";
+  document.getElementById("obInLede").innerHTML =
+    "証券投資には向きが2つあります。日本から海外への投資が" + (S.total/10000).toFixed(1) +
+    "兆円、海外から日本への投資が" + (IN.total/10000).toFixed(1) + "兆円。" +
+    "下は<strong>海外から日本に投資している国</strong>の上位です（保有者の所在国別）。" +
+    "パネル02の「東証の売買代金の66.2%が海外投資家」を、残高の側から見たものにあたります。";
+
+  var R = IN.rows, W = 880, RH = 26, PL = 110, PR = 96, PT = 26;
+  var H = PT + R.length * RH + 12, max = R[0].v;
+  var x = function(v){ return PL + (W - PL - PR) * v / max; };
+  var svg = el("svg", {viewBox:"0 0 " + W + " " + H, role:"img",
+    "aria-label":"海外から日本への証券投資残高（国別）"});
+  [0, 50e4, 100e4, 150e4, 200e4, 250e4].forEach(function(t){
+    if(t > max) return;
+    svg.appendChild(el("line",{x1:x(t),x2:x(t),y1:PT-8,y2:H-8,stroke:css(t===0?"--axis":"--grid")}));
+    svg.appendChild(el("text",{x:x(t),y:PT-13,"text-anchor":"middle",fill:css("--ink-3"),
+      "font-size":10,"font-family":"IBM Plex Mono, monospace"}, (t/10000) + "兆"));
+  });
+  R.forEach(function(r,i){
+    var y0 = PT + i * RH;
+    svg.appendChild(el("text",{x:PL-8,y:y0+17,"text-anchor":"end",fill:css("--ink-2"),
+      "font-size":11.5,"font-family":'"Zen Kaku Gothic New",sans-serif'}, obN(r.n)));
+    var e = el("rect",{x:PL,y:y0+6,width:Math.max(x(r.v)-PL,1.5),height:14,fill:css("--s3"),rx:2});
+    e.addEventListener("mouseenter", function(ev){ showTip(ev.clientX, ev.clientY,
+      '<div class="th">' + r.n + '</div>' +
+      '<div class="tr"><span>対日証券投資残高</span><b>' + (r.v/10000).toFixed(1) + '兆円</b></div>' +
+      '<div class="tr"><span>全体に占める割合</span><b>' + (r.v/IN.total*100).toFixed(1) + '%</b></div>'); });
+    e.addEventListener("mouseleave", hideTip);
+    svg.appendChild(e);
+    svg.appendChild(el("text",{x:x(r.v)+8,y:y0+17,fill:css("--ink"),"font-size":11.5,
+      "font-weight":600,"font-family":"IBM Plex Mono, monospace"}, (r.v/10000).toFixed(1)));
+  });
+  host.appendChild(svg);
+  legend("obInLegend", [["--s3","海外から日本への証券投資残高（兆円）","box"]]);
+  document.getElementById("obInFoot").textContent =
+    "ベルギーとルクセンブルクが上位に来るのは、ユーロクリアなど国際証券決済機関の所在地だからで、" +
+    "最終的な保有者の国籍とは一致しません。証券投資（資産）が発行者の所在国別なのに対し、" +
+    "証券投資（負債）は保有者の所在国別に分類されています。";
+}

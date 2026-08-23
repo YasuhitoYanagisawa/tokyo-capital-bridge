@@ -273,7 +273,7 @@ function drawHeat(){
       c.addEventListener("mouseenter",function(ev){ showTip(ev.clientX,ev.clientY,'<div class="th">'+r.full+' / '+YEARS[j]+'年</div><div class="tr"><span>業況DI 年平均</span><b>'+(v==null?"—":v.toFixed(1))+'</b></div>'); });
       c.addEventListener("mouseleave",hideTip);
       c.addEventListener("click",function(){ document.getElementById("dgInd").value=r.full;
-        renderDiag(); document.querySelector('.lens-btn[data-lens="3"]').click(); });
+        renderDiag(); document.querySelector('.lens-btn[data-lens="6"]').click(); });
       svg.appendChild(c);
     });
   });

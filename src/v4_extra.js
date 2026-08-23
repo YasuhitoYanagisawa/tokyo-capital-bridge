@@ -469,6 +469,7 @@ function renderAll(){
   renderStampV4();
   renderMapHero(); drawFlowMap(); drawIneqStrip(); drawLadder(); drawRatio(); renderRatioNote();
   renderForeign(); drawRegion(); drawForeignTrend(); renderPolicy();
+  renderOutHero(); drawObSec(); drawObMix(); drawObLoan(); drawObYen(); renderObCayman(); drawObIn();
   drawBondEnv(); drawMarketTable(); drawMarketBars(); drawTurnYield(); drawTseMonthly();
   renderSmeHero(); drawHero(); drawShikin(); drawSubro(); drawHosho(); drawHeat();
   renderEquityGap(); drawGrowth();
